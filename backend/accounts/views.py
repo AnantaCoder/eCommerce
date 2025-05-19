@@ -6,15 +6,15 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics, permissions
+from rest_framework import status, generics, permissions,viewsets,mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from .serializers import (
     RegisterSerializer, UserSerializer, EmailVerificationSerializer,
-    OTPVerificationSerializer, RequestOTPSerializer 
+    OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer
 )
-from .models import OTP
+from .models import *
 
 User = get_user_model()
 
@@ -252,3 +252,41 @@ class LogoutView(APIView):
             return Response({"detail": "Refresh token not provided."}, status=status.HTTP_400_BAD_REQUEST)
         except TokenError as e:
             return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+ 
+class IsOwner(permissions.AllowAny):
+    
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+class SellerViewSet(mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    viewsets.GenericViewSet):
+    """
+    POST   /api/auth/seller/         → create your seller profile
+    GET    /api/seller/{pk}/    → retrieve it
+    PATCH  /api/seller/{pk}/    → partial update
+    PUT    /api/seller/{pk}/    → full update
+    """
+    serializer_class = SellerSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        return Seller.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
+        
+# The mixin classes provide the actions that are used to provide the basic
+# view behavior. Note that the mixin classes provide action methods 
+# rather than defining the handler methods, such as .get() and 
+# .post(), directly. This allows for more flexible composition of behavior.
+
+
+'''viewsets'''
+'''A ViewSet class is simply a type of class-based View, that does not provide any method handlers such as .get() or .post(), and instead provides actions such as .list() and .create().
+
+The method handlers for a ViewSet are only bound to the corresponding actions at the point of finalizing the view, using the .as_view() method.'''

@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-import random
+from django.conf import settings
+
 import string
 from datetime import timedelta
 from django.utils import timezone
@@ -50,6 +51,10 @@ class User(AbstractUser):
     email = models.EmailField(_('email address') , unique=True)
     is_email_verified = models.BooleanField(default=False)
     
+    is_seller = models.BooleanField(default=False)
+    shop_name    = models.CharField(max_length=200, blank=True)
+    gst_number   = models.CharField(max_length=50, blank=True)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] #email and password required by default 
     
@@ -57,12 +62,23 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
     
+class Seller(models.Model):
+    
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE,
+                                related_name='seller_profile')
+    shop_name = models.CharField(max_length=200)
+    gst_number = models.CharField(max_length=50,blank=True)
+    address = models.TextField(blank=True)
+    
+    def __str__(self):
+        return self.shop_name
     
 class OTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="otps")
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
-    expired_at = models.DateTimeField(null=True)  # Allow NULL
+    expired_at = models.DateTimeField(null=True)  
 
     def save(self, *args, **kwargs):
         if not self.expired_at:
@@ -70,12 +86,12 @@ class OTP(models.Model):
         super().save(*args, **kwargs)
 
     def is_valid(self):
-        return timezone.now() <= self.expired_at  # Fixed typo
+        return timezone.now() <= self.expired_at 
 
     @classmethod
     def generate_otp(cls, user):
         user.otps.all().delete()
-        code = ''.join(secrets.choice(string.digits) for _ in range(6))  # More secure
+        code = ''.join(secrets.choice(string.digits) for _ in range(6))  
         otp = cls(user=user, code=code)
         otp.save()
         return otp

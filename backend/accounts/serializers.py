@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import OTP
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import *
 
 User = get_user_model()
 
@@ -95,5 +94,9 @@ class RequestOTPSerializer(serializers.Serializer):
             return value
         except User.DoesNotExist:
             raise serializers.ValidationError("No user found with this email address.")
-        
-        
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seller
+        fields = ["shop_name","gst_number","address"]
