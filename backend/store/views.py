@@ -59,16 +59,42 @@ class ItemViewSet(viewsets.ModelViewSet):
             "items": serializer.data
         })
 
-class OrderViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.RetrieveModelMixin,
-                   viewsets.GenericViewSet):
+from rest_framework import viewsets, status, mixins
+from rest_framework.response import Response
+from .models import Order
+from .serializers import OrderSerializer, CreateOrderSerializer
+
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    GET    /orders/        → list your orders
+    GET    /orders/{pk}/   → retrieve a single order
+    POST   /orders/        → create a new order (uses CreateOrderSerializer)
+    """
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    
+
     def get_queryset(self):
+        # only your own orders
         return self.queryset.filter(buyer=self.request.user)
-    
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateOrderSerializer
+        return OrderSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+
+        # serialize the resulting Order with your read-only serializer
+        output = OrderSerializer(order, context={'request': request})
+        headers = self.get_success_headers(output.data)
+        return Response(output.data, status=status.HTTP_201_CREATED, headers=headers)
+
     
 class SellerViewSet(mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,
@@ -82,6 +108,6 @@ class SellerViewSet(mixins.CreateModelMixin,
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        user = self.request.user
-        user.is_seller = True
-        user.save(update_fields=['is_seller'])
+        # user = self.request.user
+        # # user.is_seller = True
+        # # user.save(update_fields=['is_seller'])

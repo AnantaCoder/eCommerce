@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email,**extra_fields)
         
-        # create this method 
+        
         user.set_password(password)
         
         user.save(using=self._db)
@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
     def create_user(self,email,password=None , **extra_fields):
         extra_fields.setdefault('is_staff',False)
         extra_fields.setdefault('is_superuser',False)
-        extra_fields.setdefault('is_active',False) #user inactive until verified. 
+        extra_fields.setdefault('is_active',False) 
         return self._create_user(email,password,**extra_fields)
     
     def create_superuser(self,email,password=None , **extra_fields):
@@ -51,9 +51,8 @@ class User(AbstractUser):
     email = models.EmailField(_('email address') , unique=True)
     is_email_verified = models.BooleanField(default=False)
     
-    is_seller = models.BooleanField(default=False)
-    shop_name    = models.CharField(max_length=200, blank=True)
-    gst_number   = models.CharField(max_length=50, blank=True)
+    # redundant filed for user type . 
+    # is_seller = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] #email and password required by default 
@@ -62,15 +61,40 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
     
+    # dynamically checks if user is seller or not 
+    @property
+    def is_seller(self):
+        return hasattr(self,'seller')
+    
 class Seller(models.Model):
     
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                related_name='seller_profile')
-    shop_name = models.CharField(max_length=200)
-    gst_number = models.CharField(max_length=50,blank=True)
-    address = models.TextField(blank=True)
     
+    SELLER_TYPES = [
+        ('individual', 'Individual'),
+        ('wholesaler', 'Wholesaler'),
+        ('enterprise', 'Enterprise'),
+    ]
+      
+      
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='seller',
+        primary_key=True
+    )
+    shop_name = models.CharField(max_length=200)
+    gst_number = models.CharField(max_length=50, blank=True)
+    address = models.TextField(blank=True)
+    seller_type = models.CharField(max_length=20, choices=SELLER_TYPES, default='individual')
+    is_verified = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        indexes= [
+            models.Index(fields=['shop_name']),
+            models.Index(fields=['gst_number'])
+            
+        ]
     def __str__(self):
         return self.shop_name
     

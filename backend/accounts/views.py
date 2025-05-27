@@ -6,7 +6,8 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics, permissions,viewsets,mixins
+from django.urls import reverse
+from rest_framework import status, generics, permissions,viewsets,mixins,serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
@@ -14,52 +15,115 @@ from .serializers import (
     RegisterSerializer, UserSerializer, EmailVerificationSerializer,
     OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer
 )
+from django.core.mail import send_mail, BadHeaderError
+import logging
+
+logger = logging.getLogger(__name__)
 from .models import *
 
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
+    """
+    Handles user registration and sends email verification.
     
-    serializer_class = RegisterSerializer #serializer class
+    The create method registers a new user and automatically sends
+    a verification email with a secure token-based link.
+    """
+    
+    serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
     
     def create(self, request, *args, **kwargs):
+        """
+        Create a new user account and send verification email.
         
+        This method validates the registration data, creates the user,
+        and attempts to send a verification email. If email sending fails,
+        the user is still created but an appropriate message is returned.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         
         try:
-            user = serializer.save()
-            self.send_verification_email(user)
-            return Response({
-            "message": "User registered successfully. Please check your email to verify your account."
-            }, status=status.HTTP_201_CREATED)
-            
-        except Exception as e:
+            # Call the instance method (note the 'self.')
+            self.send_verification_email(request, user)
             return Response(
-            {"detail": f"Registration failed: {str(e)}"},
-            status=status.HTTP_400_BAD_REQUEST
+                {"message": "User registered successfully. Check your email for a verification link."},
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            # Log the specific error for debugging
+            logger.error(f"Failed to send verification email to {user.email}: {str(e)}")
+            return Response(
+                {
+                    "message": "User registered successfully but email verification could not be sent.",
+                    "detail": "Please use the request-otp endpoint to verify your email.",
+                    "email": user.email
+                },
+                status=status.HTTP_201_CREATED
             )
     
-    def send_verification_email(self, user):
-        try:
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            verification_link = f"http://127.0.0.1:8000/api/auth/verify-email/?uid={uid}&token={token}"
-            # verification_link = f"{settings.FRONTEND_URL}/verify-email/?uid={uid}&token={token}"
-            print(f"verification mail is :{verification_link} ")
+    def send_verification_email(self, request, user):
+        """
+        Send email verification link to the user.
         
+        This method generates a secure token, builds an absolute URL
+        for email verification, and sends it via email. The token
+        is tied to the specific user and expires automatically.
+        
+        Args:
+            request: The HTTP request object (needed to build absolute URL)
+            user: The User instance to send verification email to
+            
+        Raises:
+            Exception: If email sending fails for any reason
+        """
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Build the absolute URL for email verification
+        # This uses Django's reverse() to get the correct URL pattern
+        try:
+            verify_path = reverse('accounts:verify_email')  # Note: using the namespaced URL
+        except:
+            verify_path = reverse('verify-email')
+            
+        base_url = request.build_absolute_uri(verify_path)
+        verification_link = f"{base_url}?uid={uid}&token={token}"
+        
+        print(f"[DEBUG] Email verification link: {verification_link}")
+        logger.info(f"Generated verification link for user {user.email}")
+        
+        subject = "Verify Your Email Address"
+        message = (
+            f"Hello,\n\n"
+            f"Thank you for registering! Please click the link below to verify your email address:\n\n"
+            f"{verification_link}\n\n"
+            f"This link will expire in 24 hours for security purposes.\n\n"
+            f"If you did not create this account, you can safely ignore this email.\n\n"
+            f"Best regards,\n"
+            f"Your App Team"
+        )
+        
+        try:
             send_mail(
-            subject="Verify Your Email \n",
-            message=f"Please click the link to verify your email: {verification_link}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False, 
             )
-        except Exception as e :
-            return Response({
-                "detail":"Unable to send verification email."
-            },status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            logger.info(f"Verification email sent successfully to {user.email}")
+            
+        except BadHeaderError as e:
+            logger.error(f"Bad email header when sending to {user.email}: {str(e)}")
+            raise Exception("Invalid email header detected")
+            
+        except Exception as e:
+            logger.error(f"Failed to send verification email to {user.email}: {str(e)}")
+            raise Exception(f"Email sending failed: {str(e)}")
 
 
 class VerifyEmailView(APIView):
@@ -99,6 +163,7 @@ class VerifyEmailView(APIView):
                 return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RequestOTPView(APIView):
@@ -157,7 +222,7 @@ class VerifyOTPView(APIView):
             # Activate the user
             user.is_active = True
             user.is_email_verified = True
-            user.save()
+            user.save(update_fields=['is_active', 'is_email_verified'])
 
             # Delete the used OTP
             user.otps.all().delete()
@@ -255,20 +320,21 @@ class LogoutView(APIView):
         
         
  
-class IsOwner(permissions.AllowAny):
+class IsOwner(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user
 
-class SellerViewSet(mixins.CreateModelMixin,
-                    mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    viewsets.GenericViewSet):
+class SellerViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet ):
     """
-    POST   /api/auth/seller/         → create your seller profile
-    GET    /api/seller/{pk}/    → retrieve it
-    PATCH  /api/seller/{pk}/    → partial update
-    PUT    /api/seller/{pk}/    → full update
+    POST   /api/auth/seller/      → create your seller profile
+    GET    /api/seller/{pk}/      → retrieve it
+    PATCH  /api/seller/{pk}/      → partial update
+    PUT    /api/seller/{pk}/      → full update
     """
     serializer_class = SellerSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
@@ -277,7 +343,15 @@ class SellerViewSet(mixins.CreateModelMixin,
         return Seller.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+
+        if user.is_seller:
+            raise serializers.ValidationError("You are already a seller.")
+
+        serializer.save(user=user)
+
+        # user.is_seller = True
+        # user.save(update_fields=['is_seller'])
         
         
 # The mixin classes provide the actions that are used to provide the basic
