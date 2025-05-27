@@ -59,10 +59,7 @@ class ItemViewSet(viewsets.ModelViewSet):
             "items": serializer.data
         })
 
-from rest_framework import viewsets, status, mixins
-from rest_framework.response import Response
-from .models import Order
-from .serializers import OrderSerializer, CreateOrderSerializer
+
 
 class OrderViewSet(
     mixins.ListModelMixin,
