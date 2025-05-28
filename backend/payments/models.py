@@ -3,7 +3,7 @@ from accounts.models import User,Seller
 from store.models import Order
 # Create your models here.
 
-class Payment(models.Model):
+class Payments(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
@@ -58,9 +58,9 @@ class Payment(models.Model):
         return f"{self.transaction_id} - {self.status}"
 
     
-class PaymentGatewayLog(models.Model):
+class PaymentsGatewayLog(models.Model):
         payment_id = models.ForeignKey(
-            Payment,
+            Payments,
             on_delete = models.CASCADE,
             related_name = 'gateway_logs'
         )

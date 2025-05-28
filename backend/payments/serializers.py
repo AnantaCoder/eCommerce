@@ -1,17 +1,17 @@
-from models import Payment,PaymentGatewayLog
+from models import Payments,PaymentsGatewayLog
 from rest_framework import serializers 
 from rest_framework.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 
-class PaymentSerializer(serializers.ModelSerializer):
+class PaymentsSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     seller = serializers.StringRelatedField(read_only=True)
     order = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        model = Payment
+        model = Payments
         fields = [
             'id',
             'user',
@@ -37,11 +37,11 @@ class PaymentSerializer(serializers.ModelSerializer):
             raise ValidationError(_("Amount must be greater than zero."))
 
 
-class PaymentGatewayLogSerializer(serializers.ModelSerializer):
+class PaymentsGatewayLogSerializer(serializers.ModelSerializer):
     payment = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        model = PaymentGatewayLog
+        model = PaymentsGatewayLog
         fields = [
             'id',
             'payment',
