@@ -17,6 +17,8 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+    
+    # 
 class Item(models.Model):
     seller = models.ForeignKey(
         Seller,
@@ -27,6 +29,8 @@ class Item(models.Model):
     item_type    = models.CharField(max_length=100)
     manufacturer = models.CharField(max_length=200)
     
+    '''its optional right now '''
+    ''' category is empty be default ,later modify it to allow multiple categories per item '''
     category = models.ForeignKey(
         Category, 
         on_delete=models.SET_NULL, 
@@ -63,7 +67,7 @@ class OrderItem(models.Model):
     
     item_name = models.CharField(max_length=200)
     item_price = models.DecimalField(max_digits=10, decimal_places=2)
-    manufacturer = models.CharField(max_length=200)
+    # manufacturer = models.CharField(max_length=200) , remove manufacturer here if it’s always the same as original_item.manufacturer
     quantity = models.PositiveIntegerField()
     
     
@@ -109,3 +113,14 @@ class Order(models.Model):
         return f"Order #{self.id} - {self.buyer.email}"
 
 '''A Stock Keeping Unit (SKU) is a unique alphanumeric code used by businesses to track and manage their inventory. It's essentially a product's identifier within a company's system. SKUs are used to identify specific products, including variations like size, color, or model, and help with internal stock management'''
+
+'''
+Primary Key (PK): Unique identifier for each row. Django auto-creates an id unless you override it (as in Seller where user becomes the PK).
+
+Foreign Key (FK): A link to another model’s PK. E.g. Item.seller → Seller.pk, Order.buyer → User.pk.
+
+OneToOneField: A special FK where the relation is 1:1 (used in Seller to tie exactly one profile per User).
+
+ManyToManyField: Creates an intermediate table linking two models; e.g. Order.items links orders to their line items.
+
+'''

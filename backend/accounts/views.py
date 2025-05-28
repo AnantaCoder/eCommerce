@@ -247,7 +247,6 @@ class VerifyOTPView(APIView):
 class UserDetailView(generics.RetrieveAPIView):
     
     serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated] permission class is default . 
     
     def get_object(self):
         return self.request.user
@@ -331,7 +330,7 @@ class SellerViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet ):
     """
-    POST   /api/auth/seller/      → create your seller profile
+    POST   /api/auth/seller/      → create  seller profile
     GET    /api/seller/{pk}/      → retrieve it
     PATCH  /api/seller/{pk}/      → partial update
     PUT    /api/seller/{pk}/      → full update
@@ -361,6 +360,7 @@ class SellerViewSet(
 
 
 '''viewsets'''
+# user NameSet for a viewset based classes. 
 '''A ViewSet class is simply a type of class-based View, that does not provide any method handlers such as .get() or .post(), and instead provides actions such as .list() and .create().
 
 The method handlers for a ViewSet are only bound to the corresponding actions at the point of finalizing the view, using the .as_view() method.'''

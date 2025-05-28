@@ -1,0 +1,28 @@
+🧩 1. What is a ViewSet?
+A ViewSet is a class that groups together multiple actions you want your API to support — like:
+
+GET /items/ → show all items
+
+GET /items/1/ → show one item
+
+POST /items/ → create a new item
+
+PUT /items/1/ → update an item
+
+DELETE /items/1/ → delete an item
+
+🔁 2. What are Mixins?
+Mixins are like ready-made features you can add to a ViewSet.
+
+Each mixin gives one ability:
+
+Mixin	What it does
+CreateModelMixin	Lets users create (POST)
+ListModelMixin	Lets users see a list (GET)
+RetrieveModelMixin	Lets users see one item (GET by ID)
+UpdateModelMixin	Lets users update (PUT/PATCH)
+DestroyModelMixin	Lets users delete (DELETE)
+
+✅ You only include the mixins you need, and Django handles the URLs & logic.
+
+

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Item,Order
-from .serializers import ItemSerializer ,OrderSerializer
+from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,CategorySerializer
 from .permissions import IsSeller
 from accounts.models import Seller
 from accounts.serializers import SellerSerializer
@@ -62,6 +62,7 @@ class ItemViewSet(viewsets.ModelViewSet):
 
 
 class OrderViewSet(
+    mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
@@ -70,6 +71,7 @@ class OrderViewSet(
     GET    /orders/        → list your orders
     GET    /orders/{pk}/   → retrieve a single order
     POST   /orders/        → create a new order (uses CreateOrderSerializer)
+    POST   /orders/{pk}/confirm  → confirm an order(only Buyer)
     """
     queryset = Order.objects.all()
 
@@ -92,13 +94,35 @@ class OrderViewSet(
         headers = self.get_success_headers(output.data)
         return Response(output.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @action(detail=True, methods=['post'])
+    def confirm(self,request,pk=None):
+        order = self.get_object()
+        
+        if order.buyer != request.user:
+            return Response(
+                {"detail": "Not allowed to confirm this order."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        if order.status != order.ORDER_STATUS[0][0]:
+                return Response(
+                {"detail": f"Order cannot be confirmed once {order.status}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        order.status = 'confirmed'
+        order.save()
+        serializer = self.get_serializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+                
+
+        
     
 class SellerViewSet(mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
     serializer_class = SellerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated] #this line is not required . remove !!!
     
     def get_queryset(self):
         return Seller.objects.filter(user=self.request.user)
