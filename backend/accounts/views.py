@@ -104,7 +104,7 @@ class RegisterView(generics.CreateAPIView):
             f"This link will expire in 24 hours for security purposes.\n\n"
             f"If you did not create this account, you can safely ignore this email.\n\n"
             f"Best regards,\n"
-            f"Your App Team"
+            f"E-Commerce by Anirban Sarkar "
         )
         
         try:
