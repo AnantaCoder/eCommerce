@@ -26,3 +26,13 @@ DestroyModelMixin	Lets users delete (DELETE)
 ✅ You only include the mixins you need, and Django handles the URLs & logic.
 
 
+-----------------------------------------------------------------------------------------------------
+in mostly 3 ways I can write view 
+apiview = > more control , more customizations, for edgecases 
+mixins => balanced approach, some crud , for more control
+modelViewSet => crud by default , mostly Used 
+
+
+mixins can be + GenericAPIView or GenericViewSet
+
+---------------------------------------------------------------------------------------------------

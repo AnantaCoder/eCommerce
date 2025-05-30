@@ -1,4 +1,4 @@
-from models import Payments,PaymentsGatewayLog
+from payments.models import Payments,PaymentsGatewayLog
 from rest_framework import serializers 
 from rest_framework.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
