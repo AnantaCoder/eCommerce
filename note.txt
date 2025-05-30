@@ -36,3 +36,9 @@ modelViewSet => crud by default , mostly Used
 mixins can be + GenericAPIView or GenericViewSet
 
 ---------------------------------------------------------------------------------------------------
+
+A Universally Unique Identifier (UUID) is 
+a 128-bit value used to uniquely identify objects in computer systems. 
+It's often represented as a 32-character alphanumeric string formatted with hyphens. 
+UUIDs are generated using algorithms that make it statistically impossible to 
+create two identical IDs

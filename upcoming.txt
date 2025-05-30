@@ -6,3 +6,4 @@
 6. secure checkout 
 7. after payment show the shipping status 
 8. customer can review the products 
+9. connect to websockets and redis 
