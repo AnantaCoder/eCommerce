@@ -1,0 +1,1 @@
+// for out let and navbar and footer 
