@@ -12,6 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.8",
+    "axois": "^0.0.1-security",
     "clsx": "^2.1.1",
     "motion": "^12.16.0",
     "react": "^19.1.0",

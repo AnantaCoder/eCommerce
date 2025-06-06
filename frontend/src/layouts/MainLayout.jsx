@@ -1,1 +1,1 @@
-// for out let and navbar and footer 
+// for out let and navbar and footer
