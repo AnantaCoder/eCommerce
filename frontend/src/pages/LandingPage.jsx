@@ -1,4 +1,6 @@
 import React from 'react';
+import Chair from '../components/VantaBackground';
+import VantaBackground from '../components/VantaBackground';
 
 function LandingPage() {
   // Sample data for featured products - in a real app, this would come from your Django API
@@ -30,28 +32,48 @@ function LandingPage() {
   ];
 
   // Categories data with corresponding images
-  const categories = [
-    {
-      name: 'Audio',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=150&fit=crop'
-    },
-    {
-      name: 'Gaming',
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=150&fit=crop'
-    },
-    {
-      name: 'Wearables',
-      image: 'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=200&h=150&fit=crop'
-    },
-    {
-      name: 'Virtual Reality',
-      image: 'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=200&h=150&fit=crop'
-    },
-    {
-      name: 'Accessories',
-      image: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=200&h=150&fit=crop'
-    }
-  ];
+ const categories = [
+  {
+    name: 'Audio',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Gaming',
+    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Wearables',
+    image: 'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Virtual Reality',
+    image: 'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Smart Home',
+    image: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Mobile Accessories',
+    image: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Computing',
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Photography',
+    image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Fitness Tech',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=150&fit=crop'
+  },
+  {
+    name: 'Networking',
+    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=200&h=150&fit=crop'
+  }
+];
 
   // Testimonials data with avatar images
   const testimonials = [
@@ -59,17 +81,17 @@ function LandingPage() {
       id: 1,
       name: 'Mia Malik',
       avatar: 'https://plus.unsplash.com/premium_photo-1669704098858-8cd103f4ac2e?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      text: 'NeonCart has revolutionized my online shopping experience. The product quality is unmatched, and the customer service is exceptional!'
+      text: 'StoreHub has revolutionized my online shopping experience. The product quality is unmatched, and the customer service is exceptional!'
     },
     {
       id: 2,
       name: 'David Nigga',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      text: 'I\'m a huge fan of the gaming gear available at NeonCart. The Aether Gaming Mouse has significantly improved my performance.'
+      text: 'I\'m a huge fan of the gaming gear available at StoreHub. The Aether Gaming Mouse has significantly improved my performance.'
     },
     {
       id: 3,
-      name: 'Emily Red Hair',
+      name: 'Emily Blunt',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
       text: 'The Nova Smartwatch is not only stylish but also packed with features. It\'s become an essential part of my daily routine.'
     }
@@ -77,31 +99,27 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Hero Section with Glowing Orb Effect */}
+      {/* Hero with three js effects */}
+      
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* The key to creating the glowing orb: multiple overlapping gradients with blur effects */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          {/* Main glowing orb - uses radial gradient and blur for the ethereal effect */}
-          <div className="relative">
-            <div className="w-96 h-96 rounded-full bg-gradient-to-br from-cyan-400 via-teal-500 to-cyan-600 opacity-80 blur-3xl"></div>
-            <div className="absolute top-4 left-4 w-80 h-80 rounded-full bg-gradient-to-tr from-cyan-300 to-teal-400 opacity-60 blur-2xl"></div>
-            <div className="absolute top-8 left-8 w-64 h-64 rounded-full bg-cyan-200 opacity-40 blur-xl"></div>
-          </div>
-        </div>
-        
-        {/* Hero Content - positioned above the glowing background */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
-            Welcome to Future Commerce
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Explore the future of online shopping with our curated collection of cutting-edge products and exclusive deals.
-          </p>
-          <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-            Shop Now
-          </button>
-        </div>
-      </section>
+  {/* Vanta Background - positioned absolutely behind everything */}
+  <div className="absolute inset-0 z-0">
+    <VantaBackground />
+  </div>
+
+  {/* Hero Content - positioned above the background */}
+  <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+      Welcome to Future of e-Commerce
+    </h1>
+    <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+      Explore the future of online shopping with our curated collection of cutting-edge products and exclusive deals.
+    </p>
+    <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+      Shop Now
+    </button>
+  </div>
+</section>
 
       {/* Featured Products Section */}
       <section className="py-20 px-6">

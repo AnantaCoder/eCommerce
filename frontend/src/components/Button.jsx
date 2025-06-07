@@ -5,7 +5,7 @@ const Button = ({
     onClick,
     className = '', 
     variant = 'blue',
-    px="4",
+    px="10",
     py="2",
       
      }) => {
