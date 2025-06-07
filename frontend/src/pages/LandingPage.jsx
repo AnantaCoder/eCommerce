@@ -109,10 +109,10 @@ function LandingPage() {
 
   {/* Hero Content - positioned above the background */}
   <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
-    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
+    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
       Welcome to Future of e-Commerce
     </h1>
-    <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+    <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
       Explore the future of online shopping with our curated collection of cutting-edge products and exclusive deals.
     </p>
     <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
