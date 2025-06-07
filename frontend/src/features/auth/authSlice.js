@@ -1,6 +1,8 @@
 // src/store/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../services/api';
+// import api from '../../services/api';
+
+const api = null
 
 // Async thunks for authentication
 export const loginUser = createAsyncThunk(
@@ -22,6 +24,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// for users to register 
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, first_name, last_name }, { rejectWithValue }) => {
@@ -157,3 +160,8 @@ const authSlice = createSlice({
 
 export const { clearError, clearAuth } = authSlice.actions;
 export default authSlice.reducer;
+
+/**
+ * More on create async thunk-
+ * https://medium.com/@bremarotta/redux-toolkit-createasyncthunk-829e139ea623
+ */
