@@ -17,6 +17,7 @@ from .serializers import (
 )
 from django.core.mail import send_mail, BadHeaderError
 import logging
+from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
 from .models import *
@@ -91,6 +92,7 @@ class RegisterView(generics.CreateAPIView):
             verify_path = reverse('verify-email')
             
         base_url = request.build_absolute_uri(verify_path)
+        # base_url = 'http://localhost:5173/'
         verification_link = f"{base_url}?uid={uid}&token={token}"
         
         print(f"[DEBUG] Email verification link: {verification_link}")
@@ -132,14 +134,14 @@ class VerifyEmailView(APIView):
     
     def get(self, request):
         serializer = EmailVerificationSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)  # Will auto-validate the token field
+        serializer.is_valid(raise_exception=True)  
         
         token = serializer.validated_data['token']
         uid = request.query_params.get('uid')  # Still need to handle uid separately
         
         
-            
-            
+        
+        
         if not uid or not token:
             return Response({"detail": "Missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -159,6 +161,7 @@ class VerifyEmailView(APIView):
                     "refresh": str(refresh),
                     "access": str(refresh.access_token)
                 }, status=status.HTTP_200_OK)
+                # return redirect('http/localhost:5173/home')
             else:
                 return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -167,6 +170,7 @@ class VerifyEmailView(APIView):
 
 
 class RequestOTPView(APIView):
+    
     """View for requesting OTP."""
     
     permission_classes = [permissions.AllowAny]
@@ -266,6 +270,7 @@ class LoginView(APIView):
             user.last_login = timezone.now()
             user.save(update_fields=['last_login'])
             refresh = RefreshToken.for_user(user)
+            # this will be  thrown out 
             response_data = {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),

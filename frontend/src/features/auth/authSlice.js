@@ -1,8 +1,6 @@
-// src/store/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import api from '../../services/api';
+import api from '../../services/api';
 
-const api = null
 
 // Async thunks for authentication
 export const loginUser = createAsyncThunk(
@@ -18,7 +16,7 @@ export const loginUser = createAsyncThunk(
       return { access, refresh, user };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Login failed'
+        error.response?.data?.message || "Login Failed "
       );
     }
   }
@@ -29,20 +27,22 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, first_name, last_name }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/register/', {
+      const response = await api.post('/auth/signup/', {
         email,
-        password,
         first_name,
         last_name,
+        password,
+        password2: password,  
       });
+
       return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Registration failed'
-      );
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
+
+
 
 export const refreshToken = createAsyncThunk(
   'auth/refresh',
@@ -99,7 +99,7 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
-      state.isAuthenticated = false;
+      state.isAuthenticated = false; // this is important 
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
     },
@@ -113,7 +113,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user; //
         state.accessToken = action.payload.access;
         state.refreshToken = action.payload.refresh;
         state.isAuthenticated = true;

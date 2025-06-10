@@ -1,9 +1,10 @@
 import React from 'react'
+import AuthSystem from '../features/auth/AuthSystem'
 
 export default function LoginPage() {
   return (
     <div>
-      <h1>Login Page </h1>
+      <AuthSystem/>
     </div>
   )
 }
