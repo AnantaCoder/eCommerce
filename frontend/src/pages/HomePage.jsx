@@ -1,10 +1,12 @@
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+
+import EcommerceHero from '../components/EcommerceHero'
+import ProductGrid from '../components/ProductCard'
 
 export default function HomePage() {
   return (
     <div>
-      <h1 className='bg-amber-50'>HomePage</h1>
+      <EcommerceHero/>
+      <ProductGrid/>
     </div>
   )
 }

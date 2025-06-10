@@ -77,18 +77,16 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8 text-amber-50">
-              <a href="#" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
+              <a href="/home" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Home
               </a>
-              <a href="#" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
+              <a href="/category" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Categories
               </a>
-              <a href="#" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
-                Products
+              <a href="/store" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
+                Store
               </a>
-              <a href="#" className="text-amber-50 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
-                Deals
-              </a>
+              
             </div>
           </div>
 
@@ -108,13 +106,21 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated && user ? (
               <>
-                <button className="p-2 text-red-500 hover:text-purple-600">
+                <button className="p-2 text-red-500 cursor-pointer  hover:text-purple-600"
+                onClick={() => {
+                          navigate('/wishlist');
+                        }}>
+                
+                
                   <Heart className="w-5 h-5" />
                 </button>
 
-                <button className="p-2 text-yellow-500 hover:text-purple-600 relative">
+                <button className="p-2 cursor-pointer  text-yellow-500 hover:text-purple-600 relative"
+                 onClick={() => {
+                          navigate('/cart');
+                        }}>
                   <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex cursor-pointer items-center justify-center">
                     3
                   </span>
                 </button>
@@ -123,7 +129,7 @@ const Navbar = () => {
                 <div className="relative user-dropdown">
                   <button
                     onClick={toggleUserMenu}
-                    className="flex items-center space-x-2 text-blue-500 hover:text-purple-600 p-2 rounded-lg transition-colors"
+                    className="flex items-center space-x-2 text-blue-500 hover:text-purple-600 p-2 cursor-pointer rounded-lg transition-colors"
                   >
                     <User className="w-5 h-5" />
                     <span className="text-amber-50 text-sm font-medium">
@@ -133,41 +139,23 @@ const Navbar = () => {
                   </button>
                   
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700">
-                      <div className="px-4 py-2 text-sm text-gray-300 border-b border-gray-700">
-                        {user.email || 'No email'}
-                      </div>
+                    <div className="absolute right-0 mt-2 w-48 cursor-pointer bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700">
+                      
                       <button 
                         onClick={() => {
                           navigate('/account');
                           setIsUserMenuOpen(false);
                         }} 
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 transition-colors"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors"
                       >
                         My Account
                       </button>
-                      <button 
-                        onClick={() => {
-                          navigate('/orders');
-                          setIsUserMenuOpen(false);
-                        }} 
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 transition-colors"
-                      >
-                        Orders
-                      </button>
-                      <button 
-                        onClick={() => {
-                          navigate('/wishlist');
-                          setIsUserMenuOpen(false);
-                        }} 
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 transition-colors"
-                      >
-                        Wishlist
-                      </button>
+                      
+                      
                       <div className="border-t border-gray-600 my-1"></div>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-red-500 font-bold hover:bg-gray-700 transition-colors"
+                        className="w-full cursor-pointer text-left px-4 py-2 text-sm text-red-500 font-bold hover:bg-gray-700 transition-colors"
                       >
                         Sign Out
                       </button>
