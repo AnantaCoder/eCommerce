@@ -21,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<LandingPage />} /> 
+          <Route path="/home" element={<HomePage />} />
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/store" element={<StorePage />} />
            <Route path="/cart" element={<CartPage/>}/>
@@ -33,7 +34,6 @@ function App() {
         
 
 
-          <Route path="/home" element={<HomePage />} />
         <Route path="/login" element={<LoginPage/>}/>
       </Routes>
     </BrowserRouter>
