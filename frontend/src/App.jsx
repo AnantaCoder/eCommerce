@@ -5,7 +5,6 @@ import React from 'react';
 import MainLayout from "./layouts/MainLayout";
 
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
 import CategoryPage from "./pages/CategoryPage";
@@ -36,7 +35,6 @@ function App() {
 
 
         <Route path="/login" element={<LoginPage/>}/>
-        <Route path="/signup" element={<SignupPage/>}/>
       </Routes>
     </BrowserRouter>
   );
