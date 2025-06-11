@@ -12,7 +12,7 @@ import CategoryPage from "./pages/CategoryPage";
 import StorePage from "./pages/StorePage";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
-import AccountsComponent from "./components/AccountsPage";
+import AccountsComponent from "./components/ProfileCard";
 import PaymentsPage from "./components/PaymentsPage";
 
 

@@ -61,7 +61,8 @@ MIDDLEWARE = [
 # Configure CORS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React dev server
-    "http://localhost:5173",  # React dev server
+    "http://localhost:5173",
+    "http://192.168.1.34:5173"# React dev server
 ]
 
 

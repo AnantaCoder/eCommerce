@@ -1,18 +1,13 @@
 import React from 'react'
 
-function Wishlist() {
+function ProfileCard() {
   return (
     <div>
       <h1 className="text-4xl text-center p-2 pb-4 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
-        WishList Page
+        My profile || all information  || update details || view payment history ||
       </h1>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </div>
   )
 }
 
-export default Wishlist
+export default ProfileCard

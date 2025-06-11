@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
   ShoppingBag,
   TrendingUp,
   Zap,
@@ -17,8 +13,7 @@ import {
 } from "lucide-react";
 
 const EcommerceHero = () => {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
+ 
   const [currentOffer, setCurrentOffer] = useState(0);
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
@@ -63,16 +58,7 @@ const EcommerceHero = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Video controls
-  const toggleVideo = () => {
-    if (isVideoPlaying) videoRef.current.pause();
-    else videoRef.current.play();
-    setIsVideoPlaying(!isVideoPlaying);
-  };
-  const toggleMute = () => {
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
+ 
 
   const handleShopNow = () => console.log("Shop Now clicked");
   const handleExploreDeals = () => console.log("Explore Deals clicked");
@@ -86,7 +72,6 @@ const EcommerceHero = () => {
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay
         loop
-        muted={isMuted}
         playsInline
         poster="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"
       >

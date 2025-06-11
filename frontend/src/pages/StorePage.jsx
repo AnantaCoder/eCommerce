@@ -1,12 +1,14 @@
 import React from 'react'
-import NewProductGrid from '../components/StoreItems'
-import ProductGrid from '../components/ProductCard'
+import Store from '../features/store/Store'
+
 
 function StorePage() {
   return (
     <div>
-      <NewProductGrid/>
-      {/* <ProductGrid/> */}
+      <h1 className="text-4xl text-center p-2 pb-4 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
+        Our Shop 🛒
+      </h1>
+      <Store/>
     </div>
   )
 }
