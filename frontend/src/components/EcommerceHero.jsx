@@ -75,7 +75,8 @@ const EcommerceHero = () => {
         playsInline
         poster="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"
       >
-        <source src="../herovideo.mp4" type="video/mp4" />
+        {/* absolute path */}
+        <source src="/herovideo.mp4" type="video/mp4" /> 
       </video>
       <div className="absolute inset-0 bg-black/70"></div>
 

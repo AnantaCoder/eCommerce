@@ -15,6 +15,8 @@ import AccountsComponent from "./components/ProfileCard";
 import PaymentsPage from "./components/PaymentsPage";
 
 
+
+// add a layer if is authenticated only then most pages accessible , inside a private route element
 function App() {
   return (
     <BrowserRouter>
