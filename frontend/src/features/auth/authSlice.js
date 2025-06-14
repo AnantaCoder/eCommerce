@@ -105,6 +105,9 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+
+
+    // all logic is pending , fulfilled or rejected 
     builder
       // Login cases
       .addCase(loginUser.pending, (state) => {

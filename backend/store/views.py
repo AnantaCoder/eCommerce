@@ -13,6 +13,8 @@ class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    filterset_fields = ['category'] 
+    search_fields = ['item_name', 'description', 'manufacturer']
     """
     GET    /items/          → list all items (anyone)
     GET    /items/{pk}/     → retrieve an item (anyone)

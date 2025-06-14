@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { 
-  Smartphone, 
-  Headphones, 
-  Gamepad2, 
-  Watch, 
-  Camera, 
-  Laptop, 
-  Home, 
-  Car, 
-  Shirt, 
-  Book, 
-  Dumbbell, 
+import {
+  Smartphone,
+  Headphones,
+  Gamepad2,
+  Watch,
+  Camera,
+  Laptop,
+  Home,
+  Car,
+  Shirt,
+  Book,
+  Dumbbell,
   Heart,
   ChevronRight,
   TrendingUp,
@@ -36,7 +36,13 @@ const CategoryCard = ({ category, onClick }) => {
     Heart
   };
 
-  const IconComponent = iconMap[category.icon] || Smartphone;
+  // Fallback dummy values
+  const fallbackIcon = 'Smartphone';
+  const fallbackColor = "pink";
+  const fallbackImage = 'https://www.lovepanky.com/wp-content/uploads/2021/01/how-to-look-sexy.jpg';
+  const fallbackBrands = ['Sony', 'Samsung', 'Apple'];
+
+  const IconComponent = iconMap[category.icon || fallbackIcon] || Smartphone;
 
   const colorSchemes = {
     blue: {
@@ -77,36 +83,54 @@ const CategoryCard = ({ category, onClick }) => {
     }
   };
 
-  const colors = colorSchemes[category.color] || colorSchemes.blue;
+  const colors = colorSchemes[category.color || fallbackColor];
+
+  // Mapped Category with Fallbacks
+  const mappedCategory = {
+    id: category.id,
+    name: category.name,
+    description: category.description || 'Explore the best in this category.',
+    itemCount: category.item_count || 0,
+    isActive: category.is_active,
+    productCount: category.productCount ?? category.item_count ?? 0,
+
+    //dummy starts 
+    trending: category.trending ?? true,
+    discount: category.discount ?? (Math.floor(Math.random() * 41) + 10) + '% OFF',
+    image: category.image || fallbackImage,
+    icon: category.icon || fallbackIcon,
+    color: category.color || fallbackColor,
+    popularBrands: category.popularBrands || fallbackBrands
+  };
 
   return (
-    <div 
+    <div
       className={`relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 ${colors.shadow} cursor-pointer border ${colors.border}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
-      {category.trending && (
+      {mappedCategory.trending && (
         <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
           <TrendingUp className="w-3 h-3" />
           Trending
         </div>
       )}
 
-      {category.discount && (
+      {mappedCategory.discount && (
         <div className="absolute top-4 right-4 z-20 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-          {category.discount}
+          {mappedCategory.discount}
         </div>
       )}
 
       <div className="relative h-36 overflow-hidden">
         <img
-          src={category.image}
-          alt={category.name}
+          src={mappedCategory.image}
+          alt={mappedCategory.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
         <div className={`absolute inset-0 bg-gradient-to-t ${colors.gradient} opacity-80`} />
-        
+
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={`p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 transition-all duration-300 ${isHovered ? 'scale-110 bg-white/20' : ''}`}>
             <IconComponent className="w-12 h-12 text-white" />
@@ -117,30 +141,30 @@ const CategoryCard = ({ category, onClick }) => {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-white text-2xl font-bold">
-            {category.name}
+            {mappedCategory.name}
           </h3>
           <ChevronRight className={`w-6 h-6 text-gray-400 transition-all duration-300 ${isHovered ? 'translate-x-1 text-white' : ''}`} />
         </div>
 
         <p className="text-gray-400 text-sm">
-          {category.description}
+          {mappedCategory.description}
         </p>
 
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-gray-400" />
           <span className="text-gray-300 text-sm">
-            {category.productCount?.toLocaleString()} products
+            {mappedCategory.productCount.toLocaleString()} products
           </span>
         </div>
 
-        {category.popularBrands && category.popularBrands.length > 0 && (
+        {mappedCategory.popularBrands.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-yellow-400" />
               <span className="text-gray-300 text-sm font-medium">Popular Brands</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {category.popularBrands.slice(0, 3).map((brand, index) => (
+              {mappedCategory.popularBrands.slice(0, 3).map((brand, index) => (
                 <span
                   key={index}
                   className={`px-2 py-1 bg-gray-800 ${colors.accent} text-xs rounded-full border ${colors.border}`}
@@ -155,7 +179,7 @@ const CategoryCard = ({ category, onClick }) => {
         <button
           className={`w-full bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2`}
         >
-          Explore {category.name}
+          Explore {mappedCategory.name}
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>

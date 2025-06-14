@@ -9,7 +9,7 @@ import storage from 'redux-persist/lib/storage';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], 
+  whitelist: ['auth','store'], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -24,4 +24,7 @@ export const store = configureStore({
     }),
 });
 
-export const persister = persistStore(store);
+const persister = persistStore(store);
+
+export {  persister };
+export default store;

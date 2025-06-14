@@ -4,7 +4,7 @@ from django.conf import settings
 from supabase import create_client, Client 
 import os 
 import uuid 
-
+import random
 
 supabase_client: Client = None
 SUPABASE_BUCKET_NAME = None
@@ -23,14 +23,16 @@ except Exception as e:
 
 class CategorySerializer(serializers.ModelSerializer):
     item_count = serializers.SerializerMethodField()
-    
+    discount = serializers.SerializerMethodField()
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'is_active', 'item_count', 'created_at']
-        read_only_fields = ['id', 'item_count', 'created_at']
+        fields = ['id', 'name', 'description', 'is_active', 'item_count','discount', 'created_at']
+        read_only_fields = ['id', 'item_count', 'created_at','discount']
     
     def get_item_count(self, obj):
         return obj.items.filter(is_active=True).count()
+    def get_discount(self,obj):
+        return random.randint(20,50)
 
 
 class ItemSerializer(serializers.ModelSerializer):

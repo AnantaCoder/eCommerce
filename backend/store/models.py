@@ -140,6 +140,7 @@ class CartItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
+    discount= models.CharField(max_length=50, null=True)
 
     class Meta:
         unique_together = ('user', 'item')
