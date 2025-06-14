@@ -2,9 +2,9 @@ from rest_framework import viewsets,permissions,mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-
-from .models import Item,Order
-from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,CategorySerializer
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from .models import Item,Order,Category,WishlistItem, CartItem
+from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer
 from .permissions import IsSeller
 from accounts.models import Seller
 from accounts.serializers import SellerSerializer
@@ -12,6 +12,7 @@ class ItemViewSet(viewsets.ModelViewSet):
     
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     """
     GET    /items/          → list all items (anyone)
     GET    /items/{pk}/     → retrieve an item (anyone)
@@ -58,6 +59,14 @@ class ItemViewSet(viewsets.ModelViewSet):
             "total_items": total_items,
             "items": serializer.data
         })
+    def perform_create(self, serializer):
+        seller = self.request.user.seller
+        serializer.save(seller=seller)
+   
+
+
+    def perform_update(self, serializer):
+        serializer.save()
 
 
 
@@ -132,3 +141,42 @@ class SellerViewSet(mixins.CreateModelMixin,
         # user = self.request.user
         # # user.is_seller = True
         # # user.save(update_fields=['is_seller'])
+        
+        
+        
+class CategoryViewSet(viewsets.ModelViewSet):
+    
+    """
+    GET    /categories/        → list all categories (anyone)
+    GET    /categories/{pk}/   → retrieve a category (anyone)
+    POST   /categories/        → create new category (only sellers)
+    PUT    /categories/{pk}/   → full update (only sellers)
+    PATCH  /categories/{pk}/   → partial update (only sellers)
+    DELETE /categories/{pk}/   → delete (only sellers)
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    
+    def get_permissions(self):
+        # only authenticated sellers can create/update/delete
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [permissions.IsAuthenticated, IsSeller]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [p() for p in permission_classes]
+    
+    
+class CartItemViewSet(viewsets.ModelViewSet):
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self):
+        return CartItem.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class WishlistItemViewSet(viewsets.ModelViewSet):
+    serializer_class = WishlistItemSerializer
+
+    def get_queryset(self):
+        return WishlistItem.objects.filter(user=self.request.user)

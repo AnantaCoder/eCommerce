@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 const EcommerceHero = () => {
- 
   const [currentOffer, setCurrentOffer] = useState(0);
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
@@ -50,15 +49,15 @@ const EcommerceHero = () => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { hours: prev.hours, minutes: prev.minutes - 1, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        if (prev.minutes > 0)
+          return { hours: prev.hours, minutes: prev.minutes - 1, seconds: 59 };
+        if (prev.hours > 0)
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
         return prev;
       });
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
- 
 
   const handleShopNow = () => console.log("Shop Now clicked");
   const handleExploreDeals = () => console.log("Explore Deals clicked");
@@ -72,17 +71,20 @@ const EcommerceHero = () => {
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay
         loop
+        muted
         playsInline
-        poster="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"
+        poster="https://images.unsplash.com/photo-1591035897819-f4bdf739f446?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       >
         {/* absolute path */}
         <source src="/herovideo.mp4" type="video/mp4" /> 
       </video>
-      <div className="absolute inset-0 bg-black/70"></div>
+      <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Offers Banner */}
       <div className="relative z-10">
-        <div className={`bg-gradient-to-r ${offers[currentOffer].color} text-white py-2 px-4 text-center font-semibold text-sm sm:text-base`}>          
+        <div
+          className={`bg-gradient-to-r ${offers[currentOffer].color} text-white py-2 px-4 text-center font-semibold text-sm sm:text-base`}
+        >
           {offers[currentOffer].text}
         </div>
       </div>
@@ -98,8 +100,8 @@ const EcommerceHero = () => {
             </span>
           </div>
 
-          <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-snug text-white">
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="font-bold text-5xl sm:text-5xl md:text-7xl lg:text-7xl xl:text-8xl leading-snug text-white">
+            <span className="bg-gradient-to-r from-orange-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Shop
             </span>{" "}
             <span className="text-white">the</span>
@@ -110,24 +112,46 @@ const EcommerceHero = () => {
           </h1>
 
           <p className="text-gray-300 text-base sm:text-lg md:text-xl leading-relaxed">
-            Discover premium products with cutting-edge technology. <span className="text-blue-400 font-semibold">Free shipping</span> on orders over $50!
+            Discover premium products with cutting-edge technology.{" "}
+            <span className="text-blue-400 font-semibold">Free shipping</span>{" "}
+            on orders over $50!
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full mt-8">
-          {[{
-            value: '50K+', label: 'Happy Customers', color: 'text-white'
-          },{
-            value: '10K+', label: 'Products', color: 'text-blue-400'
-          },{
-            value: '4.9★', label: 'Rating', color: 'text-green-400'
-          },{
-            value: '24/7', label: 'Support', color: 'text-purple-400'
-          }].map((stat, idx) => (
-            <div key={idx} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-              <div className={`text-2xl sm:text-3xl font-bold ${stat.color}`}>{stat.value}</div>
-              <div className="text-gray-300 text-xs sm:text-sm">{stat.label}</div>
+          {[
+            {
+              value: "50K+",
+              label: "Happy Customers",
+              color: "text-white",
+            },
+            {
+              value: "10K+",
+              label: "Products",
+              color: "text-blue-400",
+            },
+            {
+              value: "4.9★",
+              label: "Rating",
+              color: "text-green-400",
+            },
+            {
+              value: "24/7",
+              label: "Support",
+              color: "text-purple-400",
+            },
+          ].map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20"
+            >
+              <div className={`text-2xl sm:text-3xl font-bold ${stat.color}`}>
+                {stat.value}
+              </div>
+              <div className="text-gray-300 text-xs sm:text-sm">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
@@ -136,15 +160,22 @@ const EcommerceHero = () => {
         <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-md rounded-3xl p-6 border border-red-500/30 w-full sm:w-3/4 lg:w-1/2 mt-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Zap className="w-5 h-5 text-yellow-400" />
-            <h3 className="text-xl sm:text-2xl font-bold text-white">Flash Sale Ends In</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-white">
+              Flash Sale Ends In
+            </h3>
           </div>
           <div className="flex justify-center gap-2 sm:gap-4">
-            {['hours', 'minutes', 'seconds'].map((unit, i) => (
-              <div key={i} className="bg-black/40 rounded-xl p-2 sm:p-4 min-w-[60px]">
+            {["hours", "minutes", "seconds"].map((unit, i) => (
+              <div
+                key={i}
+                className="bg-black/40 rounded-xl p-2 sm:p-4 min-w-[60px]"
+              >
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-                  {String(timeLeft[unit]).padStart(2, '0')}
+                  {String(timeLeft[unit]).padStart(2, "0")}
                 </div>
-                <div className="text-gray-400 text-xs sm:text-sm capitalize">{unit}</div>
+                <div className="text-gray-400 text-xs sm:text-sm capitalize">
+                  {unit}
+                </div>
               </div>
             ))}
           </div>
@@ -172,16 +203,32 @@ const EcommerceHero = () => {
 
         {/* Trust Indicators */}
         <div className="flex flex-wrap justify-center items-center gap-6 mt-8">
-          {[{
-            icon: Truck, label: 'Free Shipping', color: 'text-green-400'
-          },{
-            icon: Shield, label: 'Secure Payment', color: 'text-blue-400'
-          },{
-            icon: Star, label: 'Premium Quality', color: 'text-yellow-400'
-          },{
-            icon: Users, label: '24/7 Support', color: 'text-purple-400'
-          }].map((trust, idx) => (
-            <div key={idx} className="flex items-center gap-1 sm:gap-2 text-gray-300 text-sm">
+          {[
+            {
+              icon: Truck,
+              label: "Free Shipping",
+              color: "text-green-400",
+            },
+            {
+              icon: Shield,
+              label: "Secure Payment",
+              color: "text-blue-400",
+            },
+            {
+              icon: Star,
+              label: "Premium Quality",
+              color: "text-yellow-400",
+            },
+            {
+              icon: Users,
+              label: "24/7 Support",
+              color: "text-purple-400",
+            },
+          ].map((trust, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-1 sm:gap-2 text-gray-300 text-sm"
+            >
               <trust.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${trust.color}`} />
               <span>{trust.label}</span>
             </div>
@@ -191,7 +238,10 @@ const EcommerceHero = () => {
 
       {/* Scroll Down */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-        <button onClick={scrollToProducts} className="flex flex-col items-center gap-1 text-white/80 hover:text-white transition-colors">
+        <button
+          onClick={scrollToProducts}
+          className="flex flex-col items-center gap-1 text-white/80 hover:text-white transition-colors"
+        >
           <span className="text-xs sm:text-sm">Explore Products</span>
           <ChevronDown className="w-5 h-5 animate-bounce" />
         </button>

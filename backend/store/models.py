@@ -1,12 +1,10 @@
 from django.db import models
 from django.conf import settings
-from accounts.models import Seller
-
-# Create your models here.
+from accounts.models import Seller , User
+import uuid
 
 
 class Category(models.Model):
-    
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
@@ -17,20 +15,18 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
-    
-    # 
+
+
 class Item(models.Model):
     seller = models.ForeignKey(
         Seller,
         on_delete=models.CASCADE,
         related_name='items'
     )
-    item_name    = models.CharField(max_length=200,db_index=True)
-    item_type    = models.CharField(max_length=100)
+    item_name = models.CharField(max_length=200, db_index=True)
+    item_type = models.CharField(max_length=100)
     manufacturer = models.CharField(max_length=200)
     
-    '''its optional right now '''
-    ''' category is empty be default ,later modify it to allow multiple categories per item '''
     category = models.ForeignKey(
         Category, 
         on_delete=models.SET_NULL, 
@@ -41,43 +37,45 @@ class Item(models.Model):
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
     
+    image_urls = models.JSONField(
+        default=list, 
+        blank=True,
+        null=True,
+    )
     sku = models.CharField(max_length=100, unique=True, blank=True)  
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        # Composite indexes for common query patterns 
         indexes = [
             models.Index(fields=['seller', 'is_active']),
             models.Index(fields=['category', 'is_active']),
             models.Index(fields=['item_name', 'is_active']),
         ]
+    
     def __str__(self):
         return f"{self.item_name}({self.manufacturer})"
     
     @property
     def is_in_stock(self):
-        return self.quantity>0
+        return self.quantity > 0
     
 
 class OrderItem(models.Model):
-    
-    
     item_name = models.CharField(max_length=200)
     item_price = models.DecimalField(max_digits=10, decimal_places=2)
-    # manufacturer = models.CharField(max_length=200) , remove manufacturer here if it’s always the same as original_item.manufacturer
     quantity = models.PositiveIntegerField()
-    
-    
+    manufacturer = models.CharField(max_length=500)
     original_item = models.ForeignKey(
         Item, 
         on_delete=models.SET_NULL, 
-        null=True,  # Allow null if item is deleted
+        null=True,
         related_name='order_items'
     )
-    seller = models.ForeignKey(Seller, on_delete=models.PROTECT) #PROTECT SELLER DATA 
+    seller = models.ForeignKey(Seller, on_delete=models.PROTECT)
 
 
 class Order(models.Model):
@@ -112,6 +110,53 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} - {self.buyer.email}"
 
+
+
+
+class WishlistItem(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="wishlist_items",
+        
+    )
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'item')
+
+
+class CartItem(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="cart_items"
+    )
+    
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'item')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''A Stock Keeping Unit (SKU) is a unique alphanumeric code used by businesses to track and manage their inventory. It's essentially a product's identifier within a company's system. SKUs are used to identify specific products, including variations like size, color, or model, and help with internal stock management'''
 
 '''
@@ -124,3 +169,6 @@ OneToOneField: A special FK where the relation is 1:1 (used in Seller to tie exa
 ManyToManyField: Creates an intermediate table linking two models; e.g. Order.items links orders to their line items.
 
 '''
+
+
+

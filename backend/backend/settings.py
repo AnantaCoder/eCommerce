@@ -2,6 +2,7 @@ from datetime import timedelta
 import environ
 from decouple import config
 from pathlib import Path
+import base64,json
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -102,6 +103,51 @@ DATABASES = {
         
     }
 }
+try:
+    anon_key_parts = env('SUPABASE_ANON_KEY').split('.')
+    if len(anon_key_parts) > 1:
+        # Pad the base64 string if its length is not a multiple of 4
+        padded_payload = anon_key_parts[1] + '=' * (4 - len(anon_key_parts[1]) % 4)
+        decoded_payload = base64.urlsafe_b64decode(padded_payload).decode('utf-8')
+        anon_key_data = json.loads(decoded_payload)
+        supabase_project_ref = anon_key_data.get('ref')
+        if supabase_project_ref:
+            SUPABASE_URL = f"https://{supabase_project_ref}.supabase.co"
+        else:
+            SUPABASE_URL = "" # Fallback if ref not found
+            print("Warning: Could not extract project reference from SUPABASE_ANON_KEY. Set SUPABASE_URL manually if issues persist.")
+    else:
+        SUPABASE_URL = "" # Fallback if anon key format is unexpected
+        print("Warning: SUPABASE_ANON_KEY format is unexpected. Set SUPABASE_URL manually if issues persist.")
+except Exception as e:
+    SUPABASE_URL = "" # Fallback on error
+    print(f"Error parsing SUPABASE_ANON_KEY for URL: {e}. Set SUPABASE_URL manually if issues persist.")
+
+# Map SUPABASE_KEY to the anon key from your .env
+SUPABASE_KEY = env('SUPABASE_ANON_KEY')
+
+# Map SUPABASE_BUCKET_NAME to BUCKET_NAME from your .env
+SUPABASE_BUCKET_NAME = env('BUCKET_NAME')
+
+# Note: SUPABASE_SECRET_KEY and SUPABASE_ACCESS_KEY from your .env are not directly
+# used by the public Supabase Python client for simple uploads.
+# They are typically for service role authentication or S3-compatible access.
+
+# Media settings for handling file uploads (kept this)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
+
+# # payments 
+# STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
+# STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+# STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
+
+# pagination 
+
+
 
 
 # Password validation
@@ -123,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 AUTH_USER_MODEL = "accounts.User"
 
-# deafault authentication classes
+# default authentication classes
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -132,6 +178,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",  # This makes all views require authentication by default
     ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {

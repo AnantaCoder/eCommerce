@@ -1,7 +1,6 @@
 // App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./styles/global.css";
-import React from 'react';
 import MainLayout from "./layouts/MainLayout";
 
 import LoginPage from "./pages/LoginPage";

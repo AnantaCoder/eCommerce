@@ -5,5 +5,5 @@
 5. payment option 
 6. secure checkout 
 7. after payment show the shipping status 
-8. customer can review the products 
+8. customer can review the products and rate it 
 9. connect to websockets and redis 

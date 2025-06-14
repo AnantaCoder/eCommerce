@@ -1,5 +1,24 @@
 from rest_framework import serializers
-from .models import Item, Order, OrderItem, Category
+from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem
+from django.conf import settings 
+from supabase import create_client, Client 
+import os 
+import uuid 
+
+
+supabase_client: Client = None
+SUPABASE_BUCKET_NAME = None
+
+try:
+    if settings.SUPABASE_URL and settings.SUPABASE_KEY and settings.SUPABASE_BUCKET_NAME:
+        supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+        SUPABASE_BUCKET_NAME = settings.SUPABASE_BUCKET_NAME
+    else:
+        print("Supabase settings (URL, Key, or Bucket Name) are not fully configured in settings.py.")
+except AttributeError as e:
+    print(f"Warning: Supabase settings not fully loaded. Ensure .env and settings.py are correct. Error: {e}")
+except Exception as e:
+    print(f"Error initializing Supabase client: {e}")
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -21,6 +40,20 @@ class ItemSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     is_in_stock = serializers.ReadOnlyField()  
     
+    
+    image_files = serializers.ListField(
+        child=serializers.ImageField(), 
+        allow_empty=True, 
+        required=False,
+        write_only=True 
+    )
+    # This field will be used for output, displaying the stored URLs
+    image_urls = serializers.ListField(
+        child=serializers.URLField(), 
+        allow_empty=True, 
+        read_only=True
+    )
+    
     class Meta:
         model = Item
         fields = [
@@ -38,6 +71,8 @@ class ItemSerializer(serializers.ModelSerializer):
             'total_value',
             'is_in_stock',
             'seller_name',
+            'image_urls',   # For displaying stored URLs
+            'image_files',  # For uploading files (input only)
             'created_at',
             'updated_at'
         ]
@@ -52,7 +87,6 @@ class ItemSerializer(serializers.ModelSerializer):
         ]
     
     def get_total_value(self, obj):
-        """Calculate total inventory value (quantity × price)."""
         return obj.quantity * obj.price
     
     def validate_quantity(self, value):
@@ -66,7 +100,6 @@ class ItemSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
-        
         user = self.context['request'].user
         
         if not hasattr(user, 'seller'):
@@ -74,11 +107,91 @@ class ItemSerializer(serializers.ModelSerializer):
                 "Only sellers can create items."
             )
         
+        #popping both seller and seller id to get rid of multiple values error 
+        validated_data.pop('seller', None) 
+        validated_data.pop('seller_id', None) 
+
         if not validated_data.get('sku'):
-            import uuid
             validated_data['sku'] = str(uuid.uuid4())[:8].upper()
         
+        # Extract image_files from validated_data
+        image_files = validated_data.pop('image_files', [])
+        
+        uploaded_image_urls = []
+        if supabase_client and SUPABASE_BUCKET_NAME:
+            for image_file in image_files:
+                #unique na\me
+                file_extension = os.path.splitext(image_file.name)[1]
+                unique_filename = f"{uuid.uuid4()}{file_extension}"
+                
+                try:
+                    
+                    upload_response = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
+                        unique_filename, 
+                        image_file.read(), 
+                        {"content-type": image_file.content_type}
+                    )
+
+                    if upload_response and hasattr(upload_response, 'path') and upload_response.path:
+                        public_url = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).get_public_url(unique_filename)
+                        if public_url:
+                            uploaded_image_urls.append(public_url)
+                        else:
+                            print(f"Error getting public URL for {unique_filename}: {public_url}")
+                    else:
+                        print(f"Error uploading image {unique_filename}: {upload_response}")
+
+                except Exception as e:
+                    print(f"An error occurred during Supabase upload for {image_file.name}: {e}")
+                    raise serializers.ValidationError(f"Image upload failed for {image_file.name}: {e}")
+        else:
+            print("Supabase client not initialized or bucket name missing. Image uploads will be skipped.")
+
+        # Assign the list of uploaded URLs to the model's image_urls field
+        validated_data['image_urls'] = uploaded_image_urls
+        
         return Item.objects.create(seller=user.seller, **validated_data)
+
+    def update(self, instance, validated_data):
+        # Ensure 'seller' or 'seller_id' is not in validated_data during update as well
+        validated_data.pop('seller', None)
+        validated_data.pop('seller_id', None)
+
+        image_files = validated_data.pop('image_files', [])
+        
+        # If new image files are provided, upload them and update image_urls
+        if image_files:
+            # Start with existing URLs to append new ones
+            uploaded_image_urls = list(instance.image_urls) if instance.image_urls else [] 
+            if supabase_client and SUPABASE_BUCKET_NAME:
+                for image_file in image_files:
+                    file_extension = os.path.splitext(image_file.name)[1]
+                    unique_filename = f"{uuid.uuid4()}{file_extension}"
+                    try:
+                        upload_response = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
+                            unique_filename, 
+                            image_file.read(),
+                            {"content-type": image_file.content_type}
+                        )
+                        if upload_response and hasattr(upload_response, 'path') and upload_response.path:
+                            public_url = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).get_public_url(unique_filename)
+                            if public_url:
+                                uploaded_image_urls.append(public_url)
+                            else:
+                                print(f"Error getting public URL for {unique_filename} during update: {public_url}")
+                        else:
+                            print(f"Error uploading image {unique_filename} during update: {upload_response}")
+                    except Exception as e:
+                        print(f"An error occurred during Supabase upload for {image_file.name} (update): {e}")
+                        raise serializers.ValidationError(f"Image upload failed for {image_file.name} during update: {e}")
+            else:
+                print("Supabase client not initialized during update. Image uploads will be skipped.")
+                # Optionally raise an error
+            
+            validated_data['image_urls'] = uploaded_image_urls
+        
+        # Call super to handle updating other fields
+        return super().update(instance, validated_data)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -88,8 +201,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'item_name',
-            'item_price', 
-            'manufacturer',
+            'item_price',  
+            'manufacturer', 
             'quantity',
             'original_item',
             'seller'
@@ -98,24 +211,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-   
+    
     items = OrderItemSerializer(many=True, read_only=True)
     buyer_email = serializers.CharField(source='buyer.email', read_only=True)
     
-    
-    '''
-    change this to support update and create operations 
-    '''
-    '''if issue then add a total amount method '''
-    
-    # def create(self, validated_data):
-    # items_data = validated_data.pop('items')
-    # order = Order.objects.create(**validated_data)
-    # for item_data in items_data:
-    #     order_item = OrderItem.objects.create(**item_data)
-    #     order.items.add(order_item)
-    # return order
-
     class Meta:
         model = Order
         fields = [
@@ -130,7 +229,7 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id', 
             'buyer_email',
-            'total_amount',  
+            'total_amount',   
             'items',
             'created_at', 
             'updated_at'
@@ -138,7 +237,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class CreateOrderSerializer(serializers.Serializer):
-   
+    
     items = serializers.ListField(
         child=serializers.DictField(
             child=serializers.CharField()
@@ -202,7 +301,7 @@ class CreateOrderSerializer(serializers.Serializer):
             order_item = OrderItem.objects.create(
                 item_name=item.item_name,
                 item_price=item.price,
-                manufacturer=item.manufacturer,
+                manufacturer=item.manufacturer, 
                 quantity=quantity,
                 original_item=item,
                 seller=item.seller
@@ -214,3 +313,23 @@ class CreateOrderSerializer(serializers.Serializer):
             item.save()
         
         return order
+
+
+
+# store/serializers.py
+
+class CartItemSerializer(serializers.ModelSerializer):
+    item = ItemSerializer(read_only=True)
+    item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all(), source='item', write_only=True)
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'item', 'item_id', 'quantity', 'added_at']
+
+class WishlistItemSerializer(serializers.ModelSerializer):
+    item = ItemSerializer(read_only=True)
+    item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all(), source='item', write_only=True)
+
+    class Meta:
+        model = WishlistItem
+        fields = ['id', 'item', 'item_id', 'added_at']
