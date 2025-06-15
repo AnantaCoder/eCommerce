@@ -1,4 +1,4 @@
-1. Update user info 
+1. Update user info -done
 2. Cart to add items 
 3. Supplier can add items 
 4. Chat bot for customer support 

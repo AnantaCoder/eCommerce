@@ -9,10 +9,13 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await api.post('/auth/login/', { email, password });
       const { access, refresh, user } = response.data;
-      
+
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
-      
+
+      // to save users type eg seller 
+      localStorage.setItem('user', JSON.stringify(user))
+
       return { access, refresh, user };
     } catch (error) {
       return rejectWithValue(
@@ -25,14 +28,15 @@ export const loginUser = createAsyncThunk(
 // for users to register 
 export const registerUser = createAsyncThunk(
   'auth/register',
-  async ({ email, password, first_name, last_name }, { rejectWithValue }) => {
+  async ({ email, password, first_name, last_name, is_seller }, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/signup/', {
         email,
         first_name,
         last_name,
         password,
-        password2: password,  
+        password2: password,
+        is_seller: is_seller || false //flag
       });
 
       return response.data;
@@ -41,6 +45,43 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+// for sellers to register 
+export const sellerRegistration = createAsyncThunk(
+  'auth/sellerRegistration',
+  async ({ password, shop_name, gst_number, address }, { getState, rejectWithValue }) => {
+    try {
+      // 1. Pull current auth info from Redux
+      const { accessToken, refreshToken, user } = getState().auth;
+      if (!user?.email) {
+        return rejectWithValue('User must be logged in to register as seller');
+      }
+
+      // 2. Call your seller‐registration endpoint
+      const response = await api.post(
+        '/auth/seller/',
+        { email: user.email, password, shop_name, gst_number, address },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }
+      );
+
+      // 3. If the endpoint returns new tokens, store them
+      if (response.data.access && response.data.refresh) {
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
+      }
+
+      // 4. Return whatever data you need in the fulfilled action
+      return response.data;
+
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 
 
 
@@ -52,14 +93,15 @@ export const refreshToken = createAsyncThunk(
       const response = await api.post('/auth/token/refresh/', {
         refresh: refreshToken,
       });
-      
+
       const { access } = response.data;
       localStorage.setItem('access_token', access);
-      
+      // since refresh token return user data , so loginstate= initial state
       return { access };
     } catch (error) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
       return rejectWithValue('Token refresh failed');
     }
   }
@@ -76,15 +118,32 @@ export const logoutUser = createAsyncThunk(
     } finally {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
     }
     return {};
   }
 );
 
+
+// helper to get initial state from LS
+const getInitialState = () => {
+  try {
+    const user = localStorage.getItem("user")
+    return user ? JSON.parse(user) : null;
+
+  } catch (err) {
+    console.error("failed to user parsing from local storage", err)
+    return null
+  }
+}
+
+
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+    user: getInitialState(), // initialisation of user from local storage 
+    // getting all the things from LS
     accessToken: localStorage.getItem('access_token'),
     refreshToken: localStorage.getItem('refresh_token'),
     isAuthenticated: !!localStorage.getItem('access_token'),
@@ -100,8 +159,10 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false; // this is important 
+      // removing the data from ls
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
     },
   },
   extraReducers: (builder) => {
@@ -126,6 +187,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
+        state.user = null
       })
       // Register cases
       .addCase(registerUser.pending, (state) => {
@@ -137,6 +199,19 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // sellerRegistration cases
+      .addCase(sellerRegistration.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(sellerRegistration.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(sellerRegistration.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -157,7 +232,9 @@ const authSlice = createSlice({
         state.refreshToken = null;
         state.isAuthenticated = false;
         state.error = null;
-      });
+      })
+
+
   },
 });
 

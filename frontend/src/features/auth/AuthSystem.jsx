@@ -390,4 +390,11 @@ const AuthSystem = () => {
   );
 };
 
+
+
+
+
+const SellerRegistration= ()=>{
+  
+}
 export default AuthSystem;

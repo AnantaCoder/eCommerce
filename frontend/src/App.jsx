@@ -12,6 +12,7 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import AccountsComponent from "./components/ProfileCard";
 import PaymentsPage from "./components/PaymentsPage";
+import SellerRegistrationPage from "./pages/SellerRegistrationPage";
 
 
 
@@ -35,6 +36,7 @@ function App() {
         
 
 
+        <Route path="/seller-registration" element={<SellerRegistrationPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
       </Routes>
     </BrowserRouter>

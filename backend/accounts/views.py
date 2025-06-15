@@ -270,14 +270,12 @@ class LoginView(APIView):
             user.last_login = timezone.now()
             user.save(update_fields=['last_login'])
             refresh = RefreshToken.for_user(user)
+            user_serializer= UserSerializer(user)
             # this will be  thrown out 
             response_data = {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': {
-                    'id': user.id,
-                    'email': user.email,
-                },
+                'user': user_serializer.data,
                 'message': 'Login successful',
                 'status': 'success'
             }
