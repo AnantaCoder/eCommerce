@@ -98,27 +98,29 @@ const Footer = () => {
           </div>
 
           {/* Newsletter */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Stay Updated</h3>
-            <p className="text-gray-400 text-sm">
-              Subscribe to our newsletter for exclusive deals and updates.
-            </p>
-            <div className="space-y-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-              />
-              <div className='flex justify-center'>
-              <Button variant='purple' px='8'  >Subscribe Now!</Button>
-
+                <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Stay Updated</h3>
+                <p className="text-gray-400 text-sm">
+                  Subscribe to our newsletter for exclusive deals and updates.
+                </p>
+                <div className="space-y-2">
+                  <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  />
+                  <div className='flex justify-center'>
+                  <button className="relative px-6 py-2 font-semibold text-white rounded-md bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 overflow-hidden group">
+                    <span className="absolute w-64 h-0 transition-all duration-300 origin-center rotate-45 -translate-x-20 bg-purple-300 top-1/2 group-hover:h-64 group-hover:-translate-y-32 ease"></span>
+                    <span className="relative">Subscribe Now!</span>
+                  </button>
+                  </div>
+                </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              </div>
 
-      {/* Trust Indicators */}
+              {/* Trust Indicators */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ProductCard from '../../components/ProductCard';
 import { fetchProducts, resetProducts } from './productSlice';
+import Loader from '../../components/Loader';
 
 export default function ProductGrid({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch(); //using this hook for accesing the dispatch func in the store slice 
@@ -77,7 +78,7 @@ export default function ProductGrid({ selectedCategory, searchQuery }) {
   // };
 
   // Show loading state on first page (set a timer)
-  if (loading && page === 1) return <p>Loading products...</p>;
+  
 
   // Render detailed error information
   if (errorObj) {

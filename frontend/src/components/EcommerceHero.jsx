@@ -27,14 +27,15 @@ const EcommerceHero = () => {
       color: "from-red-500 to-orange-500",
     },
     {
-      text: "⚡ Flash Deal: Free Shipping on Orders $50+!",
+      text: "⚡ Flash Deal: Free Shipping on Orders $899+!",
       color: "from-blue-500 to-purple-500",
     },
     {
       text: "🎁 New Customer: Extra 20% OFF your first order!",
       color: "from-green-500 to-teal-500",
     },
-  ];
+  ]
+
 
   // Rotate offers
   useEffect(() => {
@@ -114,7 +115,7 @@ const EcommerceHero = () => {
           <p className="text-gray-300 text-base sm:text-lg md:text-xl leading-relaxed">
             Discover premium products with cutting-edge technology.{" "}
             <span className="text-blue-400 font-semibold">Free shipping</span>{" "}
-            on orders over $50!
+            on orders over ₹999 !
           </p>
         </div>
 
@@ -155,7 +156,7 @@ const EcommerceHero = () => {
             </div>
           ))}
         </div>
-
+                                                                                                                                          
         {/* Flash Sale */}
         <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-md rounded-3xl p-6 border border-red-500/30 w-full sm:w-3/4 lg:w-1/2 mt-8">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -234,8 +235,9 @@ const EcommerceHero = () => {
             </div>
           ))}
         </div>
-      </div>
 
+
+      </div>
       {/* Scroll Down */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
         <button

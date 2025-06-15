@@ -9,7 +9,11 @@ class Category(models.Model):
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    discount = models.CharField(max_length=20, null=True)
+    image = models.URLField(null=True)
+    icon= models.CharField(max_length=25,null=True)
+    color= models.CharField(max_length=25,null=True)
+    popular_brands = models.JSONField(default=list,null=True)
     class Meta:
         verbose_name_plural = 'Categories'
     

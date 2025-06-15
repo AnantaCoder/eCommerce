@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import dataService from "../../components/dataService";
+import React, { useEffect } from "react";
+// import dataService from "../../components/dataService";
 import CategoryCard from "../../components/CategoryCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "./categorySlice";
@@ -9,11 +9,12 @@ import { fetchCategories } from "./categorySlice";
 export default function CategoryGrid({ onCategorySelect }) {
   const dispatch = useDispatch();
 
-  const categories = useSelector((state) => state.categories.categories);
-  const loading = useSelector((state) => state.categories.loading);
-  const errorObj = useSelector((state) => state.categories.error);
-  const page = useSelector((state) => state.categories.page);
-  const totalPages = useSelector((state) => state.categories.totalPages);
+  const categories = useSelector((state) => state.categories.categories)
+  const loading = useSelector((state) => state.categories.loading)
+  const errorObj = useSelector((state) => state.categories.error)
+  
+  // const page = useSelector((state) => state.categories.page)
+  // const totalPages = useSelector((state) => state.categories.totalPages)
 
   useEffect(() => {
     dispatch(

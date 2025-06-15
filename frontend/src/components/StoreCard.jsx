@@ -1,10 +1,34 @@
-
 import React from 'react';
 import { Star, Truck, ShoppingCart, Heart } from 'lucide-react';
 
 const StoreCard = ({ product }) => {
-  const formatPrice = (price) => `$${price.toFixed(2)}`;
+  const formatPrice = (price) => `₹${parseFloat(price).toLocaleString('en-IN')}`;
   const formatRating = (rating) => rating.toFixed(1);
+  
+  const mappedProduct = {
+    id: product.id,
+    name: product.item_name,
+    category: product.category_name,
+    description: product.description,
+    price: parseFloat(product.price),
+    image: product.image_urls?.[0] || 'https://images.unsplash.com/photo-1735812030252-2e292cdb4d7c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    inStock: product.is_in_stock,
+    manufacturer: product.manufacturer,
+    sku: product.sku,
+    seller: product.seller_name,
+    quantity: product.quantity,
+    itemType: product.item_type,
+    totalValue: product.total_value,
+    isActive: product.is_active,
+    createdAt: product.created_at,
+    updatedAt: product.updated_at,
+    // Default values for missing fields
+    rating: 4.5,
+    reviewCount: 128,
+    fastDelivery: true,
+    discount: null,
+    originalPrice: null
+  };
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
@@ -14,8 +38,8 @@ const StoreCard = ({ product }) => {
       {/* Image Container */}
       <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
         <img 
-          src={product.image} 
-          alt={product.name}
+          src={mappedProduct.image} 
+          alt={mappedProduct.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
         />
         
@@ -24,12 +48,12 @@ const StoreCard = ({ product }) => {
         
         {/* Floating Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
-          {product.discount > 0 && (
+          {mappedProduct.discount > 0 && (
             <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-xl backdrop-blur-sm">
-              -{product.discount}% OFF
+              -{mappedProduct.discount}% OFF
             </div>
           )}
-          {product.fastDelivery && (
+          {mappedProduct.fastDelivery && (
             <div className="bg-gradient-to-r from-emerald-400 to-teal-400 text-gray-900 p-2 rounded-full shadow-xl backdrop-blur-sm">
               <Truck size={14} />
             </div>
@@ -44,7 +68,7 @@ const StoreCard = ({ product }) => {
         {/* Category Tag */}
         <div className="absolute bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-700/50">
           <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
-            {product.category}
+            {mappedProduct.category}
           </span>
         </div>
       </div>
@@ -53,12 +77,12 @@ const StoreCard = ({ product }) => {
       <div className="p-6 relative">
         {/* Title */}
         <h3 className="font-bold text-white text-xl mb-2 leading-tight">
-          {product.name}
+          {mappedProduct.name}
         </h3>
 
         {/* Description */}
         <p className="text-gray-400 text-sm mb-4 leading-relaxed">
-          {product.description}
+          {mappedProduct.description}
         </p>
 
         {/* Rating & Reviews */}
@@ -66,47 +90,60 @@ const StoreCard = ({ product }) => {
           <div className="flex items-center gap-1.5 bg-yellow-500/20 px-3 py-1.5 rounded-full border border-yellow-500/30">
             <Star size={14} className="fill-yellow-400 text-yellow-400" />
             <span className="text-sm font-semibold text-yellow-300">
-              {formatRating(product.rating)}
+              {formatRating(mappedProduct.rating)}
             </span>
           </div>
           <span className="text-sm text-gray-500">
-            {product.reviewCount.toLocaleString()} reviews
+            {mappedProduct.reviewCount.toLocaleString()} reviews
           </span>
         </div>
 
         {/* Price Section */}
         <div className="flex items-baseline gap-3 mb-6">
           <span className="text-3xl font-bold text-white tracking-tight">
-            {formatPrice(product.price)}
+            {formatPrice(mappedProduct.price)}
           </span>
-          {product.originalPrice > product.price && (
+          {mappedProduct.originalPrice && mappedProduct.originalPrice > mappedProduct.price && (
             <span className="text-lg text-gray-500 line-through">
-              {formatPrice(product.originalPrice)}
+              {formatPrice(mappedProduct.originalPrice)}
             </span>
           )}
         </div>
 
-        {/* Bottom Actions */}
-        <div className="flex items-center justify-between">
-          {/* Stock Status */}
-          <div className="flex items-center gap-2">
-            <div className={`w-2.5 h-2.5 rounded-full ${product.inStock ? 'bg-emerald-400' : 'bg-red-400'} shadow-sm`} />
-            <span className={`text-sm font-medium ${product.inStock ? 'text-emerald-300' : 'text-red-300'}`}>
-              {product.inStock ? 'In Stock' : 'Out of Stock'}
-            </span>
-          </div>
-          
+        {/* Stock Status */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className={`w-2.5 h-2.5 rounded-full ${mappedProduct.inStock ? 'bg-emerald-400' : 'bg-red-400'} shadow-sm`} />
+          <span className={`text-sm font-medium ${mappedProduct.inStock ? 'text-emerald-300' : 'text-red-300'}`}>
+            {mappedProduct.inStock ? 'In Stock' : 'Out of Stock'}
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3">
           {/* Add to Cart Button */}
           <button 
-            disabled={!product.inStock}
-            className={`group/btn flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
-              product.inStock 
+            disabled={!mappedProduct.inStock}
+            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
+              mappedProduct.inStock 
                 ? 'bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-105' 
                 : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
             }`}
           >
             <ShoppingCart size={16} className="transition-transform group-hover/btn:scale-110" />
             Add to Cart
+          </button>
+
+          {/* Purchase Button */}
+          <button 
+            disabled={!mappedProduct.inStock}
+            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
+              mappedProduct.inStock 
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl hover:scale-105' 
+                : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
+            }`}
+          >
+            <span className="text-lg">⚡</span>
+            Buy Now
           </button>
         </div>
       </div>
@@ -116,4 +153,8 @@ const StoreCard = ({ product }) => {
     </div>
   );
 };
+
+// Demo with your data structure
+
+
 export default StoreCard
