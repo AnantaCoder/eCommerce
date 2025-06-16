@@ -1,8 +1,13 @@
 import React from 'react';
 import Chair from '../components/VantaBackground';
 import VantaBackground from '../components/VantaBackground';
+import {  useNavigate } from 'react-router-dom';
+
+
 
 function LandingPage() {
+
+  const navigate = useNavigate()
   // Sample data for featured products - in a real app, this would come from your Django API
   const featuredProducts = [
     {
@@ -115,7 +120,10 @@ function LandingPage() {
     <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
       Explore the future of online shopping with our curated collection of cutting-edge products and exclusive deals.
     </p>
-    <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+    <button
+    
+    onClick={()=>navigate('/home')}
+    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
       Shop Now
     </button>
   </div>

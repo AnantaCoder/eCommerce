@@ -335,10 +335,28 @@ class CreateOrderSerializer(serializers.Serializer):
 class CartItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)
     item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all(), source='item', write_only=True)
-
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    total_price = serializers.SerializerMethodField()
     class Meta:
         model = CartItem
-        fields = ['id', 'item', 'item_id', 'quantity', 'added_at']
+        fields = ['id', 'item', 'item_id', 'quantity', 'price', 'total_price', 'added_at']
+
+    def get_total_price(self, obj):
+        return obj.quantity * obj.price
+
+    def create(self, validated_data):
+        item = validated_data['item']
+        validated_data['price'] = item.price  # snapshot price from Item
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        #prevent price change 
+        validated_data.pop('price', None)
+        return super().update(instance, validated_data)
+
+
+
+
 
 class WishlistItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)

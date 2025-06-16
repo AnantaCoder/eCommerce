@@ -140,24 +140,7 @@ const Navbar = () => {
                   Store
                 </a>
 
-                {/* for sellers  */}
-                {isAuthenticated &&
-                  isSeller && ( // Correct conditional rendering
-                    <>
-                      <a
-                        href="/add-item"
-                        className="text-green-400 hover:text-green-500 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center"
-                      >
-                        <PlusCircle className="w-4 h-4 mr-1" /> Add Item
-                      </a>
-                      <a
-                        href="/manage-items"
-                        className="text-red-400 hover:text-red-500 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" /> Manage Items
-                      </a>
-                    </>
-                  )}
+                
               </div>
               
             </div>
@@ -358,7 +341,7 @@ const Navbar = () => {
               Store
             </a>
 
-            {/* Seller-specific links in mobile menu */}
+            {/* Seller-specific links in mobile menu
             {isAuthenticated &&
               isSeller && ( // Correct conditional rendering
                 <>
@@ -375,7 +358,7 @@ const Navbar = () => {
                     <Trash2 className="w-4 h-4 mr-2" /> Manage Items
                   </a>
                 </>
-              )}
+              )} */}
 
             <div className="border-t border-gray-200 pt-4">
               {isAuthenticated && user ? (

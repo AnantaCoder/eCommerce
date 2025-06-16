@@ -1,17 +1,22 @@
-import React from 'react';
-import { Star, Truck, ShoppingCart, Heart } from 'lucide-react';
+import React from "react";
+import { Star, Truck, ShoppingCart, Heart } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { addToWishlist } from "../features/wishlist/wishlistSlice";
 
 const StoreCard = ({ product }) => {
-  const formatPrice = (price) => `₹${parseFloat(price).toLocaleString('en-IN')}`;
+  const formatPrice = (price) =>
+    `₹${parseFloat(price).toLocaleString("en-IN")}`;
   const formatRating = (rating) => rating.toFixed(1);
-  
+  const dispatch = useDispatch();
   const mappedProduct = {
     id: product.id,
     name: product.item_name,
     category: product.category_name,
     description: product.description,
     price: parseFloat(product.price),
-    image: product.image_urls?.[0] || 'https://images.unsplash.com/photo-1735812030252-2e292cdb4d7c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    image:
+      product.image_urls?.[0] ||
+      "https://images.unsplash.com/photo-1735812030252-2e292cdb4d7c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     inStock: product.is_in_stock,
     manufacturer: product.manufacturer,
     sku: product.sku,
@@ -27,25 +32,29 @@ const StoreCard = ({ product }) => {
     reviewCount: 128,
     fastDelivery: true,
     discount: null,
-    originalPrice: null
+    originalPrice: null,
+  };
+  // wishlist adder functionality
+  const handleAddToWishlist = () => {
+    dispatch(addToWishlist(product.id));
   };
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/5 pointer-events-none" />
-      
+
       {/* Image Container */}
       <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
-        <img 
-          src={mappedProduct.image} 
+        <img
+          src={mappedProduct.image}
           alt={mappedProduct.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
         />
-        
+
         {/* Dark overlay on image */}
         <div className="absolute inset-0 bg-black/20" />
-        
+
         {/* Floating Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {mappedProduct.discount > 0 && (
@@ -61,8 +70,14 @@ const StoreCard = ({ product }) => {
         </div>
 
         {/* Wishlist Button */}
-        <button className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 transition-all duration-300 hover:scale-110 border border-gray-700/50">
-          <Heart size={16} className="text-gray-300 hover:text-red-400 transition-colors" />
+        <button
+          onClick={handleAddToWishlist}
+          className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 transition-all duration-300 hover:scale-110 border border-gray-700/50"
+        >
+          <Heart
+            size={16}
+            className="text-gray-300 hover:text-red-400 transition-colors"
+          />
         </button>
 
         {/* Category Tag */}
@@ -103,43 +118,55 @@ const StoreCard = ({ product }) => {
           <span className="text-3xl font-bold text-white tracking-tight">
             {formatPrice(mappedProduct.price)}
           </span>
-          {mappedProduct.originalPrice && mappedProduct.originalPrice > mappedProduct.price && (
-            <span className="text-lg text-gray-500 line-through">
-              {formatPrice(mappedProduct.originalPrice)}
-            </span>
-          )}
+          {mappedProduct.originalPrice &&
+            mappedProduct.originalPrice > mappedProduct.price && (
+              <span className="text-lg text-gray-500 line-through">
+                {formatPrice(mappedProduct.originalPrice)}
+              </span>
+            )}
         </div>
 
         {/* Stock Status */}
         <div className="flex items-center gap-2 mb-4">
-          <div className={`w-2.5 h-2.5 rounded-full ${mappedProduct.inStock ? 'bg-emerald-400' : 'bg-red-400'} shadow-sm`} />
-          <span className={`text-sm font-medium ${mappedProduct.inStock ? 'text-emerald-300' : 'text-red-300'}`}>
-            {mappedProduct.inStock ? 'In Stock' : 'Out of Stock'}
+          <div
+            className={`w-2.5 h-2.5 rounded-full ${
+              mappedProduct.inStock ? "bg-emerald-400" : "bg-red-400"
+            } shadow-sm`}
+          />
+          <span
+            className={`text-sm font-medium ${
+              mappedProduct.inStock ? "text-emerald-300" : "text-red-300"
+            }`}
+          >
+            {mappedProduct.inStock ? "In Stock" : "Out of Stock"}
           </span>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
           {/* Add to Cart Button */}
-          <button 
+          <button
             disabled={!mappedProduct.inStock}
             className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
-              mappedProduct.inStock 
-                ? 'bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-105' 
-                : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
+              mappedProduct.inStock
+                ? "bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-105"
+                : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700"
             }`}
           >
-            <ShoppingCart size={16} className="transition-transform group-hover/btn:scale-110" />
+            <ShoppingCart
+              size={16}
+              className="transition-transform group-hover/btn:scale-110"
+            />
             Add to Cart
           </button>
 
           {/* Purchase Button */}
-          <button 
+          <button
             disabled={!mappedProduct.inStock}
             className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
-              mappedProduct.inStock 
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl hover:scale-105' 
-                : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
+              mappedProduct.inStock
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl hover:scale-105"
+                : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700"
             }`}
           >
             <span className="text-lg">⚡</span>
@@ -156,5 +183,4 @@ const StoreCard = ({ product }) => {
 
 // Demo with your data structure
 
-
-export default StoreCard
+export default StoreCard;

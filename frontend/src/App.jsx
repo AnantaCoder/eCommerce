@@ -13,6 +13,7 @@ import WishlistPage from "./pages/WishlistPage";
 import AccountsComponent from "./components/ProfileCard";
 import PaymentsPage from "./components/PaymentsPage";
 import SellerRegistrationPage from "./pages/SellerRegistrationPage";
+import AddItems from "./features/store/AddItems";
 
 
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="/wishlist" element={<WishlistPage/>}/>
           <Route path="/account" element={<AccountsComponent/>}/>
           <Route path="/payment" element={<PaymentsPage/>}/>
+          <Route path="/add-item" element={<AddItems/>}/>
 
 
         </Route>
