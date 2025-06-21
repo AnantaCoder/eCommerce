@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import StoreCard from '../../components/StoreCard';
 import { fetchProducts, resetProducts } from '../product/productSlice';
+import Loader from '../../components/Loader';
 
 export default function Store({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch(); //using this hook for accesing the dispatch func in the store slice 
 
   // selecting each contents and defining its state to match the global state
-  const items      = useSelector(state => state.product.items);
+  const items      = useSelector(state => state.product.items) || [];
   const loading    = useSelector(state => state.product.loading);
   const errorObj   = useSelector(state => state.product.error);
   const page       = useSelector(state => state.product.page);
@@ -77,7 +78,7 @@ export default function Store({ selectedCategory, searchQuery }) {
   // };
 
   // Show loading state on first page (set a timer)
-  if (loading && page === 1) return <p>Loading products...</p>;
+  if (loading && page === 1) return <Loader/>;
 
   // Render detailed error information
   if (errorObj) {

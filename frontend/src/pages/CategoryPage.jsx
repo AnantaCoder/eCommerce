@@ -6,9 +6,12 @@ export default function CategoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   return (
-    <div>
+    <div className="py-5 px-2">
+      <h1 className="text-4xl text-center py-2 pb-4 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
+        Categories 🛍️
+      </h1>
       <CategoryGrid onCategorySelect={setSelectedCategory} />
-      <h1 className="text-4xl text-center p-2 pb-4 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
+      <h1 className="text-4xl text-center py-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-orange-500">
         Trending Now 🔥
       </h1>
       <div>

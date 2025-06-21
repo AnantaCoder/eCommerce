@@ -23,17 +23,17 @@ class Payments(models.Model):
     user_id = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='payments'
+        related_name='payment_user'
     )
     seller_id = models.ForeignKey(
         Seller,
         on_delete=models.CASCADE,
-        related_name='payments'
+        related_name='payments_seller'
     )
     order_id =  models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='payments'
+        related_name='payments_seller'
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default='INR')

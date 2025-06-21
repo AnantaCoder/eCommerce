@@ -14,12 +14,12 @@ export const fetchProducts = createAsyncThunk(
     try {
       const params = { page, page_size: pageSize };
       if (categoryId) params.categoryId = categoryId;
-      if (search)     params.search     = search;
+      if (search) params.search = search;
 
       const response = await api.get('/store/items/', { params });
-    //   console.log(response)
-      return { 
-        items: response.data.items,
+      //   console.log(response)
+      return {
+        items: response.data.results,
         totalItems: response.data.total_items,
         page,
         pageSize
@@ -62,7 +62,7 @@ const slice = createSlice({
   extraReducers: builder => {
     builder
 
-    // async action is dispatched and promise in pending
+      // async action is dispatched and promise in pending
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -71,12 +71,13 @@ const slice = createSlice({
       //async action successfully resolves
       .addCase(fetchProducts.fulfilled, (state, { payload }) => {
         state.loading = false;
-        // update page the number 
+        state.error = null;
         state.page = payload.page;
-        // pagination logic 
-        state.items = payload.page === 1
-          ? payload.items
-          : [...state.items, ...payload.items];
+        if (payload.page === 1) {
+          state.items = payload.items;
+        } else {
+          state.items = [...state.items, ...payload.items];
+        }
         state.totalPages = Math.ceil(payload.totalItems / payload.pageSize);
       })
       // async action didnt work out successfully 
@@ -84,7 +85,7 @@ const slice = createSlice({
         state.loading = false;
         state.error = payload;
       });
-  },
+},
 });
 
 export const { resetProducts } = slice.actions;

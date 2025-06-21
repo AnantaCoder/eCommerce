@@ -9,7 +9,7 @@ function MainLayout() {
     <div className="min-h-screen bg-black">
       <Navbar />
       
-      <main className="container mx-auto px-0 py-4">
+      <main className="container mx-auto px-0 ">
         <Outlet />
       </main>
       

@@ -27,7 +27,7 @@ export const fetchCategories = createAsyncThunk(
         }
     }
 )
-
+// cerate categories will be added later 
 
 const categorySlice = createSlice({
     name: 'categories',

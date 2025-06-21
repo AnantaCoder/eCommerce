@@ -1,20 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../services/api";
 
-
-
-
 export const addItems = createAsyncThunk(
   'store/add-items',
   async (
-    { item_name, item_type, manufacturer, quantity, price, sku, description, categoryId, imageFiles = [] },
-    { getState, rejectWithValue }
+    { item_name, item_type, manufacturer, quantity, price, sku, description, category, imageFiles = [] },
+    { rejectWithValue, getState }
   ) => {
-    const { accessToken, user } = getState().auth;
+    const accessToken = localStorage.getItem("access_token");
+    const state = getState();
+    const user = state.auth.user;
+
     if (!user?.id || !accessToken) {
       return rejectWithValue({ status: 401, message: 'Must be logged in as seller.' });
     }
-    if (!categoryId) {
+    if (!category) {
       return rejectWithValue({ status: 400, message: 'Category is required.' });
     }
 
@@ -28,8 +28,8 @@ export const addItems = createAsyncThunk(
       form.append('price', price);
       form.append('sku', sku);
       form.append('description', description);
-      form.append('category', categoryId);
-      imageFiles.forEach((file, idx) => form.append(`images[${idx}]`, file));
+      form.append('category', category);
+      imageFiles.forEach((file) => form.append('image_files', file));
 
       const response = await api.post('store/items/', form, {
         headers: {
@@ -50,36 +50,33 @@ const initialState = {
   items: [],
   loading: false,
   error: null,
-  success: false, // Optional: for success messages
+  success: false,
 };
+
 const storeSlice = createSlice({
   name: 'store',
   initialState,
-  reducers: {
-    
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      
       .addCase(addItems.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.success = false;
       })
-      
       .addCase(addItems.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-       
-        state.items.push(action.payload); 
+        state.items.push(action.payload);
         state.error = null;
       })
       .addCase(addItems.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
-        state.error = action.payload || { message: 'Failed to add item.' }; 
+        state.error = action.payload || { message: 'Failed to add item.' };
       });
   },
 });
-//define action as well 
+
+// export const { } = storeSlice.actions; 
 export default storeSlice.reducer;

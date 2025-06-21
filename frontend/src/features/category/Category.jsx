@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import CategoryCard from "../../components/CategoryCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "./categorySlice";
+import Loader from "../../components/Loader";
 
 
 
@@ -25,7 +26,7 @@ export default function CategoryGrid({ onCategorySelect }) {
     );
   }, [dispatch]);
 
-  if (loading) return <p className="text-white">Loading categories...</p>;
+  if (loading) return <Loader/>;
   if (errorObj)
     return <p className="text-red-500">Error: {errorObj.message}</p>;
 

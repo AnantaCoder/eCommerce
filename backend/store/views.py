@@ -53,14 +53,15 @@ class ItemViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
     
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        total_items = queryset.count()
-        return Response({
-            "total_items": total_items,
-            "items": serializer.data
-        })
+    # remove the custom list since drf handles pagination automatically 
+    # def list(self, request, *args, **kwargs):
+    #     response = super().list(request, *args, **kwargs)
+    #     response.data['total_items'] = self.get_queryset().count()
+    #     return response
+    
+    
+    
+    
     def perform_create(self, serializer):
         seller = self.request.user.seller
         serializer.save(seller=seller)

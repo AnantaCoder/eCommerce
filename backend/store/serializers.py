@@ -85,7 +85,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'total_value',
             'is_in_stock',
             'seller_name',
-            'image_urls',   # For displaying stored URLs
+            'image_urls',   # For displaying stored URLs 
             'image_files',  # For uploading files (input only)
             'created_at',
             'updated_at'

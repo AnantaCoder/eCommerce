@@ -16,9 +16,9 @@ import SellerRegistrationPage from "./pages/SellerRegistrationPage";
 import AddItems from "./features/store/AddItems";
 
 
-
 // add a layer if is authenticated only then most pages accessible , inside a private route element
 function App() {
+  
   return (
     <BrowserRouter>
       <Routes>

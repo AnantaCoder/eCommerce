@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Heart, ShoppingCart, Star, Eye, Share2, Zap } from 'lucide-react';
+import { addToWishlist } from '../features/wishlist/wishlistSlice';
 
 const ProductCard = ({ product }) => {
   // Map API response to component props
@@ -23,7 +24,10 @@ const ProductCard = ({ product }) => {
     discount: null,
     originalPrice: null
   };
-
+const wishListAddButton = (product)=>{
+  console.log("added to wishlist ")
+  addToWishlist(product.id)
+}
   return (
     <div className="group relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20 cursor-pointer">
       {mappedProduct.discount && (
@@ -33,7 +37,10 @@ const ProductCard = ({ product }) => {
       )}
 
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0">
-        <button className="p-2 rounded-full bg-black/40 text-white hover:bg-red-500 backdrop-blur-md transition-all duration-200">
+        <button 
+        onClick={wishListAddButton}
+        
+        className="p-2 rounded-full bg-black/40 text-white hover:bg-red-500 backdrop-blur-md transition-all duration-200">
           <Heart className="w-4 h-4" />
         </button>
         <button className="p-2 rounded-full bg-black/40 text-white hover:bg-blue-500 backdrop-blur-md transition-all duration-200">

@@ -5,6 +5,7 @@ import productReducer from '../features/product/productSlice'
 import categoriesReducer from '../features/category/categorySlice'
 import storeReducer from '../features/store/storeSlice'
 import wishlistReducer from '../features/wishlist/wishlistSlice'
+import cartReducer from '../features/cart/cartSlice'
 
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   categories:categoriesReducer,
   store:storeReducer,
   wishlist:wishlistReducer,
+  cart:cartReducer,
 })
 
 export default rootReducer

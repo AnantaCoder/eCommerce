@@ -186,7 +186,7 @@ const Navbar = () => {
                   <div className="relative user-dropdown">
                     <button
                       onClick={toggleUserMenu}
-                      className="flex items-center space-x-2 text-blue-500 hover:text-purple-600 p-2 cursor-pointer rounded-lg transition-all duration-200 hover:bg-gray-800"
+                      className="flex px-5 items-center space-x-2 text-blue-500 hover:text-purple-600 p-2 cursor-pointer rounded-lg transition-all duration-200 hover:bg-gray-800"
                     >
                       <User className="w-5 h-5" />
                       <span className="text-amber-50 text-sm font-medium">
@@ -251,7 +251,9 @@ const Navbar = () => {
                             <PlusCircle className="inline-block w-4 h-4 mr-2" />{" "}
                             Add Item
                           </button>
-                          <button
+
+                          {/* manage items will be added later  */}
+                          {/* <button
                             onClick={() => {
                               navigate("/manage-items");
                               setIsUserMenuOpen(false);
@@ -260,7 +262,7 @@ const Navbar = () => {
                           >
                             <Trash2 className="inline-block w-4 h-4 mr-2" />{" "}
                             Manage Items
-                          </button>
+                          </button> */}
                         </>
                       )}
                       <div className="border-t border-gray-600 my-1"></div>
@@ -419,7 +421,10 @@ const Navbar = () => {
                         <PlusCircle className="w-5 h-5" />
                         <span>Add Item</span>
                       </button>
-                      <button
+
+
+                      {/* manage items will be added later */}
+                      {/* <button
                         onClick={() => {
                           navigate("/manage-items");
                           setIsMenuOpen(false);
@@ -428,7 +433,7 @@ const Navbar = () => {
                       >
                         <Trash2 className="w-5 h-5" />
                         <span>Manage Items</span>
-                      </button>
+                      </button> */}
                     </div>
                     
                   )}
