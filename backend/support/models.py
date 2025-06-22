@@ -5,29 +5,39 @@ from django.conf import settings
 # Create your models here.
 
 
-
-class TimeStampModel(models.Model):
+class ChatSession(models.Model):
+    email = models.EmailField(max_length=254,unique=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE, #<---------- user delete chat delete 
+        null=True,
+        blank=True,
+        related_name='chat_sessions'
+    )
     
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta: abstract = True
+    is_active= models.BooleanField(default=True)
 
-class ChatRoom(TimeStampModel):
-    id  = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
-    participants = models.ManyToManyField(User,related_name="chat_rooms")
-    is_group = models.BooleanField(default=False)
-    
     def __str__(self):
-        return f"ChatRoom {self.id} - {'Group' if self.is_group else "Private"}"
-    
-class Message(TimeStampModel):
-    
-    room = models.ForeignKey(ChatRoom,related_name="messages",on_delete=models.CASCADE)
-    sender = models.ForeignKey(User,related_name="sent_messages",on_delete=models.CASCADE)
-    content = models.TextField()
-    is_ai =models.BooleanField(default=False)
-    is_read = models.BooleanField(default=False)
-    
+        return f"session {self.id} for {self.email}"
+
+class ChatMessage(models.Model):
+    ROLE_CHOICES = [
+        ('user', 'User'),
+        ('bot', 'Bot'),
+        ('human', 'Human Agent'),
+    ]
+    session = models.ForeignKey(
+        ChatSession, 
+        on_delete=models.CASCADE,
+        related_name='messages'
+    )
+    sender = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
     def __str__(self):
-        return f"Message {self.id} in {self.room} by {self.sender} - {'AI' if self.is_ai else 'User'}"
+        return f"[{self.timestamp}] {self.sender}: {self.message[:30]}"

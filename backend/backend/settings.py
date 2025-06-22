@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,7 +46,27 @@ INSTALLED_APPS = [
     "accounts",
     "store",
     "payments",
+    "support",
+    "channels",
+    
 ]
+# asgi config 
+ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS={
+    'default':{
+        "BACKEND":'channels_redis.core.RedisChannelLayer',
+        "CONFIG":{
+            'hosts': [('127.0.0.1', 6379)] 
+            }
+        }
+    }
+
+# DEEPSEEK API KEY 
+AI_API_URL = "https://integrate.api.nvidia.com/v1"
+AI_API_KEY = env('DEEPSEEK_R1_API_KEY')
+AI_MODEL = "deepseek-ai/deepseek-r1"
+AI_MAX_TOKENS = 200
+CHAT_HISTORY_LIMIT = 20
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -66,7 +87,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.34:5173"# React dev server
 ]
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 ROOT_URLCONF = "backend.urls"
 
 TEMPLATES = [
