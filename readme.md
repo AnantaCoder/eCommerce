@@ -1,7 +1,9 @@
 # Project Title
 
-A simple full-stack web application with a React frontend and Django REST Framework backend.
-![ecommerce](image.png) 
+A  full-stack web application with a React frontend and Django REST Framework backend with the Power of AI.
+<!-- ![ecommerce](image.png)-->
+![image](https://github.com/user-attachments/assets/8a5d12bf-8935-4dfe-bcc0-a36bf3ea2385)
+
 ## Table of Contents
 
 * [Features](#features)
