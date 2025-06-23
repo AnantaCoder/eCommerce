@@ -61,12 +61,14 @@ CHANNEL_LAYERS={
         }
     }
 
-DEEPSEEK_API_KEY =env('DEEPSEEK_R1_API_KEY')
-AI_API_URL = "https://integrate.api.nvidia.com/v1"
-AI_API_KEY = env('DEEPSEEK_R1_API_KEY')
-AI_MODEL = "deepseek-ai/deepseek-r1"
-AI_MAX_TOKENS = 200
-CHAT_HISTORY_LIMIT = 20
+
+# AI MODEL CONFIGURATION 
+AI_BASE_URL = env("AI_BASE_URL")
+AI_MODEL_API_KEY=env("AI_MODEL_API_KEY")
+AI_MODEL_NAME=env("AI_MODEL_NAME")
+MAX_TOKENS=env("MAX_TOKENS")
+TEMPERATURE=env("TEMPERATURE")   
+        
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

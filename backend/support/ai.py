@@ -26,21 +26,22 @@ def generate_ai_response(prompt: str, session_id: int) -> str:
         messages.append({"role": "user", "content": prompt})
 
         client = openai.OpenAI(
-            base_url="https://integrate.api.nvidia.com/v1",
-            api_key=settings.DEEPSEEK_API_KEY
+            base_url=settings.AI_BASE_URL,
+            api_key=settings.AI_MODEL_API_KEY
         )
 
         response = client.chat.completions.create(
-            model="deepseek-ai/deepseek-r1",
+            model=settings.AI_MODEL_NAME,
             messages=messages,
-            max_tokens=80,        
-            temperature=0.5       
+            # type casting 
+            max_tokens=int(settings.MAX_TOKENS),
+            temperature=float(settings.TEMPERATURE)
         )
 
         text = response.choices[0].message.content.strip() if response.choices else ''
         # Truncate to first two sentences if needed
         sentences = text.split('.')
-        return ('.'.join(sentences[:2]) + '.') if len(sentences) > 1 else text
+        return ('.'.join(sentences[:3]) + '.') if len(sentences) > 1 else text
 
     except Exception as e:
         print(f"AI generation error: {e}")

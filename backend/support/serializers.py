@@ -12,6 +12,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         fields = ["id", "sender", "message", "timestamp"]
     
     # task - add a get to exclude the <think> block . 
+    
 
 class ChatSessionSerializer(serializers.ModelSerializer):
     messages = ChatMessageSerializer(many=True, read_only=True)
@@ -19,6 +20,10 @@ class ChatSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatSession
         fields = ["id", "email", "created_at", "is_active", "messages"]
+        
+        
+        
+        
 class SendMessageSerializer(serializers.Serializer):
     session_id = serializers.IntegerField()
     message = serializers.CharField(max_length=1000)
