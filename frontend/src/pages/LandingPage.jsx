@@ -2,6 +2,7 @@ import React from 'react';
 import Chair from '../components/VantaBackground';
 import VantaBackground from '../components/VantaBackground';
 import {  useNavigate } from 'react-router-dom';
+import AIChatWidget from '../features/support/AIChatWidget';
 
 
 
@@ -103,7 +104,10 @@ function LandingPage() {
   ];
 
   return (
+    <>
+    <AIChatWidget/>
     <div className="min-h-screen bg-gray-900 text-white">
+
       {/* Hero with three js effects */}
       
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -231,6 +235,7 @@ function LandingPage() {
       </section>
 
     </div>
+    </>
   );
 }
 

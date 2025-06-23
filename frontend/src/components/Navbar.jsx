@@ -23,7 +23,7 @@ const Navbar = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   //flag to determime if the user is a seller or not
-  const isSeller = user?.is_seller || false; // Correctly derives isSeller from the user object
+  const isSeller = user?.is_seller || false; 
 
   const toggleMenu = () => setIsMenuOpen((open) => !open);
   const toggleUserMenu = () => setIsUserMenuOpen((open) => !open);
@@ -32,7 +32,6 @@ const Navbar = () => {
   const getDisplayName = () => {
     if (!user) return "";
 
-    // Try different possible user name properties
     return (
       user.first_name ||
       user.firstName ||
