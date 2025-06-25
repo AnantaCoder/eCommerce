@@ -1,22 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchWishlistItems,
   selectWishlistItems,
-  selectWishlistLoading,
+  // selectWishlistLoading,
   selectWishlistError,
+  removeFromWishlist,
 } from "./wishlistSlice";
 import { Heart } from "lucide-react";
 import Loader from "../../components/Loader";
 import { toast } from "react-toastify";
 import WishlistCard from "../../components/WishlistCard";
-
+import { addToCart } from "../cart/cartSlice";
 
 export default function Wishlists() {
   const dispatch = useDispatch();
   const items = useSelector(selectWishlistItems);
-  const loading = useSelector(selectWishlistLoading);
+  // const loading = useSelector(selectWishlistLoading);
   const error = useSelector(selectWishlistError);
+
+  const prevItems = useRef(items);
 
   const token = localStorage.getItem("access_token");
 
@@ -32,14 +35,25 @@ export default function Wishlists() {
     }
   }, [error]);
 
+  // Success toast for remove/add to wishlist
+  useEffect(() => {
+    if (prevItems.current.length > items.length) {
+      toast.success("Item removed from wishlist!");
+    }
+    if (prevItems.current.length < items.length) {
+      toast.success("Item added to wishlist!");
+    }
+    prevItems.current = items;
+  }, [items]);
+
   const handleRemoveItem = (itemId) => {
-    console.log('Remove item:', itemId);
-    // dispatch(removeWishlistItem(itemId));
+    dispatch(removeFromWishlist({ itemId }))
+      
   };
 
-  const handleAddToCart = (itemId) => {
-    console.log('Add to cart:', itemId);
-    // dispatch(addToCart(wishlistItem));
+  const handleAddToCart = (mapped) => {
+    dispatch(addToCart({ itemId: mapped.id, quantity: 1 }))
+      
   };
 
   if (!token) {
@@ -54,7 +68,7 @@ export default function Wishlists() {
     );
   }
 
-  if (loading) return <Loader />
+  // if (loading) return <Loader />
 
   return (
     <div className="p-6">

@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCartItems,
   selectCartItems,
-  selectCartLoading,
+  // selectCartLoading,
   selectCartError,
+  removeFromCart,
 } from "./cartSlice";
 import CartCard from "../../components/CartCard";
 import Loader from "../../components/Loader";
@@ -14,7 +15,7 @@ import { ShoppingCart } from "lucide-react";
 export default function Cart() {
   const dispatch = useDispatch();
   const items = useSelector(selectCartItems);
-  const loading = useSelector(selectCartLoading);
+  // const loading = useSelector(selectCartLoading);
   const error = useSelector(selectCartError);
   const token = localStorage.getItem("access_token");
 
@@ -30,10 +31,9 @@ export default function Cart() {
     }
   }, [error]);
 
-  const handleRemove = (id) => {
-    console.log("Remove from cart:", id);
-    // dispatch(removeCartItem(id));
-  };
+ const handleRemove = (id) => {
+  dispatch(removeFromCart({ itemId: id }));
+};
 
   if (!token) {
     return (
@@ -47,7 +47,7 @@ export default function Cart() {
     );
   }
 
-  if (loading) return <Loader />;
+  // if (loading) return <Loader />;
 
   return (
     <div className="p-6">
@@ -80,7 +80,7 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {console.log(items)}
           {items.map((cartItem) => (
-            <CartCard key={cartItem.id} cart={cartItem} onRemove={handleRemove}  />
+            <CartCard key={cartItem.id} cart={cartItem} onRemove={handleRemove} />
           ))}
         </div>
       )}

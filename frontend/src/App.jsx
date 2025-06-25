@@ -14,6 +14,7 @@ import AccountsComponent from "./components/ProfileCard";
 import PaymentsPage from "./components/PaymentsPage";
 import SellerRegistrationPage from "./pages/SellerRegistrationPage";
 import AddItems from "./features/store/AddItems";
+import ProductDetail from "./features/product/ProductDetail";
 
 
 // add a layer if is authenticated only then most pages accessible , inside a private route element
@@ -32,6 +33,7 @@ function App() {
           <Route path="/account" element={<AccountsComponent/>}/>
           <Route path="/payment" element={<PaymentsPage/>}/>
           <Route path="/add-item" element={<AddItems/>}/>
+          <Route path="/product/:id" element={<ProductDetail />} />
 
 
         </Route>
@@ -40,6 +42,7 @@ function App() {
 
         <Route path="/seller-registration" element={<SellerRegistrationPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
+        
       </Routes>
     </BrowserRouter>
   );

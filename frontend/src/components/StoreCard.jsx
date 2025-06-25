@@ -1,12 +1,11 @@
 import React from "react";
 import { Star, Truck, ShoppingCart, Heart } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const StoreCard = ({ product }) => {
+const StoreCard = ({ product ,  addWishlist,addToCart}) => {
   const formatPrice = (price) =>
     `₹${parseFloat(price).toLocaleString("en-IN")}`;
   const formatRating = (rating) => rating.toFixed(1);
-  const dispatch = useDispatch();
   const mappedProduct = {
     id: product.id,
     name: product.item_name,
@@ -34,14 +33,12 @@ const StoreCard = ({ product }) => {
     originalPrice: null,
   };
   // wishlist adder functionality
- 
+ const navigate = useNavigate()
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
-      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/5 pointer-events-none" />
 
-      {/* Image Container */}
       <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
         <img
           src={mappedProduct.image}
@@ -49,10 +46,8 @@ const StoreCard = ({ product }) => {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
         />
 
-        {/* Dark overlay on image */}
         <div className="absolute inset-0 bg-black/20" />
 
-        {/* Floating Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {mappedProduct.discount > 0 && (
             <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-xl backdrop-blur-sm">
@@ -68,6 +63,7 @@ const StoreCard = ({ product }) => {
 
         {/* Wishlist Button */}
         <button
+        onClick={()=>addWishlist(mappedProduct.id)}
           className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 transition-all duration-300 hover:scale-110 border border-gray-700/50"
         >
           <Heart
@@ -84,19 +80,19 @@ const StoreCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6 relative">
-        {/* Title */}
+      <div className="p-6 relative cursor-pointer"
+      onClick={()=>navigate(`/product/${product.id}`)}
+      
+      
+      >
         <h3 className="font-bold text-white text-xl mb-2 leading-tight">
           {mappedProduct.name}
         </h3>
 
-        {/* Description */}
         <p className="text-gray-400 text-sm mb-4 leading-relaxed">
           {mappedProduct.description}
         </p>
 
-        {/* Rating & Reviews */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-1.5 bg-yellow-500/20 px-3 py-1.5 rounded-full border border-yellow-500/30">
             <Star size={14} className="fill-yellow-400 text-yellow-400" />
@@ -109,7 +105,6 @@ const StoreCard = ({ product }) => {
           </span>
         </div>
 
-        {/* Price Section */}
         <div className="flex items-baseline gap-3 mb-6">
           <span className="text-3xl font-bold text-white tracking-tight">
             {formatPrice(mappedProduct.price)}
@@ -122,7 +117,6 @@ const StoreCard = ({ product }) => {
             )}
         </div>
 
-        {/* Stock Status */}
         <div className="flex items-center gap-2 mb-4">
           <div
             className={`w-2.5 h-2.5 rounded-full ${
@@ -138,11 +132,11 @@ const StoreCard = ({ product }) => {
           </span>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-col gap-3">
-          {/* Add to Cart Button */}
           <button
             disabled={!mappedProduct.inStock}
+            onClick={() => addToCart(mappedProduct)}
+
             className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
               mappedProduct.inStock
                 ? "bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-105"
@@ -171,7 +165,6 @@ const StoreCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Subtle shine effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
     </div>
   );

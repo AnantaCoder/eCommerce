@@ -31,10 +31,12 @@ const mapped = {
       {/* Remove button */}
       <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100">
         <button
-          onClick={() => onRemove && onRemove(mapped.id)}
+          onClick={() =>  onRemove(cart.id)}
+          
           className="p-2 rounded-full bg-black/50 text-white hover:bg-red-500 transition"
         >
           <X className="w-4 h-4" />
+          {console.log("mapped id is ",cart.id)}
         </button>
       </div>
 
