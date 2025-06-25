@@ -1,7 +1,6 @@
 import React from "react";
 import { Star, Truck, ShoppingCart, Heart } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { addToWishlist } from "../features/wishlist/wishlistSlice";
 
 const StoreCard = ({ product }) => {
   const formatPrice = (price) =>
@@ -35,9 +34,7 @@ const StoreCard = ({ product }) => {
     originalPrice: null,
   };
   // wishlist adder functionality
-  const handleAddToWishlist = () => {
-    dispatch(addToWishlist(product.id));
-  };
+ 
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
@@ -71,7 +68,6 @@ const StoreCard = ({ product }) => {
 
         {/* Wishlist Button */}
         <button
-          onClick={handleAddToWishlist}
           className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 transition-all duration-300 hover:scale-110 border border-gray-700/50"
         >
           <Heart
