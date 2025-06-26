@@ -67,20 +67,7 @@ class RegisterView(generics.CreateAPIView):
             )
     
     def send_verification_email(self, request, user):
-        """
-        Send email verification link to the user.
         
-        This method generates a secure token, builds an absolute URL
-        for email verification, and sends it via email. The token
-        is tied to the specific user and expires automatically.
-        
-        Args:
-            request: The HTTP request object (needed to build absolute URL)
-            user: The User instance to send verification email to
-            
-        Raises:
-            Exception: If email sending fails for any reason
-        """
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         
@@ -90,9 +77,7 @@ class RegisterView(generics.CreateAPIView):
             verify_path = reverse('accounts:verify_email')  # Note: using the namespaced URL
         except:
             verify_path = reverse('verify-email')
-            
         base_url = request.build_absolute_uri(verify_path)
-        # base_url = 'http://localhost:5173/'
         verification_link = f"{base_url}?uid={uid}&token={token}"
         
         print(f"[DEBUG] Email verification link: {verification_link}")
@@ -139,9 +124,6 @@ class VerifyEmailView(APIView):
         token = serializer.validated_data['token']
         uid = request.query_params.get('uid')  # Still need to handle uid separately
         
-        
-        
-        
         if not uid or not token:
             return Response({"detail": "Missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -153,15 +135,20 @@ class VerifyEmailView(APIView):
                 user.is_active = True
                 user.is_email_verified = True
                 user.save()
-                
                 refresh = RefreshToken.for_user(user)
-                
-                return Response({
-                    "detail": "Email successfully verified.",
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token)
-                }, status=status.HTTP_200_OK)
-                # return redirect('http/localhost:5173/home')
+                frontend_base = settings.FRONTEND_URL.rstrip("/")
+                redirect_url =  f"{frontend_base}/auth/callback?access={str(refresh.access_token)}&refresh={str(refresh)}"
+                return redirect(redirect_url)
+            
+            
+            # precious format-----------------------------------------------------------------------------------------
+                # return Response({
+                #     "detail": "Email successfully verified.",
+                #     "refresh": str(refresh),
+                #     "access": str(refresh.access_token)
+                # }, status=status.HTTP_200_OK)
+                # # return redirect('http/localhost:5173/home')
+            #----------------------------------------------------------------------------------------------------------
             else:
                 return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
