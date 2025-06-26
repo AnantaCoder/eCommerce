@@ -15,8 +15,10 @@ import PaymentsPage from "./components/PaymentsPage";
 import SellerRegistrationPage from "./pages/SellerRegistrationPage";
 import AddItems from "./features/store/AddItems";
 import ProductDetail from "./features/product/ProductDetail";
+import AuthCallback from "./features/auth/AuthCallBack";
 
 
+// GUNJAN LAUDI 🦥
 // add a layer if is authenticated only then most pages accessible , inside a private route element
 function App() {
   
@@ -34,6 +36,7 @@ function App() {
           <Route path="/payment" element={<PaymentsPage/>}/>
           <Route path="/add-item" element={<AddItems/>}/>
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
 
 
         </Route>

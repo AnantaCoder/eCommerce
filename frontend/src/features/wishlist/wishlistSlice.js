@@ -69,7 +69,7 @@ export const addToWishlist = createAsyncThunk(
     } catch (error) {
       const message = error.response?.data?.detail || 'Failed to add to wishlist';
       toast.error(message, {
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 3000,
       });
       return rejectWithValue(message);

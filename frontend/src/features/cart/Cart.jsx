@@ -11,9 +11,11 @@ import CartCard from "../../components/CartCard";
 import Loader from "../../components/Loader";
 import { toast } from "react-toastify";
 import { ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const items = useSelector(selectCartItems);
   // const loading = useSelector(selectCartLoading);
   const error = useSelector(selectCartError);
@@ -71,7 +73,9 @@ export default function Cart() {
             <p className="text-gray-400 text-sm mb-4">
               Start adding items to see them here.
             </p>
-            <button className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
+            <button
+            onClick={()=>navigate('/home')}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
               Start Shopping
             </button>
           </div>

@@ -1,6 +1,6 @@
 // services/dataService.js
 // This file centralizes all data operations and will be your single point for API integration
-
+// this is no longer used in the frontend since database is there . 
 // Sample data - this will be replaced with actual API calls
 const sampleCategories = [
   {
