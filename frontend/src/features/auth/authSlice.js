@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
+import { toast } from 'react-toastify';
 
 
 // Async thunks for authentication
@@ -12,15 +13,22 @@ export const loginUser = createAsyncThunk(
 
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
+      // to save user’s type (e.g. seller)
+      localStorage.setItem('user', JSON.stringify(user));
 
-      // to save users type eg seller 
-      localStorage.setItem('user', JSON.stringify(user))
+      toast.success('Logging you in ... ✔️', {
+        position: 'bottom-right',
+        autoClose: 2000,
+      });
 
       return { access, refresh, user };
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Login Failed "
-      );
+      const message = error.response?.data.message || 'Login failed';
+      toast.error(message, {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
+      return rejectWithValue(message);
     }
   }
 );
@@ -38,7 +46,10 @@ export const registerUser = createAsyncThunk(
         password2: password,
         is_seller: is_seller || false //flag
       });
-
+      toast.success('Check email for verification link . 📨', {
+        position: "bottom-right",
+        autoClose: 5000,
+      })
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -51,7 +62,7 @@ export const sellerRegistration = createAsyncThunk(
   async ({ password, shop_name, gst_number, address }, { getState, rejectWithValue }) => {
     try {
       // 1. Pull current auth info from Redux
-      const { accessToken, refreshToken, user } = getState().auth;
+      const { accessToken,  user } = getState().auth;
       if (!user?.email) {
         return rejectWithValue('User must be logged in to register as seller');
       }
@@ -87,7 +98,7 @@ export const sellerRegistration = createAsyncThunk(
 
 export const refreshToken = createAsyncThunk(
   'auth/refresh',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, {  rejectWithValue }) => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
       const response = await api.post('/auth/token/refresh/', {
@@ -102,7 +113,7 @@ export const refreshToken = createAsyncThunk(
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
-      return rejectWithValue('Token refresh failed');
+      return rejectWithValue('Token refresh failed',error);
     }
   }
 );
@@ -115,6 +126,7 @@ export const logoutUser = createAsyncThunk(
       await api.post('/auth/logout/', { refresh: refreshToken });
     } catch (error) {
       // Continue with logout even if API call fails
+      console.log("logout section error :- ",error)
     } finally {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
@@ -164,6 +176,17 @@ const authSlice = createSlice({
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
     },
+     setTokensAndLogin: (state, action) => {
+      const { access, refresh, user } = action.payload;
+      
+      state.accessToken = access;
+      state.refreshToken = refresh;
+      state.isAuthenticated = true;
+      
+      if (user) {
+        state.user = user;
+      }
+    }
   },
   extraReducers: (builder) => {
 
@@ -238,7 +261,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearAuth } = authSlice.actions;
+export const { clearError, clearAuth, setTokensAndLogin } = authSlice.actions;
 export default authSlice.reducer;
 
 /**

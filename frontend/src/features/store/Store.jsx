@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import StoreCard from '../../components/StoreCard';
 import { fetchProducts, resetProducts } from '../product/productSlice';
 import Loader from '../../components/Loader';
+import { addToWishlist } from '../wishlist/wishlistSlice';
+import { addToCart } from '../cart/cartSlice';
 
 export default function Store({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch(); //using this hook for accesing the dispatch func in the store slice 
@@ -44,7 +46,13 @@ export default function Store({ selectedCategory, searchQuery }) {
   //  called the dependancy array, rerun after debounceSearch tern changes 
   }, [dispatch, selectedCategory?.id, debouncedSearch]);
 
+const handleAddToWishList = (id) => {
+    dispatch(addToWishlist({ itemId: id }));
+  };
 
+  const handleAddToCart = (mapped) => {
+    dispatch(addToCart({ itemId: mapped.id, quantity: 1 }));
+  };
 
   // pagination handler function , we can use useCallback here(gemini)- less crucial but good practice 
   const loadMore = useCallback(()=>{
@@ -95,7 +103,7 @@ export default function Store({ selectedCategory, searchQuery }) {
   <div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {items.map(product => (
-        <StoreCard key={product.id} product={product} />
+        <StoreCard key={product.id} product={product} addWishlist={handleAddToWishList} addToCart={handleAddToCart}/>
       ))}
     </div>
 

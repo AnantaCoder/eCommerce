@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Heart, ShoppingCart, Star, Eye, Share2, Zap } from 'lucide-react';
-import { addToWishlist } from '../features/wishlist/wishlistSlice';
-
-const ProductCard = ({ product }) => {
+import { useNavigate } from 'react-router-dom';
+const ProductCard = ({ product,addToCart,addToWishlist }) => {
+  const navigate = useNavigate()
   // Map API response to component props
   const mappedProduct = {
     id: product.id,
@@ -24,12 +24,9 @@ const ProductCard = ({ product }) => {
     discount: null,
     originalPrice: null
   };
-const wishListAddButton = (product)=>{
-  console.log("added to wishlist ")
-  addToWishlist(product.id)
-}
+
   return (
-    <div className="group relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20 cursor-pointer">
+    <div className="group relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20 ">
       {mappedProduct.discount && (
         <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           -{mappedProduct.discount}%
@@ -38,8 +35,7 @@ const wishListAddButton = (product)=>{
 
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0">
         <button 
-        onClick={wishListAddButton}
-        
+        onClick={() => addToWishlist(mappedProduct.id)}
         className="p-2 rounded-full bg-black/40 text-white hover:bg-red-500 backdrop-blur-md transition-all duration-200">
           <Heart className="w-4 h-4" />
         </button>
@@ -90,7 +86,10 @@ const wishListAddButton = (product)=>{
           )}
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1"
+      onClick={()=>navigate(`/product/${product.id}`)}
+        
+        >
           <h3 className="text-white text-xl font-bold leading-tight hover:text-blue-400 transition-colors">
             {mappedProduct.name}
           </h3>
@@ -132,6 +131,7 @@ const wishListAddButton = (product)=>{
         <div className="flex gap-3 pt-2">
           <button
             disabled={!mappedProduct.inStock}
+            onClick={() => addToCart(mappedProduct)}
             className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-500/25"
           >
             <ShoppingCart className="w-4 h-4" />

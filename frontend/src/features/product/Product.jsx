@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../../components/ProductCard";
 import { fetchProducts, resetProducts } from "./productSlice";
 import Loader from "../../components/Loader";
+import { addToWishlist } from "../wishlist/wishlistSlice";
+import { addToCart } from "../cart/cartSlice";
 
 export default function ProductGrid({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch();
@@ -67,6 +69,13 @@ export default function ProductGrid({ selectedCategory, searchQuery }) {
   if (loading && page === 1) {
     return <Loader />;
   }
+  const handleAddToWishList = (id) => {
+    dispatch(addToWishlist({ itemId: id }));
+  };
+
+  const handleAddToCart = (mapped) => {
+    dispatch(addToCart({ itemId: mapped.id, quantity: 1 }));
+  };
 
   // No items found
   if (!Array.isArray(items) || items.length === 0) {
@@ -79,7 +88,12 @@ export default function ProductGrid({ selectedCategory, searchQuery }) {
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {items.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            addToWishlist={handleAddToWishList}
+            addToCart={handleAddToCart}
+          />
         ))}
       </div>
 

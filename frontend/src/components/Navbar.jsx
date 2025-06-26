@@ -112,7 +112,9 @@ const Navbar = () => {
               <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
                 <ShoppingCart className="w-6 h-6 text-white" />
               </div>
-              <span className="ml-3 text-xl font-bold text-amber-100">
+              <span 
+              onClick={()=>navigate('/')}
+              className="ml-3 text-xl font-bold text-amber-100 cursor-pointer">
                 StoreHub
               </span>
             </div>

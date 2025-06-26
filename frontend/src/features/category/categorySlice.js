@@ -11,6 +11,8 @@ export const fetchCategories = createAsyncThunk(
             if (categoryId) params.categoryId = categoryId
 
             const response = await api.get('store/categories/', { params: params })
+
+            // I think this part is song it has to return an array
             return {
                 categories: response.data.results,
                 totalItems: response.data.count,

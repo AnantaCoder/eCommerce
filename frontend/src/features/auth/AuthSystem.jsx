@@ -118,7 +118,7 @@ const AuthSystem = () => {
         .unwrap()
         .then(() => navigate("/home"))
         .catch((err) =>
-          setErrors({ form: err.detail || "Login failed. Please try again." })
+          console.log(err)
         );
     } else {
       dispatch(
@@ -132,9 +132,7 @@ const AuthSystem = () => {
         .unwrap()
         .then(() => navigate("/login"))
         .catch((err) =>
-          setErrors({
-            form: err.detail || "Registration failed. Please try again.",
-          })
+          console.log(err)
         );
     }
   };

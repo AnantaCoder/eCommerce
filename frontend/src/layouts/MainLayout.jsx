@@ -1,18 +1,14 @@
-// layouts/MainLayout.jsx
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { Outlet } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function MainLayout() {
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
-      
       <main className="container mx-auto px-0 ">
         <Outlet />
-      </main>
-      
+      </main>  
       <Footer />
     </div>
   );
