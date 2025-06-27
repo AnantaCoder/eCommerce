@@ -16,6 +16,7 @@ import SellerRegistrationPage from "./pages/SellerRegistrationPage";
 import AddItems from "./features/store/AddItems";
 import ProductDetail from "./features/product/ProductDetail";
 import AuthCallback from "./features/auth/AuthCallBack";
+import ManageItems from "./features/store/ManageItems";
 
 
 // GUNJAN LAUDI 🦥
@@ -37,6 +38,7 @@ function App() {
           <Route path="/add-item" element={<AddItems/>}/>
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/manage-items" element={<ManageItems />} />
 
 
         </Route>

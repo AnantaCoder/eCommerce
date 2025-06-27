@@ -40,7 +40,7 @@ export const fetchProducts = createAsyncThunk(
       return rejectWithValue({ status, message });
     }
   }
-);
+)
 
 export const fetchIndividualProduct = createAsyncThunk(
   'product/fetchIndividualProduct',
@@ -61,7 +61,10 @@ export const fetchIndividualProduct = createAsyncThunk(
       return rejectWithValue({ status, message });
     }
   }
-);
+)
+
+
+
 
 
 /**
@@ -137,7 +140,9 @@ const slice = createSlice({
         state.individualLoading = false;
         state.individualError = payload;
         state.individualProduct = null;
-      });
+      })
+
+      
 },
 });
 

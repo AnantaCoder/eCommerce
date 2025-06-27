@@ -1,9 +1,11 @@
 1. Update user info -done
-2. Cart to add items 
-3. Supplier can add items 
-4. Chat bot for customer support 
+2. Cart to add items -done
+3. Supplier can add items -done
+4. Chat bot for customer support -done 
 5. payment option 
 6. secure checkout 
 7. after payment show the shipping status 
 8. customer can review the products and rate it 
-9. connect to websockets and redis 
+9. connect to websockets and redis -done
+10. sellers can manage and delete items ----------->now 
+11. search feature 

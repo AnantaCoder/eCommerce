@@ -7,7 +7,7 @@ import Loader from "../../components/Loader";
 
 
 
-export default function CategoryGrid({ onCategorySelect }) {
+export default function CategoryGrid() {
   const dispatch = useDispatch();
 
   const categories = useSelector((state) => state.categories.categories)
@@ -37,7 +37,6 @@ export default function CategoryGrid({ onCategorySelect }) {
           <CategoryCard
             key={category.id}
             category={category}
-            onClick={() => onCategorySelect?.(category)}
           />
         ) : null
       )}

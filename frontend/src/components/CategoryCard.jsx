@@ -17,9 +17,11 @@ import {
   Star,
   Users
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryCard = ({ category, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate()
 
   const iconMap = {
     Smartphone,
@@ -100,7 +102,7 @@ const CategoryCard = ({ category, onClick }) => {
     image: category.image || fallbackImage,
     icon: category.icon || fallbackIcon,
     color: category.color || fallbackColor,
-    popularBrands: category.popularBrands || fallbackBrands
+    popularBrands: category.popular_brands || fallbackBrands
   };
 
   return (
@@ -108,7 +110,8 @@ const CategoryCard = ({ category, onClick }) => {
       className={`relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 ${colors.shadow} cursor-pointer border ${colors.border}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
+        onClick={()=>navigate(`/store?category=${mappedCategory.id}`)}
+
     >
       {mappedCategory.trending && (
         <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">

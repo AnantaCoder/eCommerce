@@ -254,7 +254,7 @@ const Navbar = () => {
                           </button>
 
                           {/* manage items will be added later  */}
-                          {/* <button
+                          <button
                             onClick={() => {
                               navigate("/manage-items");
                               setIsUserMenuOpen(false);
@@ -263,7 +263,7 @@ const Navbar = () => {
                           >
                             <Trash2 className="inline-block w-4 h-4 mr-2" />{" "}
                             Manage Items
-                          </button> */}
+                          </button>
                         </>
                       )}
                       <div className="border-t border-gray-600 my-1"></div>
@@ -425,7 +425,7 @@ const Navbar = () => {
 
 
                       {/* manage items will be added later */}
-                      {/* <button
+                      <button
                         onClick={() => {
                           navigate("/manage-items");
                           setIsMenuOpen(false);
@@ -434,7 +434,7 @@ const Navbar = () => {
                       >
                         <Trash2 className="w-5 h-5" />
                         <span>Manage Items</span>
-                      </button> */}
+                      </button>
                     </div>
                     
                   )}

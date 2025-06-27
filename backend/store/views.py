@@ -58,9 +58,15 @@ class ItemViewSet(viewsets.ModelViewSet):
     #     response = super().list(request, *args, **kwargs)
     #     response.data['total_items'] = self.get_queryset().count()
     #     return response
+    '''get the item on specific category '''
+    filterset_fields=['category']
     
-    
-    
+    def get_queryset(self):
+        queryset= super().get_queryset()
+        seller_id = self.request.query_params.get("seller")
+        if seller_id:
+            queryset = queryset.filter(seller__user__id=seller_id)
+        return queryset
     
     def perform_create(self, serializer):
         seller = self.request.user.seller

@@ -1,3 +1,1 @@
-add items accessible without login . 
-category is not incrementing ,
-trending now has 3 items but it should have 4 
+category is not incrementing 
