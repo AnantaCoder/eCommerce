@@ -1,32 +1,50 @@
 import React, { useEffect } from "react";
-// import dataService from "../../components/dataService";
 import CategoryCard from "../../components/CategoryCard";
+import StoreCard from "../../components/StoreCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "./categorySlice";
+import { fetchCategories, fetchCategoricItems } from "./categorySlice";
 import Loader from "../../components/Loader";
 
-
-
-export default function CategoryGrid() {
+// Accept optional categoryId prop
+export default function CategoryGrid({ categoryId,onCategorySelect }) {
   const dispatch = useDispatch();
 
-  const categories = useSelector((state) => state.categories.categories)
-  const loading = useSelector((state) => state.categories.loading)
-  const errorObj = useSelector((state) => state.categories.error)
-  
-  // const page = useSelector((state) => state.categories.page)
-  // const totalPages = useSelector((state) => state.categories.totalPages)
+  const categories = useSelector((state) => state.categories.categories);
+  const loading = useSelector((state) => state.categories.loading);
+  const errorObj = useSelector((state) => state.categories.error);
+
+  const categoricItems = useSelector((state) => state.categories.categoricItems);
+  const categoricItemsLoading = useSelector((state) => state.categories.categoricItemsLoading);
+  const categoricItemsError = useSelector((state) => state.categories.categoricItemsError);
 
   useEffect(() => {
-    dispatch(
-      fetchCategories({
-        page: 1,
-        pageSize: 12,
-      })
-    );
-  }, [dispatch]);
+    if (categoryId) {
+      dispatch(fetchCategoricItems({ categoryId }));
+    } else {
+      dispatch(fetchCategories({ page: 1, pageSize: 12 }));
+    }
+  }, [dispatch, categoryId]);
 
-  if (loading) return <Loader/>;
+  if (categoryId) {
+    if (categoricItemsLoading) return <Loader />;
+    if (categoricItemsError)
+      return <p className="text-red-500">Error: {categoricItemsError.message}</p>;
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {categoricItems.map((item) =>
+          item ? (
+            <StoreCard
+              key={item.id}
+              product={item}
+              // addWishlist, addToCart handlers if needed
+            />
+          ) : null
+        )}
+      </div>
+    );
+  }
+
+  if (loading) return <Loader />;
   if (errorObj)
     return <p className="text-red-500">Error: {errorObj.message}</p>;
 
@@ -37,6 +55,7 @@ export default function CategoryGrid() {
           <CategoryCard
             key={category.id}
             category={category}
+            onSelect={onCategorySelect}
           />
         ) : null
       )}

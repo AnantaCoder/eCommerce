@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react'
 import Store from '../features/store/Store'
-import { useDispatch, useSelector } from 'react-redux'
+import {  useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
-import { fetchProducts } from '../features/product/productSlice'
 import { Crown, Sparkles, ShoppingBag } from 'lucide-react'
 
 function StorePage() {
-  const dispatch = useDispatch()
   const location = useLocation()
   const params = new URLSearchParams(location.search)
   const categoryId = params.get("category")
@@ -14,11 +11,7 @@ function StorePage() {
   const categories = useSelector((state)=>state.categories.categories)
   const category = categories?.find(cat => String(cat.id) === String(categoryId))
 
-  useEffect(()=>{
-    dispatch(fetchProducts({
-      categoryId, page:1, pageSize:10
-    }))
-  },[dispatch,categoryId])
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
@@ -59,7 +52,7 @@ function StorePage() {
           </div>
               
           <div className="relative max-w-6xl mx-auto">
-            <Store />
+            <Store selectedCategory={category} searchQuery={""}/>
           </div>
         </div>
 

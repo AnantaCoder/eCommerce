@@ -174,7 +174,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [p() for p in permission_classes]
     
-    
+    @action(detail=True, methods=['get'], url_path='items')
+    def items(self, request, pk=None):
+        category = self.get_object()
+        items = category.items.all()
+        serializer = ItemSerializer(items, many=True, context={'request': request})
+        return Response(serializer.data)
+            
+            
+            
 class CartItemViewSet(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
 

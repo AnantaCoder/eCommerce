@@ -15,8 +15,19 @@ export default function CategoryPage() {
           Curated Collections 🛍️
         </h1>
         <div className="max-w-7xl mx-auto">
-          <CategoryGrid onCategorySelect={setSelectedCategory} />
+          <CategoryGrid
+            categoryId={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+          />
         </div>
+        {selectedCategory && (
+          <button
+            className="block mx-auto mt-6 mb-2 px-4 py-2 bg-amber-400 text-black rounded-lg font-semibold"
+            onClick={() => setSelectedCategory(null)}
+          >
+            ← Back to All Categories
+          </button>
+        )}
         <h1 className="text-4xl md:text-5xl text-center py-6 font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-rose-500 tracking-tight">
           Exquisite Trends 🔥
         </h1>
