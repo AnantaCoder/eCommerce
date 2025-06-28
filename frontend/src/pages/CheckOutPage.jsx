@@ -1,14 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ShoppingCart } from "lucide-react";
 import { fetchCartItems, selectCartItems } from "../features/cart/cartSlice";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import StripeCheckoutForm from "../features/stripe/StripeCheckout";
+import api from "../services/api";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const user = useSelector((state) => state.auth.user);
+  const [showStripe, setShowStripe] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  const [creatingOrder, setCreatingOrder] = useState(false);
+
+  // Memoize stripe promise to prevent recreation
+  const stripePromise = useMemo(
+    () =>
+      loadStripe(
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
+          "pk_test_51RZnVHDu8OHXNhnS9EquTpbTof7Z9lM7E8zF1a43p44M4jpYjSHZEPdzltwb3ZCz5TzuyOXkMU79zAkK12be5N1Z00pFjkbiN3"
+      ),
+    []
+  );
 
   const token = localStorage.getItem("access_token");
+
   useEffect(() => {
     if (token) {
       dispatch(fetchCartItems());
@@ -25,6 +43,69 @@ export default function CheckoutPage() {
   const storePickup = 0;
   const tax = 799;
   const grandTotal = total - savings + storePickup + tax;
+
+  const handlePaymentSuccess = () => {
+    setShowStripe(false);
+    setOrderId(null);
+    alert("Payment Successful");
+    window.location.href = "/my-orders";
+  };
+
+  const handleCheckout = async () => {
+    setCreatingOrder(true);
+    try {
+      const validCartItems = cartItems.filter(
+        (item) => item.item?.id || item.id
+      );
+      if (validCartItems.length !== cartItems.length) {
+        alert(
+          "Some items in your cart are no longer available. Please remove them and try again."
+        );
+        setCreatingOrder(false);
+        return;
+      }
+      const items = validCartItems.map((item) => ({
+        item_id: item.item?.id || item.id,
+        quantity: item.quantity || 1,
+      }));
+
+      console.log("Creating order with items:", items);
+
+      const { data } = await api.post(
+        "store/orders/",
+        { items },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Order created:", data);
+      setOrderId(data.id);
+      setShowStripe(true);
+    } catch (err) {
+      console.error("Order creation error:", err);
+      console.error("Error response:", err.response?.data);
+
+      let errorMessage = "Failed to create order. Please try again.";
+
+      if (err.response?.data) {
+        if (typeof err.response.data === "string") {
+          errorMessage = err.response.data;
+        } else if (err.response.data.detail) {
+          errorMessage = err.response.data.detail;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        } else {
+          errorMessage = JSON.stringify(err.response.data);
+        }
+      }
+
+      alert(errorMessage);
+    }
+    setCreatingOrder(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black py-12 px-2 md:px-8">
@@ -95,7 +176,7 @@ export default function CheckoutPage() {
                 Save the data in the saved address list
               </label>
             </div>
-            
+
             {/* Payment Details */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-2">
@@ -187,6 +268,7 @@ export default function CheckoutPage() {
               )}
             </div>
           </div>
+
           {/* Order Summary */}
           <div className="bg-gray-900 rounded-xl border border-gray-700 p-8 shadow-lg">
             <h3 className="text-xl font-bold text-white mb-6">Order summary</h3>
@@ -212,13 +294,36 @@ export default function CheckoutPage() {
                 ₹{grandTotal.toLocaleString()}
               </span>
             </div>
+
+            {showStripe && orderId && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-gray-900 rounded-xl p-8 shadow-lg max-w-md w-full relative">
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
+                    onClick={() => setShowStripe(false)}
+                  >
+                    ×
+                  </button>
+                  <h3 className="text-xl font-bold text-white mb-4">
+                    Enter Card Details
+                  </h3>
+                  <Elements stripe={stripePromise}>
+                    <StripeCheckoutForm
+                      orderId={orderId}
+                      amount={grandTotal}
+                      onSuccess={handlePaymentSuccess}
+                    />
+                  </Elements>
+                </div>
+              </div>
+            )}
+
             <button
               className="w-full py-4 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-200 text-lg"
-              onClick={() => {
-                /* handle payment */
-              }}
+              onClick={handleCheckout}
+              disabled={creatingOrder || cartItems.length === 0}
             >
-              Continue to payment
+              {creatingOrder ? "Processing..." : "Continue to payment"}
             </button>
             <button
               className="w-full mt-3 py-2 text-blue-400 hover:text-blue-300 text-sm underline"
@@ -229,6 +334,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
       {/* Tailwind input style */}
       <style>{`
         .input {

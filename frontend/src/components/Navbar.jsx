@@ -217,6 +217,15 @@ const Navbar = () => {
                       >
                         My Account
                       </button>
+                      <button
+                        onClick={() => {
+                          navigate("/my-orders");
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                      >
+                        Orders
+                      </button>
                       {isAuthenticated && !isSeller && (
                 <button
                   onClick={() => navigate("/seller-registration")}
@@ -389,6 +398,16 @@ const Navbar = () => {
                     >
                       <ShoppingCart className="w-5 h-5" />
                       <span>Cart</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate("/my-orders");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 cursor-pointer text-yellow-500 hover:text-purple-600 transition-all duration-200 p-2 rounded-lg hover:bg-gray-800"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                      <span>Orders</span>
                     </button>
                     <button
                       onClick={() => {

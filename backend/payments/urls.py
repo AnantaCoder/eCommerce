@@ -10,4 +10,6 @@ router.register(r'gateway-log-detail', PaymentsGatewayLogDetailViewSet, basename
 
 urlpatterns = [
     path('', include(router.urls)),
+    path("create-intent/", CreatePaymentIntent.as_view(), name="create-intent"),
+    path("webhook/",StripeWebhookView.as_view(),name="stripe-webhook"),
 ]

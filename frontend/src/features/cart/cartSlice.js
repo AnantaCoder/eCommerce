@@ -136,7 +136,29 @@ export const  removeFromCart = createAsyncThunk(
   }
 )
 
-
+export const deleteAllCart = createAsyncThunk(
+  'cart/deleteAll',
+  async (_, { rejectWithValue }) => { 
+    const accessToken = localStorage.getItem("access_token")
+    if (!accessToken) {
+      return rejectWithValue({
+        status: 401,
+        message: "Must be logged in to perform this action",
+      })
+    }
+    try {
+      const response = await api.delete('store/cart/delete-all/',{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data; 
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.detail || 'Failed to delete all cart items');
+    }
+  }
+)
 
 // Initial state
 const initialState = {
@@ -178,6 +200,7 @@ const cartSlice = createSlice({
         state.loading= false
         state.error= action.payload?.message || "cant add"
       })
+      //remove
        .addCase(removeFromCart.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -190,6 +213,19 @@ const cartSlice = createSlice({
       .addCase(removeFromCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Failed to remove item";
+      })
+      //delete all
+      .addCase(deleteAllCart.pending, (state) => {
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(deleteAllCart.fulfilled, (state) => {
+        state.items = []
+        state.error = null;
+      })
+      .addCase(deleteAllCart.rejected, (state, action) => {
+        state.error = action.payload || 'Failed to delete cart items'
+        state.message = null;
       });
   },
 });

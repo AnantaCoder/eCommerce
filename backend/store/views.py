@@ -59,7 +59,7 @@ class ItemViewSet(viewsets.ModelViewSet):
     #     response.data['total_items'] = self.get_queryset().count()
     #     return response
     '''get the item on specific category '''
-    filterset_fields=['category']
+    filterset_fields=['category','items','id']
     
     def get_queryset(self):
         queryset= super().get_queryset()
@@ -191,6 +191,26 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    @action(detail=False, methods=['delete'],url_path='delete-all')
+    def delete_all(self,request):
+        user = self.request.user
+        try: 
+            if not user.is_authenticated:
+                return Response(
+                    {"error":"Auth credentials not provided"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            deleted_count,_=CartItem.objects.filter(user=user).delete()
+            return Response(
+                {"detail": f"Deleted {deleted_count} cart item(s) successfully."},
+                 status=status.HTTP_200_OK
+            )
+        except Exception as e :
+               return Response(
+                    {"error":f"Unexpected : {e}"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )    
 
 class WishlistItemViewSet(viewsets.ModelViewSet):
     serializer_class = WishlistItemSerializer

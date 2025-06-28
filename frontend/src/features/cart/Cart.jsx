@@ -6,6 +6,7 @@ import {
   // selectCartLoading,
   selectCartError,
   removeFromCart,
+  deleteAllCart,
 } from "./cartSlice";
 import CartCard from "../../components/CartCard";
 import Loader from "../../components/Loader";
@@ -39,6 +40,10 @@ export default function Cart() {
   const handleRemove = (id) => {
     dispatch(removeFromCart({ itemId: id }));
   };
+ const handleDeleteAll = async () => {
+  await dispatch(deleteAllCart());
+  dispatch(fetchCartItems());
+}
 
   if (!token) {
     return (
@@ -93,7 +98,7 @@ export default function Cart() {
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {console.log(items)}
+            {/* {console.log(items)} */}
             {items.map((cartItem) => (
               <CartCard
                 key={cartItem.id}
@@ -104,6 +109,9 @@ export default function Cart() {
           </div>
           <div className="max-w-lg mx-auto mt-10 bg-gray-900 rounded-xl border border-gray-700 p-6 shadow-lg">
             <div className="flex justify-between items-center mb-6">
+              <button onClick={handleDeleteAll} 
+              className="p-1 border-2 rounded border-amber-300 text-red-300 hover:scale-110 ease-in active:scale-100"
+              >Empty cart 🛒</button>
               <span className="text-xl font-semibold text-white">Total:</span>
               <span className="text-2xl font-bold text-amber-400">
                 ₹{totalPrice.toLocaleString()}

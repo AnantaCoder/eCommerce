@@ -129,6 +129,8 @@ export const fetchSellerItems = createAsyncThunk(
   }
 )
 
+
+
 const initialState = {
   items: [],
   loading: false,
@@ -173,5 +175,8 @@ const storeSlice = createSlice({
   },
 });
 
-// export const { } = storeSlice.actions; 
+export const selectOrderState = state => state.order
+export const selectOrderItems = state => state.order.items
+
+
 export default storeSlice.reducer;
