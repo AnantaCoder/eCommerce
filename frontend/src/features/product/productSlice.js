@@ -7,10 +7,11 @@ export const fetchProducts = createAsyncThunk(
   async ({ categoryId, search, page = 1, pageSize = 10 }, { rejectWithValue }) => {
     try {
       const params = { page, page_size: pageSize };
+      let url = `/store/items/?page=${page}&page_size=${pageSize}`
       if (categoryId) params.categoryId = categoryId;
-      if (search) params.search = search;
+       if (search) url += `&search=${encodeURIComponent(search)}`
 
-      const response = await api.get('/store/items/', { params });
+      const response = await api.get(url);
 
       return {
         items: response.data.results,

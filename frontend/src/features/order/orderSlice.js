@@ -22,12 +22,38 @@ export const fetchOrders = createAsyncThunk(
   }
 );
 
+export const addOrderAddress = createAsyncThunk(
+  'order/addAddress',
+  async ({ user, phone_number, shipping_address, country, city }, { rejectWithValue }) => {
+    const token = localStorage.getItem("access_token");
+    const params = {
+      user,
+      phone_number,
+      shipping_address,
+      country,
+      city,
+    };
+    try {
+      const response = await api.post('/store/order_address/', params, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to add order address';
+      toast.error(msg, { position: 'top-center', autoClose: 3000 });
+      return rejectWithValue(msg);
+    }
+  }
+);
+
 const orderSlice = createSlice({
   name: 'order',
   initialState: {
     items: [],
     status: 'idle',
     error: null,
+    addressStatus: 'idle',
+    addressError:null,
   },
   reducers: {},
   extraReducers: builder => {
@@ -42,6 +68,18 @@ const orderSlice = createSlice({
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      .addCase(addOrderAddress.pending, state => {
+        state.addressStatus = 'loading';
+        state.addressError = null;
+      })
+      .addCase(addOrderAddress.fulfilled, (state) => {
+        
+        state.addressStatus = 'succeeded';
+      })
+      .addCase(addOrderAddress.rejected, (state, action) => {
+        state.addressStatus = 'failed';
+        state.addressError = action.payload;
       });
   },
 });

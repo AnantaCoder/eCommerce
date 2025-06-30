@@ -5,6 +5,7 @@ import { fetchProducts, resetProducts } from '../product/productSlice';
 import Loader from '../../components/Loader';
 import { addToWishlist } from '../wishlist/wishlistSlice';
 import { addToCart } from '../cart/cartSlice';
+import { SearchX } from 'lucide-react';
 
 export default function Store({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch();
@@ -14,20 +15,15 @@ export default function Store({ selectedCategory, searchQuery }) {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
 
   // Debounce search input
-  useEffect(() => {
+ useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(searchQuery), 300);
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [searchQuery])
 
   useEffect(() => {
-    dispatch(resetProducts());
-    dispatch(fetchProducts({
-      categoryId: selectedCategory?.id,
-      search: debouncedSearch,
-      page: 1,
-      pageSize: 10,
-    }));
-  }, [dispatch, selectedCategory?.id, debouncedSearch]);
+    dispatch(resetProducts())
+    dispatch(fetchProducts({ search: debouncedSearch, page: 1, pageSize: 10 }))
+  }, [dispatch, debouncedSearch])
 
   const handleAddToWishList = useCallback((id) => {
     dispatch(addToWishlist({ itemId: id }));
@@ -64,7 +60,17 @@ export default function Store({ selectedCategory, searchQuery }) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {items.length===0?(
+         <div className="flex flex-col items-center justify-center py-20 text-center text-gray-400 space-y-4">
+      <SearchX className="w-16 h-16 text-gray-300" />
+      <h2 className="text-2xl font-semibold text-gray-500">No Matches Found</h2>
+      <p className="text-md text-gray-400">Try refining your search or explore different categories.</p>
+    </div>
+      ):(
+        <>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
         {items.map(product => (
           <StoreCard 
             key={product.id} 
@@ -75,6 +81,9 @@ export default function Store({ selectedCategory, searchQuery }) {
         ))}
       </div>
 
+        </>
+      )}
+      
       {page < totalPages && (
         <div className="flex justify-center mt-8">
           <button

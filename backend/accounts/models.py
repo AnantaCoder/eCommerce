@@ -119,3 +119,4 @@ class OTP(models.Model):
         otp = cls(user=user, code=code)
         otp.save()
         return otp
+    

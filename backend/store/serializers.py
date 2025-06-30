@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem
+from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem , OrderAddress
 from django.conf import settings 
 from supabase import create_client, Client 
 import os 
@@ -328,7 +328,6 @@ class CreateOrderSerializer(serializers.Serializer):
 
 
 
-# store/serializers.py
 
 class CartItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)
@@ -363,3 +362,15 @@ class WishlistItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishlistItem
         fields = ['id', 'item', 'item_id', 'added_at']
+        
+        
+
+class OrderAddressSerializer(serializers.ModelSerializer):
+    def validate_phone_number(self, value):
+        if not value.isdigit() or len(value) != 10:
+            raise serializers.ValidationError("Phone number must be exactly 10 digits.")
+        return value
+
+    class Meta:
+        model = OrderAddress
+        fields = ['phone_number', 'shipping_address', 'country', 'city']

@@ -17,6 +17,7 @@ import { logoutUser } from "../features/auth/authSlice";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery,setSearchQuery] = useState("")
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -56,18 +57,30 @@ const Navbar = () => {
     };
   }, [isUserMenuOpen]);
 
-  // Debug: Log user data to console to see its structure and is_seller status
+  // Debug: 
   useEffect(() => {
     console.log("Navbar - User data:", user);
     console.log("Navbar - Is authenticated:", isAuthenticated);
-    console.log("Navbar - Is Seller derived:", isSeller); // Explicitly log the derived isSeller
-  }, [user, isAuthenticated, isSeller]); // Added isSeller to dependencies for this log
+    console.log("Navbar - Is Seller derived:", isSeller); 
+  }, [user, isAuthenticated, isSeller]); 
 
   const handleLogout = () => {
     dispatch(logoutUser());
     setIsUserMenuOpen(false);
     navigate("/");
   };
+
+  // search 
+  const handleSearchInput  = (e)=>{
+    setSearchQuery(e.target.value)
+  }
+  const handleSearchSubmit=(e)=>{
+    e.preventDefault()
+    if(searchQuery.trim()){
+      navigate(`/store/?search=${encodeURIComponent(searchQuery)}`)
+      setIsMenuOpen(false)
+    }
+  }
 
   return (
     <>
@@ -148,14 +161,18 @@ const Navbar = () => {
 
             {/* Search Bar */}
             <div className="hidden lg:block flex-1 max-w-md mx-8">
-              <div className="relative">
+              <form className="relative"
+              onSubmit={handleSearchSubmit}
+              >
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={handleSearchInput}
                   placeholder="Search products..."
                   className="w-full pl-10 pr-4 py-2 border border-cyan-500 bg-gray-800 text-amber-50 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 transition-all duration-200"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-500" />
-              </div>
+              </form>
             </div>
 
             {/* Desktop Icons */}
@@ -312,15 +329,25 @@ const Navbar = () => {
 
           {/* Mobile Search */}
           <div className="lg:hidden pb-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 bg-gray-800 text-amber-50 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 transition-all duration-200"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-violet-400" />
-            </div>
-          </div>
+      {/* Move onSubmit onto the form */}
+      <form className="relative" onSubmit={handleSearchSubmit}>
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}              // ← use the state value
+          onChange={handleSearchInput}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 bg-gray-800 text-amber-50 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 transition-all duration-200"
+        />
+
+        {/* Wrap the icon in a button so clicking it submits */}
+        <button
+          type="submit"
+          className="absolute left-3 top-1/2 transform -translate-y-1/2"
+        >
+          <Search className="w-4 h-4 text-violet-400" />
+        </button>
+      </form>
+    </div>
         </div>
 
         {/* Smooth Mobile Menu with Slide Animation */}

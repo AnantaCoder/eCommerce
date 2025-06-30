@@ -3,11 +3,16 @@ import {  useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { Crown, Sparkles, ShoppingBag } from 'lucide-react'
 
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 function StorePage() {
   const location = useLocation()
   const params = new URLSearchParams(location.search)
   const categoryId = params.get("category")
-  
+   const query = useQuery();
+  const searchQuery = query.get("search") || "";
   const categories = useSelector((state)=>state.categories.categories)
   const category = categories?.find(cat => String(cat.id) === String(categoryId))
 
@@ -52,7 +57,7 @@ function StorePage() {
           </div>
               
           <div className="relative max-w-6xl mx-auto">
-            <Store selectedCategory={category} searchQuery={""}/>
+            <Store selectedCategory={category} searchQuery={searchQuery}/>
           </div>
         </div>
 

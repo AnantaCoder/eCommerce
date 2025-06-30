@@ -6,22 +6,24 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import StripeCheckoutForm from "../features/stripe/StripeCheckout";
 import api from "../services/api";
+import { addOrderAddress } from "../features/order/orderSlice";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const user = useSelector((state) => state.auth.user);
+  const addressStatus = useSelector((state) => state.order.addressStatus);
+  const addressError = useSelector((state) => state.order.addressError);
+
   const [showStripe, setShowStripe] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [creatingOrder, setCreatingOrder] = useState(false);
-
-  // Memoize stripe promise to prevent recreation
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
   const stripePromise = useMemo(
-    () =>
-      loadStripe(
-        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-          "pk_test_51RZnVHDu8OHXNhnS9EquTpbTof7Z9lM7E8zF1a43p44M4jpYjSHZEPdzltwb3ZCz5TzuyOXkMU79zAkK12be5N1Z00pFjkbiN3"
-      ),
+    () => loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_..."),
     []
   );
 
@@ -38,7 +40,6 @@ export default function CheckoutPage() {
     0
   );
 
-  // Dummy values for summary
   const savings = 299;
   const storePickup = 0;
   const tax = 799;
@@ -54,6 +55,17 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setCreatingOrder(true);
     try {
+      // Save address first
+      await dispatch(
+        addOrderAddress({
+          user: user.id,
+          phone_number: phoneNumber,
+          shipping_address: shippingAddress,
+          country,
+          city,
+        })
+      ).unwrap();
+
       const validCartItems = cartItems.filter(
         (item) => item.item?.id || item.id
       );
@@ -69,8 +81,6 @@ export default function CheckoutPage() {
         quantity: item.quantity || 1,
       }));
 
-      console.log("Creating order with items:", items);
-
       const { data } = await api.post(
         "store/orders/",
         { items },
@@ -81,15 +91,10 @@ export default function CheckoutPage() {
         }
       );
 
-      console.log("Order created:", data);
       setOrderId(data.id);
       setShowStripe(true);
     } catch (err) {
-      console.error("Order creation error:", err);
-      console.error("Error response:", err.response?.data);
-
       let errorMessage = "Failed to create order. Please try again.";
-
       if (err.response?.data) {
         if (typeof err.response.data === "string") {
           errorMessage = err.response.data;
@@ -101,7 +106,6 @@ export default function CheckoutPage() {
           errorMessage = JSON.stringify(err.response.data);
         }
       }
-
       alert(errorMessage);
     }
     setCreatingOrder(false);
@@ -153,24 +157,35 @@ export default function CheckoutPage() {
                 <input
                   className="input w-full text-stone-100 border-b-amber-500 border rounded p-2"
                   placeholder="Phone Number*"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               </div>
               <div className="mb-4 text-stone-100">
                 <input
                   className="input w-full border-b-amber-500 border rounded p-2"
                   placeholder="Shipping Address*"
+                  value={shippingAddress}
+                  onChange={(e) => setShippingAddress(e.target.value)}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4 text-stone-100 ">
                 <input
                   className="input border-b-amber-500 border rounded p-2"
                   placeholder="Country*"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
                 />
                 <input
                   className="input border-b-amber-500 border rounded p-2"
                   placeholder="City*"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                 />
               </div>
+              {addressStatus === "failed" && (
+                <div className="text-red-500 mb-2">{addressError}</div>
+              )}
               <label className="flex items-center gap-2 text-gray-400 text-sm">
                 <input type="checkbox" className="accent-blue-500" />
                 Save the data in the saved address list

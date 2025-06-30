@@ -161,7 +161,17 @@ class CartItem(models.Model):
 
 
 
-
+class OrderAddress(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        related_name='user_order_address'
+    )
+   
+    phone_number = models.CharField(max_length=50,null=False)
+    shipping_address = models.CharField(max_length=250,null=False)
+    country  =models.CharField(max_length=550, null=False)
+    city = models.CharField(max_length=250, null=False)
 
 
 

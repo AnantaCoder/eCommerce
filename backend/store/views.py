@@ -3,17 +3,21 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from .models import Item,Order,Category,WishlistItem, CartItem
-from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer
+from .models import Item,Order,Category,WishlistItem, CartItem,OrderAddress
+from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,OrderAddressSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer
 from .permissions import IsSeller
 from accounts.models import Seller
 from accounts.serializers import SellerSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 class ItemViewSet(viewsets.ModelViewSet):
     
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+    #presa class for searching 
     parser_classes = [MultiPartParser, FormParser, JSONParser]
-    filterset_fields = ['category'] 
+    filter_backends=[DjangoFilterBackend,SearchFilter]
+    filterset_fields = ['category','id'] 
     search_fields = ['item_name', 'description', 'manufacturer']
     """
     GET    /items/          → list all items (anyone)
@@ -58,8 +62,6 @@ class ItemViewSet(viewsets.ModelViewSet):
     #     response = super().list(request, *args, **kwargs)
     #     response.data['total_items'] = self.get_queryset().count()
     #     return response
-    '''get the item on specific category '''
-    filterset_fields=['category','items','id']
     
     def get_queryset(self):
         queryset= super().get_queryset()
@@ -221,3 +223,13 @@ class WishlistItemViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user= self.request.user)
+        
+        
+        
+
+class OrderAddressViewSet(viewsets.ModelViewSet):
+    queryset = OrderAddress.objects.all()
+    serializer_class = OrderAddressSerializer
+    def perform_create(self, serializer):
+        # automatically set the user to the logged‑in user
+        serializer.save(user=self.request.user)
