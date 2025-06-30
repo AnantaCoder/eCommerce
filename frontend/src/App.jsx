@@ -17,8 +17,8 @@ import AddItems from "./features/store/AddItems";
 import ProductDetail from "./features/product/ProductDetail";
 import AuthCallback from "./features/auth/AuthCallBack";
 import ManageItems from "./features/store/ManageItems";
-import CheckoutPage from "./pages/CheckoutPage";
 import OrderPage from "./pages/OrderPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 
 // GUNJAN LAUDI 🦥
