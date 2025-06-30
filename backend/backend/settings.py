@@ -87,7 +87,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  
     "http://localhost:5173",
     "http://192.168.1.34:5173",
-    "https://e-commerce-taupe-rho.vercel.app/"
+    "https://e-commerce-taupe-rho.vercel.app"
 ]
 
 # frontend connection email 
