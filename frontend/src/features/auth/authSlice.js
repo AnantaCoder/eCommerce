@@ -37,6 +37,12 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, first_name, last_name, is_seller }, { rejectWithValue }) => {
+    const toastId = toast.loading('Creating your account...', {
+      position: 'bottom-right',
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+    });
     try {
       const response = await api.post('/auth/signup/', {
         email,
@@ -44,25 +50,37 @@ export const registerUser = createAsyncThunk(
         last_name,
         password,
         password2: password,
-        is_seller: is_seller || false //flag
+        is_seller: is_seller || false,
       });
-      toast.success('Check email for verification link . 📨', {
-        position: "bottom-right",
+      toast.update(toastId, {
+        render: 'Verification email sent! 📧',
+        type: 'success',
+        isLoading: false,
         autoClose: 5000,
-      })
+      });
       return response.data;
     } catch (err) {
+      // Update toast to error on failure
+      toast.update(toastId, {
+        render: err.response?.data.message || err.message || 'Registration failed',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
       return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
+
+
+
 // for sellers to register 
 export const sellerRegistration = createAsyncThunk(
   'auth/sellerRegistration',
   async ({ password, shop_name, gst_number, address }, { getState, rejectWithValue }) => {
     try {
       // 1. Pull current auth info from Redux
-      const { accessToken,  user } = getState().auth;
+      const { accessToken, user } = getState().auth;
       if (!user?.email) {
         return rejectWithValue('User must be logged in to register as seller');
       }
@@ -93,12 +111,31 @@ export const sellerRegistration = createAsyncThunk(
   }
 );
 
-
+export const subscribeNewsletter = createAsyncThunk(
+  'auth/subscribeNewsletter',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/user/newsletter/', { email });
+      toast.success(response.data.detail, {
+        position: 'bottom-right',
+        autoClose: 4000,
+      });
+      return response.data;
+    } catch (err) {
+      const msg = err.response?.data.detail || 'Subscription failed.';
+      toast.error(msg, {
+        position: 'bottom-right',
+        autoClose: 4000,
+      });
+      return rejectWithValue(msg);
+    }
+  }
+)
 
 
 export const refreshToken = createAsyncThunk(
   'auth/refresh',
-  async (_, {  rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
       const response = await api.post('/auth/token/refresh/', {
@@ -113,7 +150,7 @@ export const refreshToken = createAsyncThunk(
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
-      return rejectWithValue('Token refresh failed',error);
+      return rejectWithValue('Token refresh failed', error);
     }
   }
 );
@@ -126,7 +163,7 @@ export const logoutUser = createAsyncThunk(
       await api.post('/auth/logout/', { refresh: refreshToken });
     } catch (error) {
       // Continue with logout even if API call fails
-      console.log("logout section error :- ",error)
+      console.log("logout section error :- ", error)
     } finally {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
@@ -161,6 +198,8 @@ const authSlice = createSlice({
     isAuthenticated: !!localStorage.getItem('access_token'),
     loading: false,
     error: null,
+    newsletterLoading: false,
+    newsletterError: null,
   },
   reducers: {
     clearError: (state) => {
@@ -176,13 +215,13 @@ const authSlice = createSlice({
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
     },
-     setTokensAndLogin: (state, action) => {
+    setTokensAndLogin: (state, action) => {
       const { access, refresh, user } = action.payload;
-      
+
       state.accessToken = access;
       state.refreshToken = refresh;
       state.isAuthenticated = true;
-      
+
       if (user) {
         state.user = user;
       }
@@ -256,6 +295,10 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.error = null;
       })
+      //news letter 
+      .addCase(subscribeNewsletter.pending, (state) => { state.newsletterLoading = true; state.newsletterError = null; })
+      .addCase(subscribeNewsletter.fulfilled, (state) => { state.newsletterLoading = false; state.newsletterError = null; })
+      .addCase(subscribeNewsletter.rejected, (state, action) => { state.newsletterLoading = false; state.newsletterError = action.payload; })
 
 
   },

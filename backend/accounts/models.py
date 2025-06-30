@@ -120,3 +120,6 @@ class OTP(models.Model):
         otp.save()
         return otp
     
+    
+class NewsletterUser(models.Model):
+    email = models.EmailField(max_length=25)

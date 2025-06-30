@@ -10,7 +10,8 @@ from .views import (
     UserDetailView,
     LoginView,
     LogoutView,
-    SellerViewSet,       
+    SellerViewSet,
+    NewsletterView       
 )
 
 app_name = 'accounts'
@@ -30,6 +31,7 @@ urlpatterns = [
     path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
 
     path('me/', UserDetailView.as_view(), name='user_detail'),
+    path('newsletter/', NewsletterView.as_view(), name='newsletter'),
 
     path('', include(router.urls)),
 ]

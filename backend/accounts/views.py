@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from .serializers import (
     RegisterSerializer, UserSerializer, EmailVerificationSerializer,
-    OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer
+    OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer,NewsletterUserSerializer
 )
 from django.core.mail import send_mail, BadHeaderError
 import logging
@@ -342,7 +342,63 @@ class SellerViewSet(
         # user.is_seller = True
         # user.save(update_fields=['is_seller'])
         
-        
+
+
+# filepath: d:\PROJECTS\eCommerce\backend\accounts\views.py
+from django.template.loader import render_to_string
+
+class NewsletterView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = NewsletterUserSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        email = serializer.validated_data['email']
+
+        if NewsletterUser.objects.filter(email__iexact=email).exists():
+            return Response(
+                {"detail": "A subscription with this email already exists."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            NewsletterUser.objects.create(email=email)
+
+            subject = "🎉 Welcome to the E-Commerce Newsletter!"
+            message = (
+                "Hello!\n\n"
+                "Thank you for subscribing to our newsletter. We're excited to have you on board!\n\n"
+                "You'll now be the first to know about our latest products, exclusive offers, and special updates.\n\n"
+                "If you ever wish to unsubscribe, just click the link at the bottom of any of our emails.\n\n"
+                "Happy shopping!\n"
+                "— The E-Commerce Team by Anirban Sarkar 💌"
+            )
+
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            logger.info(f"Newsletter confirmation email sent successfully to {email}")
+
+            return Response(
+                {
+                    "detail": (
+                        "🎉 Subscription successful! A welcome email has been sent to your inbox. "
+                        "Thank you for joining our community."
+                    )
+                },
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {"detail": "An internal error occurred. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 # The mixin classes provide the actions that are used to provide the basic
 # view behavior. Note that the mixin classes provide action methods 
 # rather than defining the handler methods, such as .get() and 

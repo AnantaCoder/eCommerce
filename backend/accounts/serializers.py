@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import Seller, OTP
+from .models import Seller, OTP , NewsletterUser
 
 User = get_user_model()
 
@@ -168,3 +168,13 @@ class SellerRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User is already registered as a seller.")
 
         return Seller.objects.create(user=user, **validated_data)
+
+
+
+class NewsletterUserSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = NewsletterUser
+        fields=[
+            "email"
+        ]
