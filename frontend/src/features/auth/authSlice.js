@@ -115,7 +115,7 @@ export const subscribeNewsletter = createAsyncThunk(
   'auth/subscribeNewsletter',
   async (email, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/user/newsletter/', { email });
+      const response = await api.post('/auth/newsletter/', { email });
       toast.success(response.data.detail, {
         position: 'bottom-right',
         autoClose: 4000,
