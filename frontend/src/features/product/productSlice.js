@@ -1,14 +1,7 @@
-// src/features/product/productSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 
-
-
-
-
-// an asynchronous action to 
-// page-1 so first page and pagesize = 10 so 10 product cards 
 export const fetchProducts = createAsyncThunk(
   'product/fetchProducts',
   async ({ categoryId, search, page = 1, pageSize = 10 }, { rejectWithValue }) => {
@@ -17,13 +10,12 @@ export const fetchProducts = createAsyncThunk(
       if (categoryId) params.categoryId = categoryId;
       if (search) params.search = search;
 
-      const response = await api.get('/store/items/', { params });  
-     
+      const response = await api.get('/store/items/', { params });
 
-      //   console.log(response)
       return {
         items: response.data.results,
-        totalItems: response.data.total_items,
+        totalItems: response.data.count,
+        totalPages: Math.ceil(response.data.count / pageSize),
         page,
         pageSize
       };
@@ -33,14 +25,14 @@ export const fetchProducts = createAsyncThunk(
         err.response?.data?.detail ||
         err.message ||
         'Failed to fetch products from the store :(';
-         toast.error(`Error ${status ? `${status}: ` : ''}${message}`, {
+      toast.error(`Error ${status ? `${status}: ` : ''}${message}`, {
         position: "top-center",
         autoClose: 5000,
       });
       return rejectWithValue({ status, message });
     }
   }
-);
+)
 
 export const fetchIndividualProduct = createAsyncThunk(
   'product/fetchIndividualProduct',
@@ -61,24 +53,18 @@ export const fetchIndividualProduct = createAsyncThunk(
       return rejectWithValue({ status, message });
     }
   }
-);
-
-
-/**
- * slice struct:
- * initial slice - all initial features 
- * then all reducers + extra reducers (builder ob provides extra methods )
- */
+)
 
 const slice = createSlice({
   name: 'product',
   initialState: {
     items: [],
-    loading: false, //boolean flag 
+    loading: false,
     error: null,
     page: 1,
     totalPages: 1,
-    individualProduct: null, // for single product details
+    totalItems: 0,
+    individualProduct: null,
     individualLoading: false,
     individualError: null,
   },
@@ -87,10 +73,10 @@ const slice = createSlice({
       state.items = [];
       state.page = 1;
       state.totalPages = 1;
+      state.totalItems = 0;
       state.error = null;
-      
     },
-     clearIndividualProduct(state) {
+    clearIndividualProduct(state) {
       state.individualProduct = null;
       state.individualLoading = false;
       state.individualError = null;
@@ -98,32 +84,29 @@ const slice = createSlice({
   },
   extraReducers: builder => {
     builder
-
-      // async action is dispatched and promise in pending
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-
-      //async action successfully resolves
-      .addCase(fetchProducts.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.error = null;
-        state.page = payload.page;
-        if (payload.page === 1) {
-          state.items = payload.items;
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        const { items, totalItems, totalPages, page } = action.payload;
+        
+        if (page > 1) {
+          state.items = [...state.items, ...items];
         } else {
-          state.items = [...state.items, ...payload.items];
+          state.items = items;
         }
-        state.totalPages = Math.ceil(payload.totalItems / payload.pageSize);
+        
+        state.totalItems = totalItems;
+        state.totalPages = totalPages;
+        state.page = page;
+        state.loading = false;
       })
-      // async action didnt work out successfully 
       .addCase(fetchProducts.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload;
       })
-
-      // for individual items 
+      
       .addCase(fetchIndividualProduct.pending, (state) => {
         state.individualLoading = true;
         state.individualError = null;
@@ -137,9 +120,9 @@ const slice = createSlice({
         state.individualLoading = false;
         state.individualError = payload;
         state.individualProduct = null;
-      });
-},
+      })
+  },
 });
 
-export const { resetProducts ,clearIndividualProduct} = slice.actions;
+export const { resetProducts, clearIndividualProduct } = slice.actions;
 export default slice.reducer;

@@ -33,8 +33,9 @@ class PaymentsSerializer(serializers.ModelSerializer):
 
     
     def validate(self, attrs):
-        if attrs.get('amount')<= 0:
+        if attrs.get('amount', 0) <= 0:
             raise ValidationError(_("Amount must be greater than zero."))
+        return attrs
 
 
 class PaymentsGatewayLogSerializer(serializers.ModelSerializer):

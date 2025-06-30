@@ -80,16 +80,16 @@ const StoreCard = ({ product ,  addWishlist,addToCart}) => {
         </div>
       </div>
 
-      <div className="p-6 relative cursor-pointer"
-      onClick={()=>navigate(`/product/${product.id}`)}
+      <div className="p-6 relative "
       
       
       >
-        <h3 className="font-bold text-white text-xl mb-2 leading-tight">
+      
+        <h3 className="font-bold text-white text-xl mb-2 leading-tight cursor-pointer"onClick={()=>navigate(`/product/${product.id}`)}>
           {mappedProduct.name}
         </h3>
 
-        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+        <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">
           {mappedProduct.description}
         </p>
 

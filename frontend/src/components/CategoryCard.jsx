@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Smartphone,
   Headphones,
@@ -15,10 +15,10 @@ import {
   ChevronRight,
   TrendingUp,
   Star,
-  Users
-} from 'lucide-react';
+  Users,
+} from "lucide-react";
 
-const CategoryCard = ({ category, onClick }) => {
+const CategoryCard = ({ category,onSelect }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const iconMap = {
@@ -33,54 +33,55 @@ const CategoryCard = ({ category, onClick }) => {
     Shirt,
     Book,
     Dumbbell,
-    Heart
+    Heart,
   };
 
   // Fallback dummy values
-  const fallbackIcon = 'Smartphone';
+  const fallbackIcon = "Smartphone";
   const fallbackColor = "pink";
-  const fallbackImage = 'https://www.lovepanky.com/wp-content/uploads/2021/01/how-to-look-sexy.jpg';
-  const fallbackBrands = ['Sony', 'Samsung', 'Apple'];
+  const fallbackImage =
+    "https://www.lovepanky.com/wp-content/uploads/2021/01/how-to-look-sexy.jpg";
+  const fallbackBrands = ["Sony", "Samsung", "Apple"];
 
   const IconComponent = iconMap[category.icon || fallbackIcon] || Smartphone;
 
   const colorSchemes = {
     blue: {
-      gradient: 'from-blue-600 to-blue-800',
-      accent: 'text-blue-400',
-      border: 'border-blue-500/20',
-      shadow: 'hover:shadow-blue-500/25'
+      gradient: "from-blue-600 to-blue-800",
+      accent: "text-blue-400",
+      border: "border-blue-500/20",
+      shadow: "hover:shadow-blue-500/25",
     },
     purple: {
-      gradient: 'from-purple-600 to-purple-800',
-      accent: 'text-purple-400',
-      border: 'border-purple-500/20',
-      shadow: 'hover:shadow-purple-500/25'
+      gradient: "from-purple-600 to-purple-800",
+      accent: "text-purple-400",
+      border: "border-purple-500/20",
+      shadow: "hover:shadow-purple-500/25",
     },
     green: {
-      gradient: 'from-green-600 to-green-800',
-      accent: 'text-green-400',
-      border: 'border-green-500/20',
-      shadow: 'hover:shadow-green-500/25'
+      gradient: "from-green-600 to-green-800",
+      accent: "text-green-400",
+      border: "border-green-500/20",
+      shadow: "hover:shadow-green-500/25",
     },
     red: {
-      gradient: 'from-red-600 to-red-800',
-      accent: 'text-red-400',
-      border: 'border-red-500/20',
-      shadow: 'hover:shadow-red-500/25'
+      gradient: "from-red-600 to-red-800",
+      accent: "text-red-400",
+      border: "border-red-500/20",
+      shadow: "hover:shadow-red-500/25",
     },
     yellow: {
-      gradient: 'from-yellow-600 to-yellow-800',
-      accent: 'text-yellow-400',
-      border: 'border-yellow-500/20',
-      shadow: 'hover:shadow-yellow-500/25'
+      gradient: "from-yellow-600 to-yellow-800",
+      accent: "text-yellow-400",
+      border: "border-yellow-500/20",
+      shadow: "hover:shadow-yellow-500/25",
     },
     pink: {
-      gradient: 'from-pink-600 to-pink-800',
-      accent: 'text-pink-400',
-      border: 'border-pink-500/20',
-      shadow: 'hover:shadow-pink-500/25'
-    }
+      gradient: "from-pink-600 to-pink-800",
+      accent: "text-pink-400",
+      border: "border-pink-500/20",
+      shadow: "hover:shadow-pink-500/25",
+    },
   };
 
   const colors = colorSchemes[category.color || fallbackColor];
@@ -89,18 +90,19 @@ const CategoryCard = ({ category, onClick }) => {
   const mappedCategory = {
     id: category.id,
     name: category.name,
-    description: category.description || 'Explore the best in this category.',
+    description: category.description || "Explore the best in this category.",
     itemCount: category.item_count || 0,
     isActive: category.is_active,
     productCount: category.productCount ?? category.item_count ?? 0,
 
-    //dummy starts 
+    //dummy starts
     trending: category.trending ?? true,
-    discount: category.discount ?? (Math.floor(Math.random() * 41) + 10) + '% OFF',
+    discount:
+      category.discount ?? Math.floor(Math.random() * 41) + 10 + "% OFF",
     image: category.image || fallbackImage,
     icon: category.icon || fallbackIcon,
     color: category.color || fallbackColor,
-    popularBrands: category.popularBrands || fallbackBrands
+    popularBrands: category.popular_brands || fallbackBrands,
   };
 
   return (
@@ -108,7 +110,7 @@ const CategoryCard = ({ category, onClick }) => {
       className={`relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 ${colors.shadow} cursor-pointer border ${colors.border}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
+      onClick={() => onSelect?.(category.id)}
     >
       {mappedCategory.trending && (
         <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
@@ -129,10 +131,16 @@ const CategoryCard = ({ category, onClick }) => {
           alt={mappedCategory.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
-        <div className={`absolute inset-0 bg-gradient-to-t ${colors.gradient} opacity-80`} />
+        <div
+          className={`absolute inset-0 bg-gradient-to-t ${colors.gradient} opacity-80`}
+        />
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className={`p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 transition-all duration-300 ${isHovered ? 'scale-110 bg-white/20' : ''}`}>
+          <div
+            className={`p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 transition-all duration-300 ${
+              isHovered ? "scale-110 bg-white/20" : ""
+            }`}
+          >
             <IconComponent className="w-12 h-12 text-white" />
           </div>
         </div>
@@ -143,12 +151,14 @@ const CategoryCard = ({ category, onClick }) => {
           <h3 className="text-white text-2xl font-bold">
             {mappedCategory.name}
           </h3>
-          <ChevronRight className={`w-6 h-6 text-gray-400 transition-all duration-300 ${isHovered ? 'translate-x-1 text-white' : ''}`} />
+          <ChevronRight
+            className={`w-6 h-6 text-gray-400 transition-all duration-300 ${
+              isHovered ? "translate-x-1 text-white" : ""
+            }`}
+          />
         </div>
 
-        <p className="text-gray-400 text-sm">
-          {mappedCategory.description}
-        </p>
+        <p className="text-gray-400 text-sm">{mappedCategory.description}</p>
 
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-gray-400" />
@@ -161,7 +171,9 @@ const CategoryCard = ({ category, onClick }) => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-yellow-400" />
-              <span className="text-gray-300 text-sm font-medium">Popular Brands</span>
+              <span className="text-gray-300 text-sm font-medium">
+                Popular Brands
+              </span>
             </div>
             <div className="flex flex-wrap gap-2">
               {mappedCategory.popularBrands.slice(0, 3).map((brand, index) => (
@@ -184,7 +196,11 @@ const CategoryCard = ({ category, onClick }) => {
         </button>
       </div>
 
-      <div className={`absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none transition-opacity duration-300 ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </div>
   );
 };

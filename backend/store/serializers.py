@@ -23,7 +23,6 @@ except Exception as e:
 
 class CategorySerializer(serializers.ModelSerializer):
     item_count = serializers.SerializerMethodField()
-    # discount = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = [
@@ -42,9 +41,8 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'item_count', 'created_at']
     
     def get_item_count(self, obj):
-        return obj.items.filter(is_active=True).count()
-    # def get_discount(self,obj):
-    #     return random.randint(20,50)
+        return obj.items.count()
+    
 
 
 class ItemSerializer(serializers.ModelSerializer):

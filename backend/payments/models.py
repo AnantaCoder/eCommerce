@@ -33,7 +33,7 @@ class Payments(models.Model):
     order_id =  models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='payments_seller'
+        related_name='payments_order'
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default='INR')

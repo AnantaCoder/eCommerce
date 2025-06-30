@@ -217,6 +217,15 @@ const Navbar = () => {
                       >
                         My Account
                       </button>
+                      <button
+                        onClick={() => {
+                          navigate("/my-orders");
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                      >
+                        Orders
+                      </button>
                       {isAuthenticated && !isSeller && (
                 <button
                   onClick={() => navigate("/seller-registration")}
@@ -254,7 +263,7 @@ const Navbar = () => {
                           </button>
 
                           {/* manage items will be added later  */}
-                          {/* <button
+                          <button
                             onClick={() => {
                               navigate("/manage-items");
                               setIsUserMenuOpen(false);
@@ -263,7 +272,7 @@ const Navbar = () => {
                           >
                             <Trash2 className="inline-block w-4 h-4 mr-2" />{" "}
                             Manage Items
-                          </button> */}
+                          </button>
                         </>
                       )}
                       <div className="border-t border-gray-600 my-1"></div>
@@ -392,6 +401,16 @@ const Navbar = () => {
                     </button>
                     <button
                       onClick={() => {
+                        navigate("/my-orders");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 cursor-pointer text-yellow-500 hover:text-purple-600 transition-all duration-200 p-2 rounded-lg hover:bg-gray-800"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                      <span>Orders</span>
+                    </button>
+                    <button
+                      onClick={() => {
                         navigate("/account");
                         setIsMenuOpen(false);
                       }}
@@ -425,7 +444,7 @@ const Navbar = () => {
 
 
                       {/* manage items will be added later */}
-                      {/* <button
+                      <button
                         onClick={() => {
                           navigate("/manage-items");
                           setIsMenuOpen(false);
@@ -434,7 +453,7 @@ const Navbar = () => {
                       >
                         <Trash2 className="w-5 h-5" />
                         <span>Manage Items</span>
-                      </button> */}
+                      </button>
                     </div>
                     
                   )}

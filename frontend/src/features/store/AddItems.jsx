@@ -19,7 +19,7 @@ import { fetchCategories } from "../category/categorySlice";
 function AddItems() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, success } = useSelector((state) => state.store);
+  const { loading,  success } = useSelector((state) => state.store);
   const { categories: categoryList, loading: categoriesLoading } = useSelector(
     (state) => state.categories
   );
@@ -149,21 +149,7 @@ function AddItems() {
           <p className="text-gray-400">List your products in the marketplace</p>
         </div>
 
-        {/* Success Message */}
-        {success && (
-          <div className="mb-6 bg-green-800/20 border border-green-600 rounded-xl p-4 flex items-center">
-            <Check className="w-5 h-5 text-green-400 mr-3" />
-            <span className="text-green-300">Item added successfully!</span>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 bg-red-800/20 border border-red-600 rounded-xl p-4 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
-            <span className="text-red-300">{error.message}</span>
-          </div>
-        )}
+        
 
         {/* Form Container */}
         <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">

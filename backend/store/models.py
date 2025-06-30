@@ -69,6 +69,7 @@ class Item(models.Model):
     
 
 class OrderItem(models.Model):
+    '''for single product'''
     item_name = models.CharField(max_length=200)
     item_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
@@ -77,12 +78,13 @@ class OrderItem(models.Model):
         Item, 
         on_delete=models.SET_NULL, 
         null=True,
-        related_name='order_items'
+        related_name='order_item'
     )
     seller = models.ForeignKey(Seller, on_delete=models.PROTECT)
 
 
 class Order(models.Model):
+    '''for all the products in the cart'''
     ORDER_STATUS = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),

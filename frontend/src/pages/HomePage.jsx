@@ -12,6 +12,8 @@ export default function HomePage() {
         Trending Now 🔥
       </h1>
       <ProductGrid />
+      <br />
+      <br />
     </div>
   );
 }

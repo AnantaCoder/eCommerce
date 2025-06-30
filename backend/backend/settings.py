@@ -84,13 +84,19 @@ MIDDLEWARE = [
 
 # Configure CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React dev server
+    "http://localhost:3000",  
     "http://localhost:5173",
-    "http://192.168.1.34:5173"# React dev server
+    "http://192.168.1.34:5173"
+    "https://e-commerce-taupe-rho.vercel.app/"
 ]
 
 # frontend connection email 
-FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
+FRONTEND_URL = env("FRONTEND_URL", default="https://e-commerce-taupe-rho.vercel.app/")
+
+# stripe payment 
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
+STRIPE_WEBHOOK_SECRET=env('STRIPE_WEBHOOK_SECRET')
 
 
 # CHANNEL_LAYERS = {

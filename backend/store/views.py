@@ -58,9 +58,15 @@ class ItemViewSet(viewsets.ModelViewSet):
     #     response = super().list(request, *args, **kwargs)
     #     response.data['total_items'] = self.get_queryset().count()
     #     return response
+    '''get the item on specific category '''
+    filterset_fields=['category','items','id']
     
-    
-    
+    def get_queryset(self):
+        queryset= super().get_queryset()
+        seller_id = self.request.query_params.get("seller")
+        if seller_id:
+            queryset = queryset.filter(seller__user__id=seller_id)
+        return queryset
     
     def perform_create(self, serializer):
         seller = self.request.user.seller
@@ -168,7 +174,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [p() for p in permission_classes]
     
-    
+    @action(detail=True, methods=['get'], url_path='items')
+    def items(self, request, pk=None):
+        category = self.get_object()
+        items = category.items.all()
+        serializer = ItemSerializer(items, many=True, context={'request': request})
+        return Response(serializer.data)
+            
+            
+            
 class CartItemViewSet(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
 
@@ -177,6 +191,26 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    @action(detail=False, methods=['delete'],url_path='delete-all')
+    def delete_all(self,request):
+        user = self.request.user
+        try: 
+            if not user.is_authenticated:
+                return Response(
+                    {"error":"Auth credentials not provided"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            deleted_count,_=CartItem.objects.filter(user=user).delete()
+            return Response(
+                {"detail": f"Deleted {deleted_count} cart item(s) successfully."},
+                 status=status.HTTP_200_OK
+            )
+        except Exception as e :
+               return Response(
+                    {"error":f"Unexpected : {e}"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )    
 
 class WishlistItemViewSet(viewsets.ModelViewSet):
     serializer_class = WishlistItemSerializer
