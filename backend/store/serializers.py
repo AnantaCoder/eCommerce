@@ -165,15 +165,12 @@ class ItemSerializer(serializers.ModelSerializer):
         return Item.objects.create(seller=user.seller, **validated_data)
 
     def update(self, instance, validated_data):
-        # Ensure 'seller' or 'seller_id' is not in validated_data during update as well
         validated_data.pop('seller', None)
         validated_data.pop('seller_id', None)
 
         image_files = validated_data.pop('image_files', [])
         
-        # If new image files are provided, upload them and update image_urls
         if image_files:
-            # Start with existing URLs to append new ones
             uploaded_image_urls = list(instance.image_urls) if instance.image_urls else [] 
             if supabase_client and SUPABASE_BUCKET_NAME:
                 for image_file in image_files:
@@ -198,11 +195,9 @@ class ItemSerializer(serializers.ModelSerializer):
                         raise serializers.ValidationError(f"Image upload failed for {image_file.name} during update: {e}")
             else:
                 print("Supabase client not initialized during update. Image uploads will be skipped.")
-                # Optionally raise an error
             
             validated_data['image_urls'] = uploaded_image_urls
         
-        # Call super to handle updating other fields
         return super().update(instance, validated_data)
 
 

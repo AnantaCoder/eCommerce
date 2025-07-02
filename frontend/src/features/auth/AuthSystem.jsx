@@ -337,7 +337,6 @@ const AuthSystem = () => {
                 </a>
               </div>
             )}
-
             {/* Submit Button */}
             <button
               onClick={handleSubmit}

@@ -22,6 +22,8 @@ export default function CheckoutPage() {
   const [shippingAddress, setShippingAddress] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [errors, setErrors] = useState({});
+
   const stripePromise = useMemo(
     () => loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_..."),
     []
@@ -45,6 +47,18 @@ export default function CheckoutPage() {
   const tax = 799;
   const grandTotal = total - savings + storePickup + tax;
 
+  const validate = () => {
+    const newErrors = {};
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must be 10 digits.";
+    }
+    if (!shippingAddress.trim()) newErrors.shippingAddress = "Address is required.";
+    if (!country.trim()) newErrors.country = "Country is required.";
+    if (!city.trim()) newErrors.city = "City is required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handlePaymentSuccess = () => {
     setShowStripe(false);
     setOrderId(null);
@@ -53,9 +67,9 @@ export default function CheckoutPage() {
   };
 
   const handleCheckout = async () => {
+    if (!validate()) return;
     setCreatingOrder(true);
     try {
-      // Save address first
       await dispatch(
         addOrderAddress({
           user: user.id,
@@ -114,11 +128,9 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black py-12 px-2 md:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left: Address & Payment */}
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-gray-900 rounded-xl border border-gray-700 p-8 shadow-lg">
             <h2 className="text-2xl font-bold text-white mb-6">Checkout</h2>
-            {/* Billing Address */}
             <div className="mb-8">
               <div className="flex gap-6 mb-4">
                 <label className="flex items-center gap-2 text-gray-300">
@@ -155,33 +167,49 @@ export default function CheckoutPage() {
               </div>
               <div className="mb-4">
                 <input
-                  className="input w-full text-stone-100 border-b-amber-500 border rounded p-2"
+                  className="input w-full text-amber-100"
                   placeholder="Phone Number*"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                 />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+                )}
               </div>
-              <div className="mb-4 text-stone-100">
+              <div className="mb-4">
                 <input
-                  className="input w-full border-b-amber-500 border rounded p-2"
+                  className="input w-full text-amber-100"
                   placeholder="Shipping Address*"
                   value={shippingAddress}
                   onChange={(e) => setShippingAddress(e.target.value)}
                 />
+                {errors.shippingAddress && (
+                  <p className="text-red-500 text-sm mt-1">{errors.shippingAddress}</p>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-4 text-stone-100 ">
-                <input
-                  className="input border-b-amber-500 border rounded p-2"
-                  placeholder="Country*"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                />
-                <input
-                  className="input border-b-amber-500 border rounded p-2"
-                  placeholder="City*"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <input
+                    className="input w-full text-amber-100"
+                    placeholder="Country*"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                  />
+                  {errors.country && (
+                    <p className="text-red-500 text-sm mt-1">{errors.country}</p>
+                  )}
+                </div>
+                <div>
+                  <input
+                    className="input w-full text-amber-100 "
+                    placeholder="City*"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                  )}
+                </div>
               </div>
               {addressStatus === "failed" && (
                 <div className="text-red-500 mb-2">{addressError}</div>
@@ -192,53 +220,27 @@ export default function CheckoutPage() {
               </label>
             </div>
 
-            {/* Payment Details */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Payment details
-              </h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Payment details</h3>
               <div className="flex flex-col gap-2 text-gray-300">
                 <label>
-                  <input
-                    type="radio"
-                    name="payment"
-                    defaultChecked
-                    className="accent-blue-500"
-                  />{" "}
-                  Online with bank card
+                  <input type="radio" name="payment" defaultChecked className="accent-blue-500" /> Online with bank card
                 </label>
                 <label>
-                  <input
-                    type="radio"
-                    name="payment"
-                    className="accent-blue-500"
-                  />{" "}
-                  Flexible online installments
+                  <input type="radio" name="payment" className="accent-blue-500" /> Flexible online installments
                 </label>
                 <label>
-                  <input
-                    type="radio"
-                    name="payment"
-                    className="accent-blue-500"
-                  />{" "}
-                  Store pickup
+                  <input type="radio" name="payment" className="accent-blue-500" /> Store pickup
                 </label>
                 <label>
-                  <input
-                    type="radio"
-                    name="payment"
-                    className="accent-blue-500"
-                  />{" "}
-                  Payment order
+                  <input type="radio" name="payment" className="accent-blue-500" /> Payment order
                 </label>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Cart & Summary */}
         <div className="space-y-8">
-          {/* Cart Items */}
           <div className="bg-gray-900 rounded-xl border border-gray-700 p-8 shadow-lg">
             <h3 className="text-xl font-bold text-white mb-6">Order Items</h3>
             <div className="space-y-4">
@@ -264,19 +266,14 @@ export default function CheckoutPage() {
                         className="w-12 h-12 rounded-lg object-cover bg-gray-800"
                       />
                       <div>
-                        <div className="text-white font-medium">
-                          {item.item_name || item.name}
-                        </div>
+                        <div className="text-white font-medium">{item.item_name || item.name}</div>
                         <div className="text-gray-400 text-sm">
                           {item.quantity || 1} × ₹{item.price}
                         </div>
                       </div>
                     </div>
                     <div className="text-white font-bold text-lg">
-                      ₹
-                      {(
-                        parseFloat(item.price) * (item.quantity || 1)
-                      ).toLocaleString()}
+                      ₹{(parseFloat(item.price) * (item.quantity || 1)).toLocaleString()}
                     </div>
                   </div>
                 ))
@@ -284,8 +281,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="bg-gray-900 rounded-xl border border-gray-700 p-8 shadow-lg">
+          <div className="bg-gray-900 rounded-xl border border-gray-700 p-8 shadow-lg relative">
             <h3 className="text-xl font-bold text-white mb-6">Order summary</h3>
             <div className="flex justify-between text-gray-400 mb-2">
               <span>Original price</span>
@@ -305,9 +301,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between text-xl font-bold mb-6">
               <span className="text-white">Total</span>
-              <span className="text-amber-400">
-                ₹{grandTotal.toLocaleString()}
-              </span>
+              <span className="text-amber-400">₹{grandTotal.toLocaleString()}</span>
             </div>
 
             {showStripe && orderId && (
@@ -319,9 +313,7 @@ export default function CheckoutPage() {
                   >
                     ×
                   </button>
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Enter Card Details
-                  </h3>
+                  <h3 className="text-xl font-bold text-white mb-4">Enter Card Details</h3>
                   <Elements stripe={stripePromise}>
                     <StripeCheckoutForm
                       orderId={orderId}
@@ -334,7 +326,7 @@ export default function CheckoutPage() {
             )}
 
             <button
-              className="w-full py-4 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-200 text-lg"
+              className="w-full py-4 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all duration-200 text-lg disabled:opacity-50"
               onClick={handleCheckout}
               disabled={creatingOrder || cartItems.length === 0}
             >
@@ -350,7 +342,6 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Tailwind input style */}
       <style>{`
         .input {
           @apply bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;

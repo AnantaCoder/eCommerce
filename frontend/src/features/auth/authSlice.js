@@ -7,6 +7,12 @@ import { toast } from 'react-toastify';
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
+    const toastId = toast.loading('Logging you in ⌛...', {
+      position: 'bottom-right',
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+    })
     try {
       const response = await api.post('/auth/login/', { email, password });
       const { access, refresh, user } = response.data;
@@ -16,19 +22,22 @@ export const loginUser = createAsyncThunk(
       // to save user’s type (e.g. seller)
       localStorage.setItem('user', JSON.stringify(user));
 
-      toast.success('Logging you in ... ✔️', {
-        position: 'bottom-right',
-        autoClose: 2000,
-      });
+      toast.update(toastId,{
+        render:"Login Successful 🥳",
+        type:'success',
+        isLoading:false,
+        autoClose:5000
+      })
 
       return { access, refresh, user };
-    } catch (error) {
-      const message = error.response?.data.message || 'Login failed';
-      toast.error(message, {
-        position: 'bottom-right',
+    } catch (err) {
+      toast.update(toastId, {
+        render: err.response?.data.message || err.message || 'Login failed 🥺',
+        type: 'error',
+        isLoading: false,
         autoClose: 3000,
       });
-      return rejectWithValue(message);
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
