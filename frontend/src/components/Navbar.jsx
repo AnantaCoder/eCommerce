@@ -181,9 +181,7 @@ const Navbar = () => {
                 <>
                   <button
                     className="p-2 text-red-500 cursor-pointer hover:text-purple-600 transition-colors duration-200 hover:scale-110 transform"
-                    onClick={() => {
-                      navigate("/wishlist");
-                    }}
+                    onClick={() => {navigate("/wishlist")}}
                   >
                     <Heart className="w-5 h-5" />
                   </button>

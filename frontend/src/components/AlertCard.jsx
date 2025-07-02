@@ -41,7 +41,7 @@ const AlertCard = () => {
         {/* Action Button */}
         <footer className="mt-6 flex justify-center">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => {navigate("/login")}}
             className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-lg font-semibold text-white hover:bg-red-700"
           >
             <i className="fas fa-sign-in-alt"></i>
