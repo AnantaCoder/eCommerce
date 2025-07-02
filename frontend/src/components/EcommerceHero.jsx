@@ -27,7 +27,7 @@ const EcommerceHero = () => {
       color: "from-red-500 to-orange-500",
     },
     {
-      text: "⚡ Flash Deal: Free Shipping on Orders $899+!",
+      text: "⚡ Flash Deal: Free Shipping on Orders Above ₹999 !",
       color: "from-blue-500 to-purple-500",
     },
     {
