@@ -7,6 +7,7 @@ import { loginUser, registerUser } from "./authSlice";
 const AuthSystem = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isDisable, setIsDisable] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -69,45 +70,14 @@ const AuthSystem = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (validateForm()) {
-  //     if (isLogin) {
-  //       dispatch(loginUser({
-  //         email:formData.email,
-  //         password:formData.password
-  //       }))
-  //       .unwrap()
-  //       .then(()=>{
-  //         navigate('/home')
-  //       })
-  //       .catch(err=>{
-  //         setErrors(err)
-  //       })
-
-  //     }
-  //   }else{
-  //     dispatch(registerUser({
-  //        email: formData.email,
-  //        password: formData.password,
-  //        first_name: formData.fullName.split(' ')[0],
-  //        last_name: formData.fullName.split(' ').slice(1).join(' ')
-  //      }))
-  //      .unwrap()
-  //      .then(()=>{
-  //       navigate('/login')
-  //      })
-  //      .catch(err=>{
-  //       setErrors(err)
-  //      })
-  //   }
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const isValid = validateForm();
     if (!isValid) return;
-
+    
+    setIsDisable(true);
+    
     if (isLogin) {
       dispatch(
         loginUser({
@@ -116,10 +86,16 @@ const AuthSystem = () => {
         })
       )
         .unwrap()
-        .then(() => navigate("/home"))
-        .catch((err) =>
-          console.log(err)
-        );
+        .then(() => {
+          navigate("/home");
+        })
+        .catch((err) => {
+          console.log(err);
+          setErrors(err);
+        })
+        .finally(() => {
+          setIsDisable(false);
+        });
     } else {
       dispatch(
         registerUser({
@@ -130,10 +106,16 @@ const AuthSystem = () => {
         })
       )
         .unwrap()
-        .then(() => navigate("/login"))
-        .catch((err) =>
-          console.log(err)
-        );
+        .then(() => {
+          navigate("/login");
+        })
+        .catch((err) => {
+          console.log(err);
+          setErrors(err);
+        })
+        .finally(() => {
+          setIsDisable(false);
+        });
     }
   };
 
@@ -147,6 +129,7 @@ const AuthSystem = () => {
       agreeToTerms: false,
     });
     setErrors({});
+    setIsDisable(false); 
   };
 
   return (
@@ -190,9 +173,10 @@ const AuthSystem = () => {
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
+                    disabled={isDisable}
                     className={`w-full pl-12 pr-4 py-4 bg-slate-800/50 border rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
                       errors.fullName ? "border-red-500" : "border-slate-600"
-                    }`}
+                    } ${isDisable ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                 </div>
                 {errors.fullName && (
@@ -212,9 +196,10 @@ const AuthSystem = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter your email"
+                  disabled={isDisable}
                   className={`w-full pl-12 pr-4 py-4 bg-slate-800/50 border rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
                     errors.email ? "border-red-500" : "border-slate-600"
-                  }`}
+                  } ${isDisable ? "opacity-50 cursor-not-allowed" : ""}`}
                 />
               </div>
               {errors.email && (
@@ -232,14 +217,18 @@ const AuthSystem = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Enter your password"
+                  disabled={isDisable}
                   className={`w-full pl-12 pr-12 py-4 bg-slate-800/50 border rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
                     errors.password ? "border-red-500" : "border-slate-600"
-                  }`}
+                  } ${isDisable ? "opacity-50 cursor-not-allowed" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                  disabled={isDisable}
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors ${
+                    isDisable ? "cursor-not-allowed opacity-50" : ""
+                  }`}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -267,16 +256,20 @@ const AuthSystem = () => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="Confirm your password"
+                    disabled={isDisable}
                     className={`w-full pl-12 pr-12 py-4 bg-slate-800/50 border rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
                       errors.confirmPassword
                         ? "border-red-500"
                         : "border-slate-600"
-                    }`}
+                    } ${isDisable ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                    disabled={isDisable}
+                    className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors ${
+                      isDisable ? "cursor-not-allowed opacity-50" : ""
+                    }`}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -302,9 +295,12 @@ const AuthSystem = () => {
                     name="agreeToTerms"
                     checked={formData.agreeToTerms}
                     onChange={handleInputChange}
-                    className="mt-1 w-4 h-4 text-purple-600 bg-slate-800/50 border-slate-600 rounded focus:ring-purple-500 focus:ring-2"
+                    disabled={isDisable}
+                    className={`mt-1 w-4 h-4 text-purple-600 bg-slate-800/50 border-slate-600 rounded focus:ring-purple-500 focus:ring-2 ${
+                      isDisable ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   />
-                  <span className="text-sm text-slate-300">
+                  <span className={`text-sm text-slate-300 ${isDisable ? "opacity-50" : ""}`}>
                     I agree to the{" "}
                     <a
                       href="#"
@@ -337,12 +333,21 @@ const AuthSystem = () => {
                 </a>
               </div>
             )}
+            
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              disabled={isDisable}
+              className={`w-full font-semibold py-4 rounded-2xl transition-all duration-300 shadow-lg ${
+                isDisable
+                  ? "bg-gray-600 cursor-not-allowed opacity-50"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white transform hover:scale-105 hover:shadow-xl"
+              }`}
             >
-              {isLogin ? "Sign In" : "Create Account"}
+              {isDisable
+                ? (isLogin ? "Signing In..." : "Creating Account...")
+                : (isLogin ? "Sign In" : "Create Account")
+              }
             </button>
           </div>
 
@@ -352,7 +357,12 @@ const AuthSystem = () => {
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
                 onClick={toggleAuthMode}
-                className="ml-2 text-purple-400 hover:text-purple-300 font-medium underline"
+                disabled={isDisable}
+                className={`ml-2 font-medium underline ${
+                  isDisable
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-purple-400 hover:text-purple-300"
+                }`}
               >
                 {isLogin ? "Sign Up" : "Sign In"}
               </button>
@@ -373,10 +383,24 @@ const AuthSystem = () => {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 text-white transition-colors">
+              <button 
+                disabled={isDisable}
+                className={`flex items-center justify-center px-4 py-3 border border-slate-600 rounded-xl text-white transition-colors ${
+                  isDisable
+                    ? "bg-slate-800/30 cursor-not-allowed opacity-50"
+                    : "bg-slate-800/50 hover:bg-slate-700/50"
+                }`}
+              >
                 <span className="text-sm font-medium">Google</span>
               </button>
-              <button className="flex items-center justify-center px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 text-white transition-colors">
+              <button 
+                disabled={isDisable}
+                className={`flex items-center justify-center px-4 py-3 border border-slate-600 rounded-xl text-white transition-colors ${
+                  isDisable
+                    ? "bg-slate-800/30 cursor-not-allowed opacity-50"
+                    : "bg-slate-800/50 hover:bg-slate-700/50"
+                }`}
+              >
                 <span className="text-sm font-medium">Facebook</span>
               </button>
             </div>
@@ -387,11 +411,8 @@ const AuthSystem = () => {
   );
 };
 
-
-
-
-
-const SellerRegistration= ()=>{
+const SellerRegistration = () => {
   
-}
+};
+
 export default AuthSystem;
