@@ -251,7 +251,7 @@ class LoginView(APIView):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
 
-        if not email or password:
+        if not email or not password:
             return Response({
                 "detail":"Email and Password is required",
                 "status":"error"

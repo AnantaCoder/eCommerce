@@ -32,7 +32,7 @@ export const loginUser = createAsyncThunk(
       return { access, refresh, user };
     } catch (err) {
       toast.update(toastId, {
-        render: err.response?.data.message || err.message || 'Login failed 🥺',
+        render: err.response?.data.detail  || 'Login failed 🥺',
         type: 'error',
         isLoading: false,
         autoClose: 3000,
@@ -71,7 +71,7 @@ export const registerUser = createAsyncThunk(
     } catch (err) {
       // Update toast to error on failure
       toast.update(toastId, {
-        render: err.response?.data.message || err.message || 'Registration failed',
+        render: err.response?.data.detail || err.message || 'Registration failed',
         type: 'error',
         isLoading: false,
         autoClose: 3000,
