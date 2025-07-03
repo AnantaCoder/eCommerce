@@ -251,6 +251,11 @@ class LoginView(APIView):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
 
+        if not email or password:
+            return Response({
+                "detail":"Email and Password is required",
+                "status":"error"
+            },status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
@@ -270,21 +275,21 @@ class LoginView(APIView):
         else:
             try:
                 user = User.objects.get(email=email)
-                if user.check_password(password):
+                if not user.is_active:
                     return Response(
                         {"detail": "Account is not active. Please verify your email."},
                         status=status.HTTP_403_FORBIDDEN
                     )
-                else:
-                    return Response(
-                        {"detail": "Invalid credentials."},
-                        status=status.HTTP_401_UNAUTHORIZED
-                    )
             except User.DoesNotExist:
                 return Response(
-                    {"detail": "Invalid credentials."},
+                    {"detail": "Invalid credentials.", "status": "error"},
                     status=status.HTTP_401_UNAUTHORIZED
                 )
+            
+            return Response(
+                {"detail": "Invalid credentials.", "status": "error"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
                 
                 
 class UserUpdateView(generics.UpdateAPIView):
