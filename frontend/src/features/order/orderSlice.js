@@ -4,16 +4,22 @@ import { toast } from 'react-toastify';
 
 export const fetchOrders = createAsyncThunk(
   'order/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (page = 1, { rejectWithValue }) => {
+    const limit = 10;
     const token = localStorage.getItem('access_token');
     if (!token) {
       return rejectWithValue({ status: 401, message: 'Not authenticated' });
     }
     try {
-      const response = await api.get('/store/orders/', {
+      const response = await api.get(`/store/orders/?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data.results; 
+      return {
+        items: response.data.results,
+        totalItems: response.data.count,
+        currentPage: page,
+        totalPages: Math.ceil(response.data.count / limit),
+      };
     } catch (err) {
       const msg = err.response?.data?.detail || 'Failed to fetch orders';
       toast.error(msg, { position: 'top-center', autoClose: 3000 });
@@ -26,13 +32,7 @@ export const addOrderAddress = createAsyncThunk(
   'order/addAddress',
   async ({ user, phone_number, shipping_address, country, city }, { rejectWithValue }) => {
     const token = localStorage.getItem("access_token");
-    const params = {
-      user,
-      phone_number,
-      shipping_address,
-      country,
-      city,
-    };
+    const params = { user, phone_number, shipping_address, country, city };
     try {
       const response = await api.post('/store/order_address/', params, {
         headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +53,10 @@ const orderSlice = createSlice({
     status: 'idle',
     error: null,
     addressStatus: 'idle',
-    addressError:null,
+    addressError: null,
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
   },
   reducers: {},
   extraReducers: builder => {
@@ -63,7 +66,10 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = action.payload.items;
+        state.currentPage = action.payload.currentPage;
+        state.totalItems = action.payload.totalItems;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = 'failed';
@@ -73,8 +79,7 @@ const orderSlice = createSlice({
         state.addressStatus = 'loading';
         state.addressError = null;
       })
-      .addCase(addOrderAddress.fulfilled, (state) => {
-        
+      .addCase(addOrderAddress.fulfilled, state => {
         state.addressStatus = 'succeeded';
       })
       .addCase(addOrderAddress.rejected, (state, action) => {
@@ -83,7 +88,5 @@ const orderSlice = createSlice({
       });
   },
 });
-
-
 
 export default orderSlice.reducer;

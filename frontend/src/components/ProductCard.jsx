@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { Heart, ShoppingCart, Star, Eye, Share2, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 const ProductCard = ({ product,addToCart,addToWishlist }) => {

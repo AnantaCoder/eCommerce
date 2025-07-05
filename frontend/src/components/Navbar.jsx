@@ -9,6 +9,7 @@ import {
   ChevronDown,
   PlusCircle,
   Trash2,
+  LocateOffIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,14 +18,14 @@ import { logoutUser } from "../features/auth/authSlice";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [searchQuery,setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   //flag to determime if the user is a seller or not
-  const isSeller = user?.is_seller || false; 
+  const isSeller = user?.is_seller || false;
 
   const toggleMenu = () => setIsMenuOpen((open) => !open);
   const toggleUserMenu = () => setIsUserMenuOpen((open) => !open);
@@ -57,12 +58,12 @@ const Navbar = () => {
     };
   }, [isUserMenuOpen]);
 
-  // Debug: 
+  // Debug:
   useEffect(() => {
     console.log("Navbar - User data:", user);
     console.log("Navbar - Is authenticated:", isAuthenticated);
-    console.log("Navbar - Is Seller derived:", isSeller); 
-  }, [user, isAuthenticated, isSeller]); 
+    console.log("Navbar - Is Seller derived:", isSeller);
+  }, [user, isAuthenticated, isSeller]);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -70,17 +71,17 @@ const Navbar = () => {
     navigate("/");
   };
 
-  // search 
-  const handleSearchInput  = (e)=>{
-    setSearchQuery(e.target.value)
-  }
-  const handleSearchSubmit=(e)=>{
-    e.preventDefault()
-    if(searchQuery.trim()){
-      navigate(`/store/?search=${encodeURIComponent(searchQuery)}`)
-      setIsMenuOpen(false)
+  // search
+  const handleSearchInput = (e) => {
+    setSearchQuery(e.target.value);
+  };
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/store/?search=${encodeURIComponent(searchQuery)}`);
+      setIsMenuOpen(false);
     }
-  }
+  };
 
   return (
     <>
@@ -125,9 +126,10 @@ const Navbar = () => {
               <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
                 <ShoppingCart className="w-6 h-6 text-white" />
               </div>
-              <span 
-              onClick={()=>navigate('/')}
-              className="ml-3 text-xl font-bold text-amber-100 cursor-pointer">
+              <span
+                onClick={() => navigate("/")}
+                className="ml-3 text-xl font-bold text-amber-100 cursor-pointer"
+              >
                 StoreHub
               </span>
             </div>
@@ -153,17 +155,12 @@ const Navbar = () => {
                 >
                   Store
                 </a>
-
-                
               </div>
-              
             </div>
 
             {/* Search Bar */}
             <div className="hidden lg:block flex-1 max-w-md mx-8">
-              <form className="relative"
-              onSubmit={handleSearchSubmit}
-              >
+              <form className="relative" onSubmit={handleSearchSubmit}>
                 <input
                   type="text"
                   value={searchQuery}
@@ -181,7 +178,9 @@ const Navbar = () => {
                 <>
                   <button
                     className="p-2 text-red-500 cursor-pointer hover:text-purple-600 transition-colors duration-200 hover:scale-110 transform"
-                    onClick={() => {navigate("/wishlist")}}
+                    onClick={() => {
+                      navigate("/wishlist");
+                    }}
                   >
                     <Heart className="w-5 h-5" />
                   </button>
@@ -217,10 +216,10 @@ const Navbar = () => {
 
                     {/* Smooth Dropdown Menu */}
                     <div
-                      className={`absolute  mt-2  cursor-pointer bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700 transition-all duration-300 ease-in-out transform origin-top-right ${
+                      className={`absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 transform transition-all duration-200 origin-top-right ${
                         isUserMenuOpen
-                          ? "opacity-100 scale-100 translate-y-0 visible"
-                          : "opacity-0 scale-95 -translate-y-2 invisible pointer-events-none"
+                          ? "opacity-100 scale-100 visible"
+                          : "opacity-0 scale-95 invisible pointer-events-none"
                       }`}
                     >
                       <button
@@ -228,7 +227,7 @@ const Navbar = () => {
                           navigate("/account");
                           setIsUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                        className="block w-full  px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                       >
                         My Account
                       </button>
@@ -237,32 +236,45 @@ const Navbar = () => {
                           navigate("/my-orders");
                           setIsUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                        className="block w-full px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                       >
                         Orders
                       </button>
+                      <button
+                        onClick={() => {
+                          navigate("/reviews");
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                      >
+                        Reviews
+                      </button>
                       {isAuthenticated && !isSeller && (
-                <button
-                  onClick={() => navigate("/seller-registration")}
-                  className="
-                    bg-gradient-to-r 
-                    from-indigo-500 via-purple-500 to-pink-500 
-                    hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 
-                    text-white 
-                    font-semibold 
-                    py-1 px-4
-                    rounded
-                    shadow-xl 
-                    transform 
-                    transition 
-                    duration-300 
-                    ease-in-out 
-                    hover:scale-105
-                "
-                >
-                  Become a Seller
-                </button>
-              )}
+                        <div className="flex justify-center mt-8">
+                          <button
+                            onClick={() => navigate("/seller-registration")}
+                            className="
+      bg-gradient-to-r 
+      from-indigo-500 via-purple-500 to-pink-500 
+      hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 
+      text-white 
+      font-semibold 
+      py-2 px-5 
+      rounded-lg 
+      shadow-lg 
+      transition 
+      duration-300 
+      ease-in-out 
+      hover:scale-105 
+      flex 
+      items-center 
+      justify-center
+    "
+                          >
+                            Become a Seller
+                          </button>
+                        </div>
+                      )}
                       {/* Seller-specific menu items in dropdown */}
                       {isSeller && ( // Correct conditional rendering
                         <>
@@ -271,7 +283,7 @@ const Navbar = () => {
                               navigate("/add-item");
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                            className="block w-full px-4 py-2 text-sm text-green-400 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                           >
                             <PlusCircle className="inline-block w-4 h-4 mr-2" />{" "}
                             Add Item
@@ -283,7 +295,7 @@ const Navbar = () => {
                               navigate("/manage-items");
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                            className="block w-full  px-4 py-2 text-sm text-red-400 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                           >
                             <Trash2 className="inline-block w-4 h-4 mr-2" />{" "}
                             Manage Items
@@ -293,7 +305,7 @@ const Navbar = () => {
                       <div className="border-t border-gray-600 my-1"></div>
                       <button
                         onClick={handleLogout}
-                        className="w-full cursor-pointer text-left px-4 py-2 text-sm text-red-500 font-bold hover:bg-gray-700 transition-colors duration-200"
+                        className="w-full cursor-pointer  px-4 py-2 text-sm text-red-500 font-bold hover:bg-gray-700 transition-colors duration-200"
                       >
                         Sign Out
                       </button>
@@ -327,25 +339,25 @@ const Navbar = () => {
 
           {/* Mobile Search */}
           <div className="lg:hidden pb-3">
-      {/* Move onSubmit onto the form */}
-      <form className="relative" onSubmit={handleSearchSubmit}>
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}              // ← use the state value
-          onChange={handleSearchInput}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 bg-gray-800 text-amber-50 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 transition-all duration-200"
-        />
+            {/* Move onSubmit onto the form */}
+            <form className="relative" onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery} // ← use the state value
+                onChange={handleSearchInput}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 bg-gray-800 text-amber-50 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 transition-all duration-200"
+              />
 
-        {/* Wrap the icon in a button so clicking it submits */}
-        <button
-          type="submit"
-          className="absolute left-3 top-1/2 transform -translate-y-1/2"
-        >
-          <Search className="w-4 h-4 text-violet-400" />
-        </button>
-      </form>
-    </div>
+              {/* Wrap the icon in a button so clicking it submits */}
+              <button
+                type="submit"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              >
+                <Search className="w-4 h-4 text-violet-400" />
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Smooth Mobile Menu with Slide Animation */}
@@ -444,13 +456,24 @@ const Navbar = () => {
                       <User className="w-5 h-5" />
                       <span>Account</span>
                     </button>
-                     <button
-                    onClick={handleLogout}
-                    className="w-full text-center px-3 py-2 text-red-500 font-bold hover:text-purple-600 mt-2 transition-all duration-200 rounded-lg hover:bg-gray-800"
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigate("/reviews");
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex cursor-pointer items-center space-x-2 text-green-500 hover:text-purple-600 transition-all duration-200 p-2 rounded-lg hover:bg-gray-800"
                   >
-                    Sign Out
+                    <LocateOffIcon className="w-5 h-5" />
+                    <span>Reviews</span>
                   </button>
-                
+                  <div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-center px-3 py-2 text-red-500 font-bold hover:text-purple-600 mt-2 transition-all duration-200 rounded-lg hover:bg-gray-800"
+                    >
+                      Sign Out
+                    </button>
                   </div>
 
                   {/* Seller-specific options in mobile dropdown */}
@@ -467,7 +490,6 @@ const Navbar = () => {
                         <span>Add Item</span>
                       </button>
 
-
                       {/* manage items will be added later */}
                       <button
                         onClick={() => {
@@ -480,13 +502,12 @@ const Navbar = () => {
                         <span>Manage Items</span>
                       </button>
                     </div>
-                    
                   )}
                   <div className="flex justify-center items-center">
-                       {isAuthenticated && !isSeller && (
-                <button
-                  onClick={() => navigate("/seller-registration")}
-                  className="
+                    {isAuthenticated && !isSeller && (
+                      <button
+                        onClick={() => navigate("/seller-registration")}
+                        className="
                     bg-gradient-to-r 
                     from-indigo-500 via-purple-500 to-pink-500 
                     hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 
@@ -496,13 +517,11 @@ const Navbar = () => {
                     rounded
                     
                 "
-                >
-                  Become a Seller
-                </button>
-              )}
+                      >
+                        Become a Seller
+                      </button>
+                    )}
                   </div>
-
-                 
                 </>
               ) : (
                 <button

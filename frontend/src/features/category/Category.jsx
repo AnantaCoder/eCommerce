@@ -36,7 +36,6 @@ export default function CategoryGrid({ categoryId,onCategorySelect }) {
             <StoreCard
               key={item.id}
               product={item}
-              // addWishlist, addToCart handlers if needed
             />
           ) : null
         )}

@@ -92,7 +92,7 @@ export const  addToCart = createAsyncThunk(
       
       const message = error.response?.data?.detail || 'Failed to add item to cart';
       toast.error(message, {
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 4000,
       });
       return rejectWithValue(message);
@@ -104,7 +104,9 @@ export const  removeFromCart = createAsyncThunk(
   'cart/delete',
   async({itemId},{rejectWithValue}) =>{
     const accessToken = localStorage.getItem("access_token")
-    toast.info("loading>>>")
+    toast.info("loading>>>",{
+      position:"bottom-right"
+    })
     if (!accessToken) {
       return rejectWithValue({
         status: 401,
@@ -127,7 +129,7 @@ export const  removeFromCart = createAsyncThunk(
     } catch  (error) {
       const message = error.response?.data?.detail || 'Failed to update cart';
       toast.error(message, {
-        position: "top-center",
+        position: "bottom-right",
         autoClose: 3000,
       });
       return rejectWithValue(message);

@@ -1,18 +1,21 @@
-from rest_framework import viewsets,permissions,mixins
+from rest_framework import viewsets,permissions,mixins,serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from .models import Item,Order,Category,WishlistItem, CartItem,OrderAddress
-from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,OrderAddressSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer
-from .permissions import IsSeller
+from .models import Item,Order,Category,WishlistItem, CartItem,OrderAddress ,Review
+from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,OrderAddressSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer , ReviewSerializer
+from .permissions import IsSeller,IsBuyerOrReadOnly
 from accounts.models import Seller
 from accounts.serializers import SellerSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+from django.db.models import Avg
 class ItemViewSet(viewsets.ModelViewSet):
     
-    queryset = Item.objects.all()
+    queryset = (
+        Item.objects.all().annotate(avg_rating=Avg('reviews__rating'))  # review model er rating field ke access kora ho66e 
+    )
     serializer_class = ItemSerializer
     #presa class for searching 
     parser_classes = [MultiPartParser, FormParser, JSONParser]
@@ -192,6 +195,14 @@ class CartItemViewSet(viewsets.ModelViewSet):
         return CartItem.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        user = self.request.user
+        item = serializer.validated_data.get('item')
+        
+        if CartItem.objects.filter(user=user,item=item).exists():
+             raise serializers.ValidationError(
+                {"detail": "This product is already in your cart."}
+            )
+        
         serializer.save(user=self.request.user)
     
     @action(detail=False, methods=['delete'],url_path='delete-all')
@@ -222,6 +233,13 @@ class WishlistItemViewSet(viewsets.ModelViewSet):
     
     
     def perform_create(self, serializer):
+        user = self.request.user
+        item = serializer.validated_data.get('item')
+        
+        if WishlistItem.objects.filter(user=user,item=item).exists():
+             raise serializers.ValidationError(
+                {"detail": "This product is already in your wishlist."}
+            )
         serializer.save(user= self.request.user)
         
         
@@ -231,5 +249,70 @@ class OrderAddressViewSet(viewsets.ModelViewSet):
     queryset = OrderAddress.objects.all()
     serializer_class = OrderAddressSerializer
     def perform_create(self, serializer):
-        # automatically set the user to the logged‑in user
         serializer.save(user=self.request.user)
+        
+        
+class ReviewOrderViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all().select_related('user','item')
+    serializer_class = ReviewSerializer
+    permission_classes = [IsBuyerOrReadOnly,permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_queryset(self):
+        item_id = self.request.query_params.get('item')
+        if item_id:
+            return self.queryset.filter(item_id=item_id)
+        return self.queryset
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        item = serializer.validated_data.get("item")
+
+        if Review.objects.filter(user=user, item=item).exists():
+            raise serializers.ValidationError(
+            {"detail": "One review per item is allowed ."}
+            )
+        serializer.save(user= self.request.user)
+        
+    @action(detail=False, methods=['get'], url_path='is-reviewed')
+    def is_reviewed(self, request):
+        user = request.user
+        item_id = request.query_params.get("item_id")
+        item_name=request.query_params.get("item_name")
+
+        if not item_id:
+            return Response(
+                {"error": "Item ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        has_reviewed = Review.objects.filter(user=user, item_id=item_id).exists()
+
+        return Response(
+            {"item_id": item_id, "reviewed": has_reviewed,"item_name":item_name},
+            status=status.HTTP_200_OK
+        )
+        
+
+    @action(detail=False, methods=['get'], url_path='pending-reviews')
+    def pending_reviews(self, request):
+        user = request.user
+
+        user_orders = Order.objects.filter(buyer=user, status='confirmed')
+
+        ordered_item_ids = set(
+            user_orders.values_list("items__id", flat=True)
+        )
+
+        reviewed_item_ids = set(
+            Review.objects.filter(user=user).values_list("item_id", flat=True)
+        )
+
+        pending_review_ids = ordered_item_ids - reviewed_item_ids
+
+        items_to_review = Item.objects.filter(id__in=pending_review_ids).values("id", "item_name")
+
+        return Response({
+            "total_unique_orders": len(ordered_item_ids),
+            "total_reviews": len(reviewed_item_ids),
+            "pending_reviews": list(items_to_review),
+        })

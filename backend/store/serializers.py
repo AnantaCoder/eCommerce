@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem , OrderAddress
+from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem , OrderAddress,Review
 from django.conf import settings 
 from supabase import create_client, Client 
 import os 
@@ -51,7 +51,7 @@ class ItemSerializer(serializers.ModelSerializer):
     seller_name = serializers.CharField(source='seller.shop_name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     is_in_stock = serializers.ReadOnlyField()  
-    
+    avg_rating = serializers.FloatField(read_only=True)
     
     image_files = serializers.ListField(
         child=serializers.ImageField(), 
@@ -81,6 +81,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'description',
             'is_active',
             'total_value',
+            'avg_rating',
             'is_in_stock',
             'seller_name',
             'image_urls',   # For displaying stored URLs 
@@ -94,6 +95,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'is_in_stock',
             'seller_name',
             'category_name',
+            'avg_rating',
             'created_at', 
             'updated_at'
         ]
@@ -369,3 +371,20 @@ class OrderAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderAddress
         fields = ['phone_number', 'shipping_address', 'country', 'city']
+        
+        
+class ReviewSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source='user.first_name', read_only=True)
+    item_name = serializers.CharField(source='item.item_name',read_only=True)
+    class Meta :
+        model = Review
+        fields = ['id', 'item','item_name', 'user', 'user_name', 'rating', 'comment', 'created_at']
+        read_only_fields = ['id', 'user', 'user_name','item_name', 'created_at']
+    def validate_rating(self,value):
+        if not (1<=value<=5):
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value 
+    def create(self,validated_data):
+        request = self.context['request']
+        validated_data['user'] = request.user
+        return super().create(validated_data)

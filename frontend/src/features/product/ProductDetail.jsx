@@ -5,12 +5,15 @@ import IndividualProductCard from "../../components/IndivisualProductCard";
 import { fetchProducts } from "./productSlice";
 import { addToWishlist } from "../wishlist/wishlistSlice";
 import { addToCart } from "../cart/cartSlice";
+import ReviewSection from "./ReviewSection";
+import Loader from "../../components/Loader";
 
 function ProductDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const items = useSelector((state) => state.product.items);
   const loading = useSelector((state) => state.product.loading);
+  const user = useSelector((state)=>state.auth.user)
   const handleAddToWishList = (id) => {
     dispatch(addToWishlist({ itemId: id }));
   };
@@ -27,10 +30,15 @@ function ProductDetail() {
     }
   }, [dispatch, product]);
 
-  if (loading && !product) return <div>Loading...</div>;
+  if (loading && !product) return <div><Loader/></div>;
   if (!product) return <div>Product not found.</div>;
-
-  return <IndividualProductCard product={product} addWishlist={handleAddToWishList} addToCart={handleAddToCart} />;
+  const canReview = user 
+  return (
+  <>
+  <IndividualProductCard product={product} addWishlist={handleAddToWishList} addToCart={handleAddToCart} />;
+  <ReviewSection itemId={product.id} canReview={canReview}/>
+  </>
+  )
 }
 
 export default ProductDetail;

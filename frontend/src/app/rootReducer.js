@@ -2,6 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit'
 
 import authReducer from '../features/auth/authSlice'
 import productReducer from '../features/product/productSlice'
+import reviewReducer from '../features/product/reviewSlice'
 import categoriesReducer from '../features/category/categorySlice'
 import storeReducer from '../features/store/storeSlice'
 import wishlistReducer from '../features/wishlist/wishlistSlice'
@@ -19,6 +20,8 @@ const rootReducer = combineReducers({
   cart:cartReducer,
   support:supportReducer,
   order:orderSlice,
+  reviews:reviewReducer,
+
 
 })
 

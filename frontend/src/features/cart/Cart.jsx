@@ -36,7 +36,7 @@ export default function Cart() {
       toast.error(error.message || "Failed to fetch cart");
     }
   }, [error]);
-
+  let  quantity = 1
   const handleRemove = (id) => {
     dispatch(removeFromCart({ itemId: id }));
   };
@@ -104,6 +104,7 @@ export default function Cart() {
                 key={cartItem.id}
                 cart={cartItem}
                 onRemove={handleRemove}
+                quantity={quantity}
               />
             ))}
           </div>

@@ -34,12 +34,10 @@ export const fetchCategoricItems = createAsyncThunk(
             if (!categoryId) throw new Error("No categoryId provided");
             const response = await api.get(`store/categories/${categoryId}/items/`);
             
-            // Log the response to debug
             console.log('API Response:', response.data);
             
-            // Return the items directly from response.data
             return {
-                items: response.data, // This should be the array of items
+                items: response.data, 
                 categoryId
             };
         } catch (error) {

@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { Heart, ShoppingCart, Star, Package, ArrowLeft, Share2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Heart,
+  ShoppingCart,
+  Star,
+  Package,
+  ArrowLeft,
+  Share2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function IndividualProductCard({ product, addWishlist, addToCart }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -16,17 +23,18 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
     quantity: 100,
     price: "4999.00",
     sku: "HGC-1",
-    description: "50 kg 50 kg Home gym with 5 ft Straight Rod , 3 ft Curl Rod And Accessories Home Gym Combo",
+    description:
+      "50 kg 50 kg Home gym with 5 ft Straight Rod , 3 ft Curl Rod And Accessories Home Gym Combo",
     is_active: false,
     is_in_stock: true,
     seller_name: "Angus  Stores",
     image_urls: [
       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop",
       "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
     ],
     created_at: "2025-06-25T14:52:13.515719Z",
-    updated_at: "2025-06-25T14:52:13.515719Z"
+    updated_at: "2025-06-25T14:52:13.515719Z",
   };
 
   const productData = product || defaultProduct;
@@ -50,9 +58,9 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 2,
     }).format(parseFloat(price));
   };
@@ -64,13 +72,16 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button 
-                onClick={() => navigate('/store')}
-                className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+              <button
+                onClick={() => navigate("/store")}
+                className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
+              >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div className="text-sm text-gray-400">
-                <span className="hover:text-white cursor-pointer">{productData.category_name}</span>
+                <span className="hover:text-white cursor-pointer">
+                  {productData.category_name}
+                </span>
                 <span className="mx-2">/</span>
                 <span className="text-white">{productData.item_name}</span>
               </div>
@@ -105,12 +116,16 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                      selectedImage === index 
-                        ? 'border-purple-500 shadow-lg shadow-purple-500/25' 
-                        : 'border-gray-600/50 hover:border-gray-500'
+                      selectedImage === index
+                        ? "border-purple-500 shadow-lg shadow-purple-500/25"
+                        : "border-gray-600/50 hover:border-gray-500"
                     }`}
                   >
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={url}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -125,7 +140,10 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
                 {productData.item_name}
               </h1>
               <p className="text-xl text-gray-400">
-                by <span className="text-purple-400 font-medium">{productData.manufacturer}</span>
+                by{" "}
+                <span className="text-purple-400 font-medium">
+                  {productData.manufacturer}
+                </span>
               </p>
             </div>
             {/* Description */}
@@ -139,29 +157,45 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
               <div className="space-y-4">
                 <div className="flex justify-between py-3 border-b border-gray-700/50">
                   <span className="text-gray-400">Category</span>
-                  <span className="text-white font-medium">{productData.category_name}</span>
+                  <span className="text-white font-medium">
+                    {productData.category_name}
+                  </span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-700/50">
                   <span className="text-gray-400">Quantity</span>
-                  <span className="text-white font-medium">{productData.quantity}</span>
+                  <span className="text-white font-medium">
+                    {productData.quantity}
+                  </span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-700/50">
                   <span className="text-gray-400">Price</span>
-                  <span className="text-white font-bold text-xl">{formatPrice(productData.price)}</span>
+                  <span className="text-white font-bold text-xl">
+                    {formatPrice(productData.price)}
+                  </span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-700/50">
                   <span className="text-gray-400">SKU</span>
-                  <span className="text-white font-medium">{productData.sku}</span>
+                  <span className="text-white font-medium">
+                    {productData.sku}
+                  </span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-700/50">
                   <span className="text-gray-400">Stock Status</span>
-                  <span className={`font-medium ${productData.is_in_stock ? 'text-green-400' : 'text-red-400'}`}>
-                    {productData.is_in_stock ? 'In Stock' : 'Out of Stock'}
+                  <span
+                    className={`font-medium ${
+                      productData.is_in_stock
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {productData.is_in_stock ? "In Stock" : "Out of Stock"}
                   </span>
                 </div>
                 <div className="flex justify-between py-3">
                   <span className="text-gray-400">Seller</span>
-                  <span className="text-white font-medium">{productData.seller_name}</span>
+                  <span className="text-white font-medium">
+                    {productData.seller_name}
+                  </span>
                 </div>
               </div>
             </div>
@@ -173,8 +207,8 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
                   disabled={!productData.is_in_stock}
                   className={`flex-1 py-4 px-6 rounded-2xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
                     productData.is_in_stock
-                      ? 'bg-gray-700/50 text-white hover:bg-gray-600/50 hover:shadow-lg border border-gray-600/50 hover:border-gray-500'
-                      : 'bg-gray-600/30 text-gray-500 cursor-not-allowed border border-gray-700/50'
+                      ? "bg-gray-700/50 text-white hover:bg-gray-600/50 hover:shadow-lg border border-gray-600/50 hover:border-gray-500"
+                      : "bg-gray-600/30 text-gray-500 cursor-not-allowed border border-gray-700/50"
                   }`}
                 >
                   <ShoppingCart className="w-5 h-5" />
@@ -183,12 +217,14 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
                 <button
                   onClick={handleWishlistToggle}
                   className={`py-4 px-6 rounded-2xl font-semibold text-lg transition-all duration-300 border ${
-                    isWishlisted 
-                      ? 'bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30' 
-                      : 'bg-gray-700/50 text-white hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500'
+                    isWishlisted
+                      ? "bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30"
+                      : "bg-gray-700/50 text-white hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500"
                   }`}
                 >
-                  <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
+                  <Heart
+                    className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`}
+                  />
                 </button>
               </div>
               <button
@@ -196,28 +232,15 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
                 disabled={!productData.is_in_stock}
                 className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 ${
                   productData.is_in_stock
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:shadow-xl hover:shadow-purple-500/25 active:scale-[0.98]'
-                    : 'bg-gray-600/30 text-gray-500 cursor-not-allowed'
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:shadow-xl hover:shadow-purple-500/25 active:scale-[0.98]"
+                    : "bg-gray-600/30 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 Buy Now
               </button>
             </div>
             {/* Additional Info */}
-            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <span className="text-white font-medium">4.8 out of 5</span>
-                <span className="text-gray-400">(127 reviews)</span>
-              </div>
-              <p className="text-gray-300">
-                Highly rated by customers for quality and durability. Free shipping available.
-              </p>
-            </div>
+           
           </div>
         </div>
       </div>

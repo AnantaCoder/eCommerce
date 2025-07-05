@@ -19,6 +19,7 @@ import AuthCallback from "./features/auth/AuthCallBack";
 import ManageItems from "./features/store/ManageItems";
 import OrderPage from "./pages/OrderPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import OrdersReviewsPage from "./pages/ReviewsPage";
 
 
 // GUNJAN LAUDI 🦥
@@ -43,6 +44,7 @@ function App() {
           <Route path="/manage-items" element={<ManageItems />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/my-orders" element={<OrderPage />} />
+          <Route path="/reviews" element={<OrdersReviewsPage />} />
 
 
         </Route>
