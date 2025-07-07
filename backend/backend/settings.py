@@ -2,7 +2,7 @@ from datetime import timedelta
 import environ
 from decouple import config
 from pathlib import Path
-import base64,json
+import base64, json
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +20,7 @@ DEBUG = env("DEBUG", default=False)
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,28 +49,25 @@ INSTALLED_APPS = [
     "payments",
     "support",
     "channels",
-    "analyzer"
-    
+    "analyzer",
 ]
-# asgi config 
+# asgi config
 ASGI_APPLICATION = "backend.asgi.application"
-CHANNEL_LAYERS={
-    'default':{
-        "BACKEND":'channels_redis.core.RedisChannelLayer',
-        "CONFIG":{
-            'hosts': [('127.0.0.1', 6379)] 
-            }
-        }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
     }
+}
 
 
-# AI MODEL CONFIGURATION 
+# AI MODEL CONFIGURATION
 AI_BASE_URL = env("AI_BASE_URL")
-AI_MODEL_API_KEY=env("AI_MODEL_API_KEY")
-AI_MODEL_NAME=env("AI_MODEL_NAME")
-MAX_TOKENS=env("MAX_TOKENS")
-TEMPERATURE=env("TEMPERATURE")   
-        
+AI_MODEL_API_KEY = env("AI_MODEL_API_KEY")
+AI_MODEL_NAME = env("AI_MODEL_NAME")
+MAX_TOKENS = env("MAX_TOKENS")
+TEMPERATURE = env("TEMPERATURE")
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -86,19 +83,19 @@ MIDDLEWARE = [
 
 # Configure CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  
+    "http://localhost:3000",
     "http://localhost:5173",
     "http://192.168.1.34:5173",
-    "https://e-commerce-taupe-rho.vercel.app"
+    "https://e-commerce-taupe-rho.vercel.app",
 ]
 
-# frontend connection email 
+# frontend connection email
 FRONTEND_URL = env("FRONTEND_URL", default="https://e-commerce-taupe-rho.vercel.app/")
 
-# stripe payment 
-STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
-STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
-STRIPE_WEBHOOK_SECRET=env('STRIPE_WEBHOOK_SECRET')
+# stripe payment
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET")
 
 
 # CHANNEL_LAYERS = {
@@ -107,12 +104,12 @@ STRIPE_WEBHOOK_SECRET=env('STRIPE_WEBHOOK_SECRET')
 #     }
 # }
 
-# redis based channel layer 
+# redis based channel layer
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
@@ -142,61 +139,62 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # DATABASES = {"default": env.db_url("DATABASE_URL")}->LOCALE
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT', default='5432'),
-        
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT", default="5432"),
     }
 }
 try:
-    anon_key_parts = env('SUPABASE_ANON_KEY').split('.')
+    anon_key_parts = env("SUPABASE_ANON_KEY").split(".")
     if len(anon_key_parts) > 1:
         # Pad the base64 string if its length is not a multiple of 4
-        padded_payload = anon_key_parts[1] + '=' * (4 - len(anon_key_parts[1]) % 4)
-        decoded_payload = base64.urlsafe_b64decode(padded_payload).decode('utf-8')
+        padded_payload = anon_key_parts[1] + "=" * (4 - len(anon_key_parts[1]) % 4)
+        decoded_payload = base64.urlsafe_b64decode(padded_payload).decode("utf-8")
         anon_key_data = json.loads(decoded_payload)
-        supabase_project_ref = anon_key_data.get('ref')
+        supabase_project_ref = anon_key_data.get("ref")
         if supabase_project_ref:
             SUPABASE_URL = f"https://{supabase_project_ref}.supabase.co"
         else:
-            SUPABASE_URL = "" # Fallback if ref not found
-            print("Warning: Could not extract project reference from SUPABASE_ANON_KEY. Set SUPABASE_URL manually if issues persist.")
+            SUPABASE_URL = ""  # Fallback if ref not found
+            print(
+                "Warning: Could not extract project reference from SUPABASE_ANON_KEY. Set SUPABASE_URL manually if issues persist."
+            )
     else:
-        SUPABASE_URL = "" # Fallback if anon key format is unexpected
-        print("Warning: SUPABASE_ANON_KEY format is unexpected. Set SUPABASE_URL manually if issues persist.")
+        SUPABASE_URL = ""  # Fallback if anon key format is unexpected
+        print(
+            "Warning: SUPABASE_ANON_KEY format is unexpected. Set SUPABASE_URL manually if issues persist."
+        )
 except Exception as e:
-    SUPABASE_URL = "" # Fallback on error
-    print(f"Error parsing SUPABASE_ANON_KEY for URL: {e}. Set SUPABASE_URL manually if issues persist.")
+    SUPABASE_URL = ""  # Fallback on error
+    print(
+        f"Error parsing SUPABASE_ANON_KEY for URL: {e}. Set SUPABASE_URL manually if issues persist."
+    )
 
 # Map SUPABASE_KEY to the anon key from your .env
-SUPABASE_KEY = env('SUPABASE_ANON_KEY')
+SUPABASE_KEY = env("SUPABASE_ANON_KEY")
 
 # Map SUPABASE_BUCKET_NAME to BUCKET_NAME from your .env
-SUPABASE_BUCKET_NAME = env('BUCKET_NAME')
+SUPABASE_BUCKET_NAME = env("BUCKET_NAME")
 
 # Note: SUPABASE_SECRET_KEY and SUPABASE_ACCESS_KEY from your .env are not directly
 # used by the public Supabase Python client for simple uploads.
 # They are typically for service role authentication or S3-compatible access.
 
 # Media settings for handling file uploads (kept this)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
-
-
-# # payments 
+# # payments
 # STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
 # STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 # STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
 
-# pagination 
-
-
+# pagination
 
 
 # Password validation

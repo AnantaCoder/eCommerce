@@ -14,7 +14,9 @@ from django.db.models import Avg
 class ItemViewSet(viewsets.ModelViewSet):
     
     queryset = (
-        Item.objects.all().annotate(avg_rating=Avg('reviews__rating'))  # review model er rating field ke access kora ho66e 
+        Item.objects.all()
+        .annotate(avg_rating=Avg('reviews__rating'))  # review model er rating field ke access kora ho66e 
+        .distinct()
     )
     serializer_class = ItemSerializer
     #presa class for searching 
@@ -71,7 +73,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         seller_id = self.request.query_params.get("seller")
         if seller_id:
             queryset = queryset.filter(seller__user__id=seller_id)
-        return queryset
+        return queryset.distinct()
     
     def perform_create(self, serializer):
         seller = self.request.user.seller
@@ -255,13 +257,21 @@ class OrderAddressViewSet(viewsets.ModelViewSet):
 class ReviewOrderViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all().select_related('user','item')
     serializer_class = ReviewSerializer
-    permission_classes = [IsBuyerOrReadOnly,permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsBuyerOrReadOnly,permissions.IsAuthenticatedOrReadOnly,IsSeller]
     
     def get_queryset(self):
-        item_id = self.request.query_params.get('item')
+        
+        queryset = super().get_queryset()
+        user=self.request.user
+        
+        if hasattr(user,"seller"):
+            queryset=queryset.filter(item__seller= user.seller)
+        
+        item_id = self.request.query_params.get("item")
         if item_id:
-            return self.queryset.filter(item_id=item_id)
-        return self.queryset
+            queryset = queryset.filter(item_id=item_id)
+
+        return queryset.distinct()
     
     def perform_create(self, serializer):
         user = self.request.user
