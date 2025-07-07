@@ -1,0 +1,170 @@
+loading the model from hugging face 
+LM- language model 
+pipeline - black box input string and outcomes generation 
+tokenizers - convert the input string into a list of integer tokens that would 
+be in put in the LM
+Here’s a **structured breakdown** of the key points from the video, along with **clear descriptions** for each major concept and step:
+
+
+
+#### 1. **Language Models (LMs) Basics**
+
+* **Causal Language Model**: Predicts next token in a sequence based on previous tokens (auto-regressive).
+* **Masked Language Model**: Predicts a missing word in a sequence (e.g., BERT).
+
+---
+
+#### 2. **Using Hugging Face Transformers**
+
+* **Tokenizer**: Converts input text into token IDs.
+* **Model**: Loaded with `AutoModelForCausalLM`, used for training or inference.
+* **Pipeline**: Simplified interface to generate text from prompts.
+
+---
+
+#### 3. **Tokenization Details**
+
+* Converts words to tokens → token IDs.
+* **Padding & Truncation**:
+
+  * Ensures all sequences are the same length.
+  * Uses padding tokens (e.g., `128009`) to align tensor dimensions.
+* **Attention Mask**: Tells model to ignore padding tokens during attention calculations.
+
+---
+
+#### 4. **Chat Templates for Instruction Tuning**
+
+* Format inputs as conversations:
+
+  ```plaintext
+  <s>[INST] System: Speak like a pirate [/INST] User: Where does the sun rise?
+  Assistant: ...
+  ```
+* Use `.apply_chat_template()` to convert structured messages to model-ready format.
+
+---
+
+#### 5. **Prompt Engineering vs. Fine-Tuning**
+
+* Prompting alone gave \~40% accuracy.
+* For better results, **fine-tuning** is required.
+
+---
+
+### ⚙️ **Fine-Tuning from Scratch**
+
+---
+
+#### 6. **Preparing Input/Target Pairs**
+
+* Tokenize entire prompt + expected output.
+* Split into:
+
+  * **Input IDs**: `[START] subscribe to neural`
+  * **Target IDs**: `breakdown with AVB [END]`
+  * Shifted by 1 position to align prediction.
+
+---
+
+#### 7. **Loss Calculation**
+
+* Use **Cross Entropy Loss** between model logits and target IDs.
+* Mask irrelevant tokens (e.g., prompt tokens) using `-100`.
+
+---
+
+#### 8. **Training Loop**
+
+```python
+for epoch in range(EPOCHS):
+    optimizer.zero_grad()
+    outputs = model(input_ids)
+    loss = loss_fn(outputs, target_ids)
+    loss.backward()
+    optimizer.step()
+```
+
+* Reduces loss by adjusting model weights.
+* Model learns to output desired labels.
+
+---
+
+### 🧩 **Low-Rank Adaptation (LoRA) Fine-Tuning**
+
+---
+
+#### 9. **Why LoRA?**
+
+* Full fine-tuning is:
+
+  * Computationally expensive
+  * Prone to **catastrophic forgetting**
+* LoRA solves this by:
+
+  * **Freezing** original model weights.
+  * **Injecting small trainable matrices** (low-rank adapters) into attention and feedforward layers.
+
+---
+
+#### 10. **Using PEFT (Parameter Efficient Fine-Tuning)**
+
+```python
+from peft import get_peft_model, LoraConfig
+
+lora_config = LoraConfig(
+  task_type="CAUSAL_LM",
+  target_modules=["q_proj", "v_proj"],
+  r=8, lora_alpha=16, lora_dropout=0.1
+)
+
+peft_model = get_peft_model(model, lora_config)
+```
+
+* Only a **small set of parameters (\~6M)** are trained.
+* Results in lower compute, better task specialization, and **plug-n-play adapters**.
+
+---
+
+### 📊 **Results**
+
+---
+
+#### 11. **Baseline (No Fine-Tuning)**
+
+* \~37.5% accuracy on a small test set.
+
+#### 12. **After LoRA Fine-Tuning**
+
+* Accuracy improved to **67%** on just **500 training samples**.
+* Demonstrates that LoRA is highly effective.
+
+---
+
+### 🔍 **Inference Test Examples**
+
+* Predicted **"Computer Vision and Pattern Recognition"** correctly for a vision paper.
+* Original LLaMA predicted **"Machine Learning"** — less accurate.
+* LoRA-finetuned model gave **more accurate classifications**.
+
+---
+
+### 📦 **Generalization**
+
+* Framework shown can be adapted to **any fine-tuning task**, not just classification.
+* Example applications:
+
+  * Text summarization
+  * Dialogue generation
+  * Code completion
+  * Paper citation prediction
+
+
+### 📌 **Final Takeaways**
+
+* Understand input → output format for LLM training.
+* Always use chat templates for instruction-tuned models.
+* Prefer **LoRA** for efficiency and modularity.
+* Hugging Face + PEFT makes fine-tuning accessible **locally**.
+
+

@@ -1,0 +1,39 @@
+/env
+env
+.env
+/.env
+# Ignore intermediate checkpoints (already deleted, but just in case)
+checkpoint-*/
+
+# PyTorch/Trainer training artifacts
+training_args.bin
+*.log
+*.ckpt
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+.amazon_review.csv
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment/IDE-related
+.env
+.venv/
+*.swp
+*.DS_Store
+.vscode/
+.idea/
+
+# System files
+Thumbs.db
+ehthumbs.db
+
+# Git LFS metadata (don't ignore the tracked files!)
+*.lfs.*
+
+# If you're using Colab or local logs
+wandb/
+runs/

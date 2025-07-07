@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "payments",
     "support",
     "channels",
+    "analyzer"
     
 ]
 # asgi config 
