@@ -182,6 +182,47 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/reset-password/', payload)
+      toast.success('Password reset successful!', {
+        position: "bottom-right"
+      })
+      return response.data
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Unexpected error occurred'
+      toast.error(errorMessage, {
+        position: "bottom-right"
+      })
+      return rejectWithValue(
+        error.response?.data || { detail: 'Unexpected error occurred' }
+      )
+    }
+  }
+)
+
+export const sendOtp = createAsyncThunk(
+  'auth/sendOtp',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/request-otp/', { email })
+      toast.success('OTP sent successfully!', {
+        position: "bottom-right"
+      })
+      return response.data
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Could not send OTP'
+      toast.error(errorMessage, {
+        position: "bottom-right"
+      })
+      return rejectWithValue(
+        error.response?.data || { detail: 'Could not send OTP' }
+      )
+    }
+  }
+)
 
 // helper to get initial state from LS
 const getInitialState = () => {
@@ -308,7 +349,25 @@ const authSlice = createSlice({
       .addCase(subscribeNewsletter.pending, (state) => { state.newsletterLoading = true; state.newsletterError = null; })
       .addCase(subscribeNewsletter.fulfilled, (state) => { state.newsletterLoading = false; state.newsletterError = null; })
       .addCase(subscribeNewsletter.rejected, (state, action) => { state.newsletterLoading = false; state.newsletterError = action.payload; })
-
+      // forget password
+       .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(resetPassword.rejected, (state) => {
+        state.loading = false;
+      })
+       .addCase(sendOtp.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(sendOtp.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(sendOtp.rejected, (state) => {
+        state.loading = false;
+      });
 
   },
 });

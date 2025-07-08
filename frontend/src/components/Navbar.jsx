@@ -240,17 +240,10 @@ const Navbar = () => {
                       >
                         Orders
                       </button>
-                      <button
-                        onClick={() => {
-                          navigate("/reviews");
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="block w-full px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
-                      >
-                        Reviews
-                      </button>
+                      
                       {isAuthenticated && !isSeller && (
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-8 ">
+                         
                           <button
                             onClick={() => navigate("/seller-registration")}
                             className="
@@ -278,6 +271,15 @@ const Navbar = () => {
                       {/* Seller-specific menu items in dropdown */}
                       {isSeller && ( // Correct conditional rendering
                         <>
+                         <button
+                        onClick={() => {
+                          navigate("/reviews");
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full px-4 py-2 text-sm text-gray-50 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                      >
+                        Reviews
+                      </button>
                           <button
                             onClick={() => {
                               navigate("/add-item");

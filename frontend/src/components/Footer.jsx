@@ -16,7 +16,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { subscribeNewsletter } from "../features/auth/authSlice";
 
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 const Footer = () => {
+  const navigate=useNavigate()
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const newsletterLoading = useSelector(
     (state) => state.auth.newsletterLoading
@@ -28,7 +30,9 @@ const Footer = () => {
     if (!newsletterEmail) return;
     dispatch(subscribeNewsletter(newsletterEmail));
     setNewsletterEmail("");
-  };
+  }
+
+
   return (
     <footer className="bg-gray-900 text-white">
       {/* Main Footer Content */}
@@ -68,7 +72,18 @@ const Footer = () => {
               >
                 <Instagram className="w-5 h-5" />
               </a>
+              
             </div>
+             <button
+              type="submit"
+              onClick={()=>navigate('/feedback')}
+              className="relative px-6 py-2 font-semibold text-white rounded-md bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 overflow-hidden group"
+            >
+              <span className="absolute w-64 h-0 transition-all duration-300 origin-center rotate-45 -translate-x-20 bg-purple-300 top-1/2 group-hover:h-64 group-hover:-translate-y-32 ease"></span>
+              <span className="relative">
+                Feedbacks Here ♠️✨
+              </span>
+            </button>
           </div>
 
           {/* Quick Links */}
@@ -180,6 +195,7 @@ const Footer = () => {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+       
             <div className="flex items-center justify-center space-x-3">
               <Truck className="w-6 h-6 text-purple-400" />
               <div>

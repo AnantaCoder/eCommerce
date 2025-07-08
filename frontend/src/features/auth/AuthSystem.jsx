@@ -327,7 +327,8 @@ const AuthSystem = () => {
               <div className="text-right">
                 <a
                   href="#"
-                  className="text-purple-400 hover:text-purple-300 text-sm underline"
+                  onClick={()=>navigate('/reset-password')}
+                  className="text-purple-400 hover:text-purple-300 text-sm underline cursor-pointer"
                 >
                   Forgot your password?
                 </a>

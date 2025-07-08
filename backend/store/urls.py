@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ItemViewSet, OrderViewSet, SellerViewSet,CategoryViewSet,WishlistItemViewSet,CartItemViewSet,OrderAddressViewSet, ReviewOrderViewSet
+from .views import ItemViewSet, OrderViewSet, SellerViewSet,CategoryViewSet,WishlistItemViewSet,CartItemViewSet,OrderAddressViewSet, ReviewOrderViewSet,FeedbackView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -17,4 +17,5 @@ router.register(r'reviews', ReviewOrderViewSet, basename='review')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('feedback/', FeedbackView.as_view(), name='feedback'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

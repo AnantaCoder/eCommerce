@@ -11,7 +11,8 @@ from .views import (
     LoginView,
     LogoutView,
     SellerViewSet,
-    NewsletterView       
+    NewsletterView,
+    ResetPasswordView       
 )
 
 app_name = 'accounts'
@@ -29,7 +30,7 @@ urlpatterns = [
     path('verify-email/', VerifyEmailView.as_view(), name='verify_email'),
     path('request-otp/', RequestOTPView.as_view(), name='request_otp'),
     path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
-
+path('reset-password/', ResetPasswordView.as_view(), name='reset_password'),
     path('me/', UserDetailView.as_view(), name='user_detail'),
     path('newsletter/', NewsletterView.as_view(), name='newsletter'),
 

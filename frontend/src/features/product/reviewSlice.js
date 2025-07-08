@@ -183,6 +183,7 @@ const reviewSlice = createSlice({
         state.currentPage = page;
         state.nextPage = data.next ? page + 1 : null;
         state.totalPages = Math.ceil(data.count / data.results.length);
+        console.log(" state.totalPages", state.totalPages)
       })
 
       .addCase(fetchUserReviews.rejected, (state, action) => {

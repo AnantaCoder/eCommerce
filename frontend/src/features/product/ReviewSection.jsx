@@ -15,7 +15,7 @@ const ReviewSection = ({ itemId, canReview }) => {
   const [comment, setComment] = useState("");
   const [error, setError] = useState(null);
 
-  // Load reviews and review status on mount / item change
+  // Loading the reviews
   useEffect(() => {
     dispatch(fetchReviews(itemId));
     dispatch(reviewStatus(itemId));
@@ -26,16 +26,14 @@ const ReviewSection = ({ itemId, canReview }) => {
     if (!rating) return setError("Please select a rating.");
 
     try {
-      // 1) create the review
+      //creating
       await dispatch(addReview({ item: itemId, rating, comment })).unwrap();
 
-      // 2) mark as reviewed
+      // getting the status by id
       dispatch(reviewStatus(itemId));
 
-      // 3) reload reviews list
       dispatch(fetchReviews(itemId));
 
-      // 4) reset form
       setRating(5);
       setComment("");
       setError(null);
@@ -44,7 +42,6 @@ const ReviewSection = ({ itemId, canReview }) => {
     }
   };
 
-  // derived computations
   const reviewsArray = Array.isArray(reviews) ? reviews : [];
   const averageRating =
     reviewsArray.length > 0
@@ -54,7 +51,6 @@ const ReviewSection = ({ itemId, canReview }) => {
         ).toFixed(1)
       : 0;
 
-  // StarRating sub-component
   const StarRating = ({ rating, interactive = false, size = "text-lg" }) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -96,7 +92,8 @@ const ReviewSection = ({ itemId, canReview }) => {
                 {averageRating}
               </div>
               <div className="text-xs text-gray-400">
-                {reviewsArray.length} review{reviewsArray.length !== 1 ? "s" : ""}
+                {reviewsArray.length} review
+                {reviewsArray.length !== 1 ? "s" : ""}
               </div>
             </div>
           </div>
@@ -106,7 +103,9 @@ const ReviewSection = ({ itemId, canReview }) => {
       {/* Reviews List or Loading */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader />
+          <div className="flex justify-center py-12">
+            <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+          </div>
         </div>
       ) : (
         <div className="space-y-4 mb-8">

@@ -20,6 +20,8 @@ import ManageItems from "./features/store/ManageItems";
 import OrderPage from "./pages/OrderPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersReviewsPage from "./pages/ReviewsPage";
+import ResetPassword from "./features/auth/ResetPassword";
+import FeedbackPage from "./pages/FeedbackPage";
 
 
 // GUNJAN LAUDI 🦥
@@ -45,6 +47,7 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/my-orders" element={<OrderPage />} />
           <Route path="/reviews" element={<OrdersReviewsPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
 
 
         </Route>
@@ -53,6 +56,7 @@ function App() {
 
         <Route path="/seller-registration" element={<SellerRegistrationPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/reset-password" element={<ResetPassword/>}/>
         
       </Routes>
     </BrowserRouter>

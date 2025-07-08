@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Order, OrderItem, Category,CartItem,WishlistItem , OrderAddress,Review
+from store.models import Item, Order, OrderItem,Feedback, Category,CartItem,WishlistItem , OrderAddress,Review
 from django.conf import settings 
 from supabase import create_client, Client 
 import os 
@@ -388,3 +388,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context['request']
         validated_data['user'] = request.user
         return super().create(validated_data)
+    
+    
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = '__all__'

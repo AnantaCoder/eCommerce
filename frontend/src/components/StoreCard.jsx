@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Star, Truck, ShoppingCart, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const StoreCard = ({ product ,  addWishlist,addToCart}) => {
+const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
   const formatPrice = (price) =>
     `₹${parseFloat(price).toLocaleString("en-IN")}`;
   const formatRating = (rating) => rating.toFixed(1);
@@ -34,6 +34,7 @@ const StoreCard = ({ product ,  addWishlist,addToCart}) => {
   };
   // wishlist adder functionality
  const navigate = useNavigate()
+ const [onClicked,setOnClicked] = useState(false)
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
@@ -152,7 +153,11 @@ const StoreCard = ({ product ,  addWishlist,addToCart}) => {
 
           {/* Purchase Button */}
           <button
-            disabled={!mappedProduct.inStock}
+            disabled={!mappedProduct.inStock ||onClicked}
+            onClick={()=>{
+              setOnClicked(true)
+              buyNow(mappedProduct)
+            }}
             className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
               mappedProduct.inStock
                 ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl hover:scale-105"

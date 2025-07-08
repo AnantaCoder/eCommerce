@@ -11,9 +11,9 @@ from rest_framework import status, generics, permissions,viewsets,mixins,seriali
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
-from .serializers import (
+from accounts.serializers import (
     RegisterSerializer, UserSerializer, EmailVerificationSerializer,
-    OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer,NewsletterUserSerializer
+    OTPVerificationSerializer, RequestOTPSerializer ,SellerSerializer,NewsletterUserSerializer, PasswordResetConfirmSerializer
 )
 from django.core.mail import send_mail, BadHeaderError
 import logging
@@ -313,7 +313,18 @@ class LogoutView(APIView):
             return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
         
         
- 
+
+class ResetPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PasswordResetConfirmSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Password has been reset successfully.🥳 Login Again."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class IsOwner(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):

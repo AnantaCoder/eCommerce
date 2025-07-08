@@ -9,5 +9,4 @@
 9. connect to websockets and redis -done
 10. sellers can manage and delete items -done 
 11. search feature -done 
-12. Push Notification 
 13. Implementing Collaborative Filtering with Surprise

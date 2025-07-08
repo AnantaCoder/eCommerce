@@ -3,14 +3,20 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from .models import Item,Order,Category,WishlistItem, CartItem,OrderAddress ,Review
-from .serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,OrderAddressSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer , ReviewSerializer
+from store.models import Item,Order,Category,WishlistItem, CartItem,OrderAddress ,Review,Feedback
+from store.serializers import ItemSerializer ,OrderSerializer , CreateOrderSerializer,OrderAddressSerializer,CategorySerializer,WishlistItemSerializer,CartItemSerializer , ReviewSerializer,FeedbackSerializer
 from .permissions import IsSeller,IsBuyerOrReadOnly
 from accounts.models import Seller
 from accounts.serializers import SellerSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.db.models import Avg
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.views import APIView
+import json
 class ItemViewSet(viewsets.ModelViewSet):
     
     queryset = (
@@ -257,7 +263,7 @@ class OrderAddressViewSet(viewsets.ModelViewSet):
 class ReviewOrderViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all().select_related('user','item')
     serializer_class = ReviewSerializer
-    permission_classes = [IsBuyerOrReadOnly,permissions.IsAuthenticatedOrReadOnly,IsSeller]
+    permission_classes = [IsBuyerOrReadOnly,permissions.IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
         
@@ -326,3 +332,42 @@ class ReviewOrderViewSet(viewsets.ModelViewSet):
             "total_reviews": len(reviewed_item_ids),
             "pending_reviews": list(items_to_review),
         })
+
+
+
+from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework import status
+
+class FeedbackView(APIView):
+    permission_classes = [permissions.AllowAny]
+    parser_classes     = [JSONParser]
+
+    def get(self, request):
+        page = request.GET.get('page', 1)
+        qs   = Feedback.objects.all().order_by('-created_at')
+        paginator = Paginator(qs, 10)
+        page_obj  = paginator.get_page(page)
+        serializer = FeedbackSerializer(page_obj, many=True)
+        return Response({
+            'feedbacks': serializer.data,
+            'total_pages': paginator.num_pages,
+            'current_page': page_obj.number,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+            'total_count': paginator.count
+        })
+
+    def post(self, request):
+        serializer = FeedbackSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'success': True,
+                'feedback': serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            'success': False,
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)

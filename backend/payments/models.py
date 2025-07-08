@@ -37,7 +37,8 @@ class Payments(models.Model):
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default='INR')
-    status = models.CharField(max_length=20,  default='delivered') #hardcoded the status 
+    # status = models.CharField(max_length=20,  default='delivered') #hardcoded the status 
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='other')
     payment_gateway = models.CharField(max_length=100)
     transaction_id = models.CharField(max_length=100, unique=True)

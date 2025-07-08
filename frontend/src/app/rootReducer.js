@@ -9,7 +9,8 @@ import wishlistReducer from '../features/wishlist/wishlistSlice'
 import cartReducer from '../features/cart/cartSlice'
 import supportReducer from '../features/support/supportSlice'
 import orderReducer from '../features/order/orderSlice'
-import analyzeReducer from '../features/analyze/analyzeSlice'
+import analyzeReducer from '../features/analyze/analyzeSlice' 
+import feedbackReducer from '../features/support/feedbackSlice' 
 
 
 const rootReducer = combineReducers({
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   order:orderReducer,
   reviews:reviewReducer,
   analyze:analyzeReducer,
+  feedback:feedbackReducer,
 
 
 })

@@ -64,6 +64,40 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(min_length=6, max_length=6)
+    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({"password": "Passwords do not match."})
+        return data
+
+    def save(self):
+        email = self.validated_data['email']
+        otp_code = self.validated_data['otp']
+        new_password = self.validated_data['new_password']
+
+        try:
+            user = User.objects.get(email=email)
+            otp = OTP.objects.filter(user=user).latest('created_at')
+
+            if not otp.is_valid():
+                raise serializers.ValidationError({"otp": "OTP expired."})
+
+            if otp.code != otp_code:
+                raise serializers.ValidationError({"otp": "Invalid OTP."})
+
+            user.set_password(new_password)
+            user.save()
+            otp.delete()
+
+        except OTP.DoesNotExist:
+            raise serializers.ValidationError({"otp": "No OTP found. Please request one."})
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"email": "No user found with this email."})
 
 class EmailVerificationSerializer(serializers.Serializer):
 

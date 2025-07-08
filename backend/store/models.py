@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from accounts.models import Seller , User
-import uuid
+from django.utils import timezone
+
 
 
 class Category(models.Model):
@@ -197,6 +198,14 @@ class Review(models.Model):
 
 
 
+class Feedback(models.Model):
+    name = models.CharField(max_length=100)
+    message = models.TextField()
+    rating = models.IntegerField(default=5, choices=[(i, i) for i in range(1, 6)])
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"{self.name} - {self.rating}/5"
 
 
 '''A Stock Keeping Unit (SKU) is a unique alphanumeric code used by businesses to track and manage their inventory. It's essentially a product's identifier within a company's system. SKUs are used to identify specific products, including variations like size, color, or model, and help with internal stock management'''
