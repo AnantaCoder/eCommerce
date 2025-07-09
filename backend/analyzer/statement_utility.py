@@ -2,7 +2,7 @@ from transformers import AutoTokenizer,AutoModelForSequenceClassification
 import torch
 import torch.nn.functional as F
 from collections import Counter
-MODEL_DIR = 'review-finetuned'
+MODEL_DIR = './review-finetuned-model'
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
 model  = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
