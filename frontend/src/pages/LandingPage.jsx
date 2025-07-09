@@ -54,6 +54,7 @@ function LandingPage() {
   {
     name: 'Virtual Reality',
     image: 'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=200&h=150&fit=crop'
+// GUNJAN LAUDI 🦥 github.com/anantacoder
   },
   {
     name: 'Smart Home',

@@ -13,6 +13,7 @@ import secrets
 class UserManager(BaseUserManager):
     
     
+        # helper to dave the user validate m normalize and create 
     def _create_user(self,email,password=None,**extra_fields):
         if not email:
             raise ValueError("Please set the email")
@@ -25,34 +26,34 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    
+    # for ordinary user
     def create_user(self,email,password=None , **extra_fields):
         extra_fields.setdefault('is_staff',False)
         extra_fields.setdefault('is_superuser',False)
         extra_fields.setdefault('is_active',False) 
         return self._create_user(email,password,**extra_fields)
     
+    # for super user 
     def create_superuser(self,email,password=None , **extra_fields):
         extra_fields.setdefault('is_staff',True)
         extra_fields.setdefault('is_superuser',True)
-        extra_fields.setdefault('is_active',True) #user active always. 
+        extra_fields.setdefault('is_active',True) 
         
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
         
-        
         return self._create_user(email,password,**extra_fields)
     
 class User(AbstractUser):
+    """extends the abstract user class"""
     
     username = None
     email = models.EmailField(_('email address') , unique=True)
     is_email_verified = models.BooleanField(default=False)
     
-    # redundant filed for user type . 
-    # is_seller = models.BooleanField(default=False)
+   
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] #email and password required by default 
@@ -112,6 +113,7 @@ class OTP(models.Model):
     def is_valid(self):
         return timezone.now() <= self.expired_at 
 
+    '''this class methods generate otps saves and delete '''
     @classmethod
     def generate_otp(cls, user):
         user.otps.all().delete()

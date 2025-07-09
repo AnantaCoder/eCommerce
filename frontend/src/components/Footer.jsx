@@ -9,13 +9,13 @@ import {
   CreditCard,
   Shield,
   Truck,
+  Github,
 } from "lucide-react";
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { subscribeNewsletter } from "../features/auth/authSlice";
 
-import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const navigate=useNavigate()
@@ -52,14 +52,14 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://github.com/anantacoder"
                 target="_blank"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <Facebook className="w-5 h-5" />
+                <Github className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://x.com/anantacoder"
                 target="_blank"
                 className="text-gray-400 blank target-blank hover:text-white transition-colors"
               >

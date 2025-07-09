@@ -159,12 +159,12 @@ try:
         if supabase_project_ref:
             SUPABASE_URL = f"https://{supabase_project_ref}.supabase.co"
         else:
-            SUPABASE_URL = ""  # Fallback if ref not found
+            SUPABASE_URL = ""  
             print(
                 "Warning: Could not extract project reference from SUPABASE_ANON_KEY. Set SUPABASE_URL manually if issues persist."
             )
     else:
-        SUPABASE_URL = ""  # Fallback if anon key format is unexpected
+        SUPABASE_URL = ""  
         print(
             "Warning: SUPABASE_ANON_KEY format is unexpected. Set SUPABASE_URL manually if issues persist."
         )
@@ -174,25 +174,19 @@ except Exception as e:
         f"Error parsing SUPABASE_ANON_KEY for URL: {e}. Set SUPABASE_URL manually if issues persist."
     )
 
-# Map SUPABASE_KEY to the anon key from your .env
 SUPABASE_KEY = env("SUPABASE_ANON_KEY")
 
-# Map SUPABASE_BUCKET_NAME to BUCKET_NAME from your .env
 SUPABASE_BUCKET_NAME = env("BUCKET_NAME")
 
-# Note: SUPABASE_SECRET_KEY and SUPABASE_ACCESS_KEY from your .env are not directly
-# used by the public Supabase Python client for simple uploads.
-# They are typically for service role authentication or S3-compatible access.
 
-# Media settings for handling file uploads (kept this)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 # # payments
-# STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
-# STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
-# STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
 
 # pagination
 

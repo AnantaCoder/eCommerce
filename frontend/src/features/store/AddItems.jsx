@@ -219,6 +219,8 @@ function AddItems() {
                     value={formData.quantity}
                     onChange={handleInputChange}
                     required
+// GUNJAN LAUDI 🦥 github.com/anantacoder
+
                     min="1"
                     className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors"
                     placeholder="Available quantity"

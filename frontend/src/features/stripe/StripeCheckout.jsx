@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import api from "../../services/api";
-
+/**
+ * FUTURE UPGRADE PROBLEM 
+ * i can extraxt seller id from state but for individual product but how to get that
+ */
 export default function StripeCheckoutForm({ orderId, amount, onSuccess }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -12,6 +15,7 @@ export default function StripeCheckoutForm({ orderId, amount, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+
 
     try {
       const token = localStorage.getItem("access_token");

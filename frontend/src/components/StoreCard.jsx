@@ -175,6 +175,5 @@ const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
   );
 };
 
-// Demo with your data structure
 
 export default StoreCard;

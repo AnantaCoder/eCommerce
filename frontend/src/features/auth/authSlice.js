@@ -289,7 +289,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user; //
+        state.user = action.payload.user; 
         state.accessToken = action.payload.access;
         state.refreshToken = action.payload.refresh;
         state.isAuthenticated = true;
@@ -359,6 +359,7 @@ const authSlice = createSlice({
       .addCase(resetPassword.rejected, (state) => {
         state.loading = false;
       })
+      // otps cases 
        .addCase(sendOtp.pending, (state) => {
         state.loading = true;
       })

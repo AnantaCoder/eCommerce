@@ -8,7 +8,6 @@ class IsSeller(permissions.BasePermission):
 
 class IsBuyerOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        # Only authenticated users can perform write operations
         if not (request.user and request.user.is_authenticated):
             return False
 

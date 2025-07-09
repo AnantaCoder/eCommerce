@@ -24,7 +24,7 @@ import ResetPassword from "./features/auth/ResetPassword";
 import FeedbackPage from "./pages/FeedbackPage";
 
 
-// GUNJAN LAUDI 🦥
+// GUNJAN LAUDI 🦥 github.com/anantacoder
 // add a layer if is authenticated only then most pages accessible , inside a private route element
 function App() {
   

@@ -37,7 +37,9 @@ const ProductCard = ({ product,addToCart,addToWishlist }) => {
         className="p-2 rounded-full bg-black/40 text-white hover:bg-red-500 backdrop-blur-md transition-all duration-200">
           <Heart className="w-4 h-4" />
         </button>
-        <button className="p-2 rounded-full bg-black/40 text-white hover:bg-blue-500 backdrop-blur-md transition-all duration-200">
+        <button className="p-2 rounded-full bg-black/40 text-white hover:bg-blue-500 backdrop-blur-md transition-all duration-200"
+      onClick={()=>navigate(`/product/${product.id}`)}
+        >
           <Eye className="w-4 h-4" />
         </button>
         <button className="p-2 rounded-full bg-black/40 text-white hover:bg-blue-500 backdrop-blur-md transition-all duration-200">

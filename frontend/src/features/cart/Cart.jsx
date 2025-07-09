@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCartItems,
   selectCartItems,
-  // selectCartLoading,
   selectCartError,
   removeFromCart,
   deleteAllCart,
@@ -18,7 +17,6 @@ export default function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const items = useSelector(selectCartItems);
-  // const loading = useSelector(selectCartLoading);
   const error = useSelector(selectCartError);
   const token = localStorage.getItem("access_token");
   const totalPrice = items.reduce(

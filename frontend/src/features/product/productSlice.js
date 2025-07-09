@@ -76,6 +76,8 @@ const slice = createSlice({
       state.totalPages = 1;
       state.totalItems = 0;
       state.error = null;
+// GUNJAN LAUDI 🦥 github.com/anantacoder
+
     },
     clearIndividualProduct(state) {
       state.individualProduct = null;

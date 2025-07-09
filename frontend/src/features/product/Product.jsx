@@ -9,7 +9,6 @@ import { addToCart } from "../cart/cartSlice";
 export default function ProductGrid({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch();
 
-  // Extracting state from Redux store
   const items = useSelector((state) => state.product.items) || [];
   const loading = useSelector((state) => state.product.loading);
   const errorObj = useSelector((state) => state.product.error);
@@ -66,9 +65,18 @@ export default function ProductGrid({ selectedCategory, searchQuery }) {
   }
 
   // Initial loading state
-  if (loading && page === 1) {
-    return <Loader />;
-  }
+if (loading && page === 1) {
+  return (
+    <div className="flex items-center justify-center py-12">
+      {/* Spinner */}
+      <div className="w-12 h-12 border-4 border-t-transparent border-blue-500 rounded-full animate-spin" />
+      {/* Optional label */}
+      <span className="ml-3 text-white text-lg font-medium">Loading…</span>
+    </div>
+  );
+}
+
+
   const handleAddToWishList = (id) => {
     dispatch(addToWishlist({ itemId: id }));
   };

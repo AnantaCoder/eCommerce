@@ -545,3 +545,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+// PS: can be modular 

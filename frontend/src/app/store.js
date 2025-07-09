@@ -28,3 +28,5 @@ const persister = persistStore(store);
 
 export {  persister };
 export default store;
+
+// redux store <- root reducer <- slices <- dispatch(send) + selectors(read)

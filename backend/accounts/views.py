@@ -114,7 +114,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 class VerifyEmailView(APIView):
-    
+    '''this view verifies the email and set the things active :)'''
     permission_classes = [permissions.AllowAny]
     
     def get(self, request):
@@ -122,7 +122,7 @@ class VerifyEmailView(APIView):
         serializer.is_valid(raise_exception=True)  
         
         token = serializer.validated_data['token']
-        uid = request.query_params.get('uid')  # Still need to handle uid separately
+        uid = request.query_params.get('uid')  
         
         if not uid or not token:
             return Response({"detail": "Missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
@@ -141,7 +141,7 @@ class VerifyEmailView(APIView):
                 return redirect(redirect_url)
             
             
-            # precious format-----------------------------------------------------------------------------------------
+            # previous format-----------------------------------------------------------------------------------------
                 # return Response({
                 #     "detail": "Email successfully verified.",
                 #     "refresh": str(refresh),
@@ -182,7 +182,7 @@ class RequestOTPView(APIView):
             
             send_mail(
                 subject="Your Verification Code",
-                message=f"Your verification code is: {otp.code}. It expires in 15 minutes.",
+                message=f"Your verification code is: {otp.code}. It expires in 15 minutes. Ecommerce by Anirban Sarkar",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,
@@ -218,7 +218,7 @@ class VerifyOTPView(APIView):
             # Delete the used OTP
             user.otps.all().delete()
 
-            # Generate JWT token
+            # Generate JWT token from scratch 
             refresh = RefreshToken.for_user(user)
 
             return Response({
@@ -247,7 +247,7 @@ class LoginView(APIView):
     
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
 
@@ -360,8 +360,6 @@ class SellerViewSet(
         
 
 
-# filepath: d:\PROJECTS\eCommerce\backend\accounts\views.py
-from django.template.loader import render_to_string
 
 class NewsletterView(APIView):
     permission_classes = [permissions.AllowAny]

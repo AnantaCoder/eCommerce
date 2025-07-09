@@ -8,11 +8,14 @@ import {
   Share2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { deleteAllCart, fetchCartItems } from "../features/cart/cartSlice";
+import { toast } from "react-toastify";
 
 function IndividualProductCard({ product, addWishlist, addToCart }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
-
+  const dispatch= useDispatch()
   const defaultProduct = {
     id: 2,
     item_name: "Home Gym Combo",
@@ -53,9 +56,18 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
     addToCart({ id: productData.id });
   };
 
-  const handleBuyNow = () => {
-    addToCart({ id: productData.id });
-  };
+  const handleBuyNow = async () => {
+  try {
+    await dispatch(addToCart({ itemId: productData.id, quantity: 1 }))
+      .unwrap();
+  } catch (err) {
+    toast.error("Could not add to cart: " + (err.message || err), {
+      position: "bottom-right",
+    });
+  } finally {
+    navigate("/cart");
+  }
+}
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {

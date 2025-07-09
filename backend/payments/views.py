@@ -23,7 +23,7 @@ class PaymentListCreateViewSet(
         serializer.save(user=self.request.user, status="pending")
 
 
-# Payment retrieve + update + delete
+# Payment ALL CRUD
 class PaymentDetailViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
@@ -84,7 +84,7 @@ class CreatePaymentIntent(APIView):
             )
 
         try:
-            amount_in_paise = int(float(amount)) #change this letter 
+            amount_in_paise = int(float(amount)) #change this later 
             
             stripe.api_key = settings.STRIPE_SECRET_KEY
             intent = stripe.PaymentIntent.create(

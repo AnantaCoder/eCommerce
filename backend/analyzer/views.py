@@ -61,3 +61,4 @@ class ItemReviewRecommendationView(APIView):
         
         
         
+"""no database connections """

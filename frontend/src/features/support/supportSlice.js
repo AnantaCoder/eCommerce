@@ -16,6 +16,7 @@ export const startChatSession = createAsyncThunk(
     }
 
 )
+// GUNJAN LAUDI 🦥 github.com/anantacoder
 
 export const getChatHistory = createAsyncThunk(
     'support/history',

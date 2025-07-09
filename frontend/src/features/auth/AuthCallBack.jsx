@@ -18,12 +18,12 @@ export default function AuthCallback() {
         position: 'bottom-right',})
       try {
 
-        // get the things in the links 
+        // get the things from  the links 
         const params = new URLSearchParams(location.search);
         const access = params.get("access");
         const refresh = params.get("refresh");
 
-        
+        // if refresh and access then sent the request to nackend with access token and if successful then redirected to the home page and logged in automatically 
         if (access && refresh) {
           localStorage.setItem("access_token", access);
           localStorage.setItem("refresh_token", refresh);
@@ -94,3 +94,6 @@ export default function AuthCallback() {
 
   return <Loader />;
 }
+
+
+// tldr: auth call back :-receiving and processing authentication tokens after an external verification process, leaving the user in a logged-out state even after they've successfully verified their email.

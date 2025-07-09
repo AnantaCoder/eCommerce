@@ -27,28 +27,23 @@ const FeedbackPage = () => {
   })
   const [showForm, setShowForm] = useState(false)
 
-  // 1️⃣ Load first page on mount
   useEffect(() => {
     dispatch(fetchFeedbacks(1))
   }, [dispatch])
 
-  // 2️⃣ Handle Feedback Submit
   const handleSubmit = async e => {
     e.preventDefault()
     await dispatch(submitFeedback(formData))
     setFormData({ name: '', message: '', rating: 5 })
     setShowForm(false)
-    // Refresh the current page
     dispatch(fetchFeedbacks(currentPage))
   }
 
-  // 3️⃣ Pagination handler
   const handlePageChange = page => {
     dispatch(setCurrentPage(page))
     dispatch(fetchFeedbacks(page))
   }
 
-  // 4️⃣ Animated background bits (unchanged)
   const floatingElements = Array.from({ length: 20 }, (_, i) => (
     <motion.div
       key={i}

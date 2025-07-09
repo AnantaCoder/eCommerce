@@ -212,3 +212,17 @@ class NewsletterUserSerializer(serializers.ModelSerializer):
         fields=[
             "email"
         ]
+        
+# '''hasattr'''
+# class Pfp:
+#     def __init__(self):
+#         self.name="Anirban"
+
+
+    
+# if __name__=="__main__":
+#         Pf = Pfp()
+#         if hasattr(Pf,"name"):
+#             print("true")
+#         else:
+#             print("false")

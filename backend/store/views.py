@@ -11,12 +11,8 @@ from accounts.serializers import SellerSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.db.models import Avg
-from django.http import JsonResponse
 from django.core.paginator import Paginator
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
-import json
 class ItemViewSet(viewsets.ModelViewSet):
     
     queryset = (
@@ -335,10 +331,7 @@ class ReviewOrderViewSet(viewsets.ModelViewSet):
 
 
 
-from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework import status
+
 
 class FeedbackView(APIView):
     permission_classes = [permissions.AllowAny]

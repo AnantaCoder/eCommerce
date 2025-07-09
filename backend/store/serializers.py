@@ -394,3 +394,22 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = '__all__'
+        
+        
+        
+        
+        
+'''
+# THIS FOR ITEM SERIALIZER 
+| Feature                        | What it Does                                     |
+| ------------------------------ | ------------------------------------------------ |
+| `total_value`                  | Calculates `price * quantity` automatically      |
+| `seller_name`, `category_name` | Shows related data without extra effort          |
+| `image_files`                  | Lets users upload images                         |
+| `image_urls`                   | Stores + returns public image URLs from Supabase |
+| `create()`                     | Validates seller, uploads images, saves item     |
+| `update()`                     | Optionally adds new images, updates fields       |
+| Validations                    | Makes sure price and quantity are reasonable     |
+
+
+'''
