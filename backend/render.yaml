@@ -3,7 +3,7 @@ services:
     name: e-commerce
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    startCommand: gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --timeout 120
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: backend.settings
