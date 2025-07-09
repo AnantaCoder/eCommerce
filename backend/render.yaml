@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: e-commerce
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend.settings
