@@ -1,16 +1,46 @@
-# Use a lightweight Node.js image
-FROM node:18-alpine
+# frontend/Dockerfile
+# Stage 1: Build the React application
+# Using a Node.js image to build the React app
+FROM node:18-alpine AS builder
 
-# Set working directory
+# Set the working directory
 WORKDIR /usr/src/frontend
 
-# Install dependencies
-COPY package.json package-lock.json* yarn.lock* ./
-# If you use npm:
+# Copy package.json and package-lock.json first to leverage Docker cache
+# This means npm dependencies are re-installed only if these files change
+COPY package.json package-lock.json* ./
+
+# Install Node.js dependencies
 RUN npm ci
 
+# Copy the rest of the frontend source code
 COPY . .
 
+# Build the React application for production
+# This creates optimized static assets in the 'dist' directory (for Vite)
+RUN npm run build
+
+# Stage 2: Serve the built React application using 'serve'
+# We use a fresh, smaller Node.js image for the final serving stage
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /usr/src/frontend
+
+# Copy the built static files from the 'builder' stage
+# The 'dist' directory is where Vite puts the production build output
+COPY --from=builder /usr/src/frontend/dist ./dist
+
+# Install 'serve' globally to serve the static files
+# 'serve' is a simple static file server
+RUN npm install -g serve
+
+# Expose the port that 'serve' will listen on
+# Changed from 3000 to 5173 as requested
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+# Command to run 'serve' to serve the static files
+# It serves files from the 'dist' directory and binds to 0.0.0.0 on Railway's $PORT
+# Changed the port in the serve command to 5173
+CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:5173"]
+
