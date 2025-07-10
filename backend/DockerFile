@@ -1,43 +1,25 @@
 
 FROM python:3.11-slim
 
-# Set environment variables for production
-# PYTHONUNBUFFERED ensures Python output is not buffered, useful for logs
-# PYTHONDONTWRITEBYTECODE prevents Python from writing .pyc files
+
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV PORT 8000 # Default port, Railway will inject its own $PORT
+ENV PORT 8000 
 
-# Set the working directory inside the container
 WORKDIR /usr/src/backend
 
-# Install system dependencies required for psycopg2 (if you use PostgreSQL)
-# and other build tools. Clean up apt lists to reduce image size.
 RUN apt-get update \
     && apt-get install -y build-essential libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt and install Python dependencies
-# It's good practice to install dependencies before copying the rest of the code
-# to leverage Docker's build cache.
-# Ensure 'gunicorn' is in your requirements.txt or add it here.
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-# Copy the rest of the Django project files into the container
 COPY . .
 
-# Collect static files for Django in production
-# This command gathers all static files into a single directory (usually 'staticfiles')
-# that Gunicorn or a web server can serve.
 RUN python manage.py collectstatic --noinput
 
-# Expose the port that Gunicorn will listen on
 EXPOSE 8000
 
-# Command to run the Django application with Gunicorn
-# Gunicorn is a production-ready WSGI server for Python.
-# It binds to 0.0.0.0 on the port provided by Railway's $PORT environment variable.
-# IMPORTANT: Replace 'your_project_name' with the actual name of your Django project
-# (the directory containing your settings.py and wsgi.py).
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "your_project_name.wsgi:application"]
+
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "backend.wsgi:application"]

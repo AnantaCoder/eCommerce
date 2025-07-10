@@ -24,23 +24,17 @@ RUN npm run build
 # We use a fresh, smaller Node.js image for the final serving stage
 FROM node:18-alpine
 
-# Set the working directory
 WORKDIR /usr/src/frontend
 
-# Copy the built static files from the 'builder' stage
-# The 'dist' directory is where Vite puts the production build output
+
 COPY --from=builder /usr/src/frontend/dist ./dist
 
-# Install 'serve' globally to serve the static files
-# 'serve' is a simple static file server
+
 RUN npm install -g serve
 
-# Expose the port that 'serve' will listen on
-# Changed from 3000 to 5173 as requested
+
 EXPOSE 5173
 
-# Command to run 'serve' to serve the static files
-# It serves files from the 'dist' directory and binds to 0.0.0.0 on Railway's $PORT
-# Changed the port in the serve command to 5173
+
 CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:5173"]
 
