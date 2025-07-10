@@ -9,10 +9,40 @@ export default function AnalyzeComponent({ itemId, onClose }) {
 
   useEffect(() => {
     if (itemId) {
-      console.log("analyzer dispatched ",itemId)
       dispatch(fetchItemFeedback(itemId))
     }
   }, [dispatch, itemId])
+
+  // Normalize any response shape into finalRecommendation, summary and array of lines
+  let finalRecommendation = null
+  let summary = ''
+  let detailsLines = []
+
+  if (Array.isArray(feedback)) {
+    // shape: [ summaryString, detailsString ]
+    summary = feedback[0] || ''
+    detailsLines = typeof feedback[1] === 'string'
+      ? feedback[1].split('\n').filter(l => l.trim())
+      : []
+  } else if (feedback && typeof feedback === 'object') {
+    // shape: { final_recommendation, summary, details: "line1\nline2" }
+    finalRecommendation = feedback.final_recommendation ?? null
+    summary = feedback.summary ?? ''
+    detailsLines = typeof feedback.details === 'string'
+      ? feedback.details.split('\n').filter(l => l.trim())
+      : []
+  }
+
+  // Helper to parse each detail line into { reviews, label, confidence }
+  const parseDetail = (line) => {
+    const [left, right] = line.split('→').map(s => s.trim())
+    const match = right.match(/^(.+)\s+\(([\d.]+)\)$/)
+    return {
+      reviews: left,
+      label: match ? match[1] : right,
+      confidence: match ? parseFloat(match[2]) : undefined
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -32,7 +62,7 @@ export default function AnalyzeComponent({ itemId, onClose }) {
             </button>
           </div>
 
-          {/* Analysis content */}
+          {/* Content */}
           <div className="space-y-4">
             {loading ? (
               <div className="text-center py-8">
@@ -44,47 +74,59 @@ export default function AnalyzeComponent({ itemId, onClose }) {
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
                 <p className="text-red-400">{error}</p>
               </div>
-            ) : feedback ? (
+            ) : (summary || detailsLines.length > 0 || finalRecommendation) ? (
               <div className="space-y-4">
                 {/* Final recommendation */}
-                {feedback.final_recommendation && (
+                {finalRecommendation && (
                   <div className="bg-purple-900/30 border border-purple-500/30 rounded-xl p-4">
                     <h4 className="text-lg font-semibold text-purple-300 mb-2">
                       Final Recommendation
                     </h4>
-                    <p className="text-gray-300">{feedback.final_recommendation}</p>
+                    <p className="text-gray-300">{finalRecommendation}</p>
                   </div>
                 )}
 
                 {/* Summary */}
-                {feedback.summary && (
+                {summary && (
                   <div className="bg-blue-900/30 border border-blue-500/30 rounded-xl p-4">
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Summary</h4>
-                    <p className="text-gray-300">{feedback.summary}</p>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">
+                      Summary
+                    </h4>
+                    <p className="text-gray-300">{summary}</p>
                   </div>
                 )}
 
                 {/* Details */}
-                {feedback.details.length > 0 && (
+                {detailsLines.length > 0 && (
                   <div className="bg-green-900/30 border border-green-500/30 rounded-xl p-4">
-                    <h4 className="text-lg font-semibold text-green-300 mb-3">Details</h4>
+                    <h4 className="text-lg font-semibold text-green-300 mb-3">
+                      Details
+                    </h4>
                     <div className="space-y-2">
-                      {feedback.details.map((d, idx) => (
-                        <div key={idx} className="flex items-start">
-                          <div className="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                          <div className="text-gray-300 text-sm">
-                            <p>
-                              <span className="font-semibold">Review:</span> {d.reviews}
-                            </p>
-                            <p>
-                              <span className="font-semibold">Label:</span> {d.label}
-                            </p>
-                            <p>
-                              <span className="font-semibold">Confidence:</span> {d.confidence}
-                            </p>
+                      {detailsLines.map((line, idx) => {
+                        const { reviews, label, confidence } = parseDetail(line)
+                        return (
+                          <div key={idx} className="flex items-start">
+                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <div className="text-gray-300 text-sm">
+                              <p>
+                                <span className="font-semibold">Review:</span> {reviews}
+                              </p>
+                              <p>
+                                <span className="font-semibold">Label:</span> {label}
+                              </p>
+                              {confidence !== undefined && (
+                                <p>
+                                  <span className="font-semibold">
+                                    Confidence:
+                                  </span>{' '}
+                                  {confidence}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 )}

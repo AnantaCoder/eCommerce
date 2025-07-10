@@ -1,40 +1,16 @@
-# frontend/Dockerfile
-# Stage 1: Build the React application
-# Using a Node.js image to build the React app
-FROM node:18-alpine AS builder
-
-# Set the working directory
-WORKDIR /usr/src/frontend
-
-# Copy package.json and package-lock.json first to leverage Docker cache
-# This means npm dependencies are re-installed only if these files change
-COPY package.json package-lock.json* ./
-
-# Install Node.js dependencies
-RUN npm ci
-
-# Copy the rest of the frontend source code
-COPY . .
-
-# Build the React application for production
-# This creates optimized static assets in the 'dist' directory (for Vite)
-RUN npm run build
-
-# Stage 2: Serve the built React application using 'serve'
-# We use a fresh, smaller Node.js image for the final serving stage
+# Use a lightweight Node.js image
 FROM node:18-alpine
 
+# Set working directory
 WORKDIR /usr/src/frontend
 
+# Install dependencies
+COPY package.json package-lock.json* yarn.lock* ./
+# If you use npm:
+RUN npm ci
 
-COPY --from=builder /usr/src/frontend/dist ./dist
-
-
-RUN npm install -g serve
-
+COPY . .
 
 EXPOSE 5173
 
-
-CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:5173"]
-
+CMD ["npm", "run", "dev"]

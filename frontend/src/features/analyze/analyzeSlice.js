@@ -10,8 +10,7 @@ export const fetchItemFeedback = createAsyncThunk(
       const response = await api.get(`analyzer/item/${itemId}/recommendation/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
         }
       })
       return response.data
@@ -32,7 +31,7 @@ const analyzeSlice = createSlice({
     feedback: null,
     details: [],
     summary: '',
-    finalRecommendation: '',
+    finalRecommendation: null,
     error: null,
     loading: false
   },
@@ -46,13 +45,14 @@ const analyzeSlice = createSlice({
       .addCase(fetchItemFeedback.fulfilled, (state, { payload }) => {
         state.loading = false
         state.error = null
-         state.finalRecommendation = payload.final_recommendation
-         state.summary  = payload.summary
-        state.details = (payload.details || []).slice(0,5).map(d => ({
-          text: d.reviews,
-          label: d.label,
-          confidence: d.confidence
-        }))
+
+        state.finalRecommendation = payload.final_recommendation ?? null
+        state.summary = payload.summary
+
+        state.details = typeof payload.details === 'string'
+          ? payload.details.split('\n').filter(line => line.trim() !== '')
+          : []
+
         state.feedback = payload
       })
       .addCase(fetchItemFeedback.rejected, (state, { payload }) => {
