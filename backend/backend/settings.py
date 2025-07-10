@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "payments",
     "support",
     "channels",
-    # "analyzer",
+    "analyzer",
 ]
 # asgi config
 ASGI_APPLICATION = "backend.asgi.application"

@@ -1,0 +1,16 @@
+# Use a lightweight Node.js image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /usr/src/frontend
+
+# Install dependencies
+COPY package.json package-lock.json* yarn.lock* ./
+# If you use npm:
+RUN npm ci
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
