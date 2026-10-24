@@ -8,10 +8,12 @@ import { addToCart, deleteAllCart, fetchCartItems } from "../cart/cartSlice";
 import { SearchX } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { openLoginModal } from "../auth/authSlice";
 
 export default function Store({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const {
     items = [],
@@ -36,19 +38,31 @@ export default function Store({ selectedCategory, searchQuery }) {
 
   const handleAddToWishList = useCallback(
     (id) => {
+      if (!isAuthenticated) {
+        dispatch(openLoginModal("Please sign in to save items to your wishlist."));
+        return;
+      }
       dispatch(addToWishlist({ itemId: id }));
     },
-    [dispatch]
+    [dispatch, isAuthenticated]
   );
 
   const handleAddToCart = useCallback(
     (product) => {
+      if (!isAuthenticated) {
+        dispatch(openLoginModal("Please sign in to add items to your shopping cart."));
+        return;
+      }
       dispatch(addToCart({ itemId: product.id, quantity: 1 }));
     },
-    [dispatch]
+    [dispatch, isAuthenticated]
   );
 
   const handleBuyNow = async (product) => {
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to purchase this item and proceed to checkout."));
+      return;
+    }
     try {
       await dispatch(deleteAllCart()).unwrap();
       await dispatch(addToCart({ itemId: product.id, quantity: 1 }));

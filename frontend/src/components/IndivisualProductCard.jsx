@@ -8,14 +8,16 @@ import {
   Share2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteAllCart, fetchCartItems } from "../features/cart/cartSlice";
+import { openLoginModal } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 
 function IndividualProductCard({ product, addWishlist, addToCart }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
-  const dispatch= useDispatch()
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const defaultProduct = {
     id: 2,
     item_name: "Home Gym Combo",
@@ -57,17 +59,19 @@ function IndividualProductCard({ product, addWishlist, addToCart }) {
   };
 
   const handleBuyNow = async () => {
-  try {
-    await dispatch(addToCart({ itemId: productData.id, quantity: 1 }))
-      .unwrap();
-  } catch (err) {
-    toast.error("Could not add to cart: " + (err.message || err), {
-      position: "bottom-right",
-    });
-  } finally {
-    navigate("/cart");
-  }
-}
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to buy this product and proceed to checkout."));
+      return;
+    }
+    try {
+      await dispatch(addToCart({ itemId: productData.id, quantity: 1 })).unwrap();
+      navigate("/cart");
+    } catch (err) {
+      toast.error("Could not add to cart: " + (err.message || err), {
+        position: "bottom-right",
+      });
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {

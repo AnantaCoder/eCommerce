@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { sellerRegistration } from './authSlice';
+import { toast } from 'react-toastify';
 
 export default function SellerRegistrationForm() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function SellerRegistrationForm() {
     )
     .unwrap()
     .then(() => {
-      alert("Creation of seller account is Successful. login again!")
+      toast.success("Creation of seller account is Successful. Please log in again! 🥳");
       navigate("/login");
     })
     .catch((err) => {

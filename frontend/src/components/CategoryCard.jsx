@@ -107,7 +107,7 @@ const CategoryCard = ({ category,onSelect }) => {
 
   return (
     <div
-      className={`relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 ${colors.shadow} cursor-pointer border ${colors.border}`}
+      className={`group relative bg-gray-900 rounded-3xl shadow-xl overflow-hidden transform transition-all duration-200 hover:scale-[1.03] active:scale-[0.99] ${colors.shadow} cursor-pointer border ${colors.border}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect?.(category.id)}
@@ -189,10 +189,14 @@ const CategoryCard = ({ category,onSelect }) => {
         )}
 
         <button
-          className={`w-full bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(category.id);
+          }}
+          className={`w-full bg-gradient-to-r ${colors.gradient} hover:opacity-95 active:scale-95 active:shadow-inner text-white font-semibold py-3 px-4 rounded-xl transition-all duration-150 shadow-lg flex items-center justify-center gap-2 cursor-pointer`}
         >
           Explore {mappedCategory.name}
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
       </div>
 

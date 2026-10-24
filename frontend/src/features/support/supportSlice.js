@@ -82,7 +82,18 @@ const supportSlice = createSlice({
     initialState: initialState,
     reducers: {
         addMessage: (state, action) => {
-            state.messages.push(action.payload)
+            const incoming = action.payload;
+            if (!incoming) return;
+            const exists = state.messages.some(
+                (m) => (incoming.id && m.id === incoming.id) ||
+                       (m.sender === incoming.sender && m.message === incoming.message)
+            );
+            if (!exists) {
+                state.messages.push(incoming);
+            }
+        },
+        clearMessages: (state) => {
+            state.messages = [];
         },
     },
     extraReducers: (builder) => {
@@ -108,7 +119,6 @@ const supportSlice = createSlice({
             })
             .addCase(getChatHistory.fulfilled, (state, { payload }) => {
                 state.loading = false;
-                // If payload is an object with a messages property, use that
                 state.messages = Array.isArray(payload)
                     ? payload
                     : Array.isArray(payload.messages)
@@ -127,7 +137,20 @@ const supportSlice = createSlice({
             })
             .addCase(sendMessage.fulfilled, (state, { payload }) => {
                 state.loading = false;
-                state.messages.push(payload);    // push the new message
+                const userMsg = {
+                    id: payload.id,
+                    sender: payload.sender,
+                    message: payload.message,
+                    timestamp: payload.timestamp
+                };
+                if (!state.messages.some(m => m.id === userMsg.id || (m.sender === userMsg.sender && m.message === userMsg.message))) {
+                    state.messages.push(userMsg);
+                }
+                if (payload.bot_message) {
+                    if (!state.messages.some(m => m.id === payload.bot_message.id)) {
+                        state.messages.push(payload.bot_message);
+                    }
+                }
             })
             .addCase(sendMessage.rejected, (state, { payload }) => {
                 state.loading = false;
@@ -140,5 +163,5 @@ const supportSlice = createSlice({
 
 // 4. exporting the actions and reducers 
 
-export const { addMessage } = supportSlice.actions;
+export const { addMessage, clearMessages } = supportSlice.actions;
 export default supportSlice.reducer

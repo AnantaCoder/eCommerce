@@ -21,12 +21,15 @@ export default function CategoryPage() {
           />
         </div>
         {selectedCategory && (
-          <button
-            className="block mx-auto mt-6 mb-2 px-4 py-2 bg-amber-400 text-black rounded-lg font-semibold"
-            onClick={() => setSelectedCategory(null)}
-          >
-            ← Back to All Categories
-          </button>
+          <div className="flex justify-center mt-6 mb-4">
+            <button
+              className="px-6 py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-rose-400 hover:from-amber-500 hover:to-rose-500 active:scale-95 active:shadow-inner text-gray-900 rounded-xl font-bold shadow-lg hover:shadow-amber-500/25 transition-all duration-150 cursor-pointer flex items-center gap-2"
+              onClick={() => setSelectedCategory(null)}
+            >
+              <span>←</span>
+              <span>Back to All Collections</span>
+            </button>
+          </div>
         )}
         <h1 className="text-4xl md:text-5xl text-center py-6 font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-rose-500 tracking-tight">
           Exquisite Trends 🔥

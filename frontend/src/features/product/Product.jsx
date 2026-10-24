@@ -5,9 +5,11 @@ import { fetchProducts, resetProducts } from "./productSlice";
 import Loader from "../../components/Loader";
 import { addToWishlist } from "../wishlist/wishlistSlice";
 import { addToCart } from "../cart/cartSlice";
+import { openLoginModal } from "../auth/authSlice";
 
 export default function ProductGrid({ selectedCategory, searchQuery }) {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const items = useSelector((state) => state.product.items) || [];
   const loading = useSelector((state) => state.product.loading);
@@ -78,10 +80,18 @@ if (loading && page === 1) {
 
 
   const handleAddToWishList = (id) => {
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to save items to your wishlist."));
+      return;
+    }
     dispatch(addToWishlist({ itemId: id }));
   };
 
   const handleAddToCart = (mapped) => {
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to add items to your shopping cart."));
+      return;
+    }
     dispatch(addToCart({ itemId: mapped.id, quantity: 1 }));
   };
 

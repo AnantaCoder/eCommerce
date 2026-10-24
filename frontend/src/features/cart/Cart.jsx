@@ -12,6 +12,7 @@ import Loader from "../../components/Loader";
 import { toast } from "react-toastify";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { openLoginModal } from "../auth/authSlice";
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -45,15 +46,23 @@ export default function Cart() {
 
   if (!token) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center p-6 bg-gray-900 rounded-xl border border-gray-700">
-          <ShoppingCart size={32} className="mx-auto mb-3 text-gray-600" />
-          <h2 className="text-lg font-semibold text-white mb-2">
+      <div className="flex items-center justify-center min-h-[60vh] p-4">
+        <div className="text-center p-8 bg-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-700/80 shadow-2xl max-w-sm w-full">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-purple-500/25">
+            <ShoppingCart size={28} />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">
             Sign In Required
           </h2>
-          <p className="text-gray-400 text-sm">
-            Please log in to view your cart.
+          <p className="text-gray-400 text-xs mb-6 leading-relaxed">
+            Please log in to your account to view saved items and manage your shopping cart.
           </p>
+          <button
+            onClick={() => dispatch(openLoginModal("Please sign in to view your shopping cart."))}
+            className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all text-xs cursor-pointer"
+          >
+            Sign In Now
+          </button>
         </div>
       </div>
     );

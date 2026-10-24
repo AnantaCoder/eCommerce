@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "../features/auth/authSlice";
+import { logoutUser, openLoginModal } from "../features/auth/authSlice";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -174,29 +174,39 @@ const Navbar = () => {
 
             {/* Desktop Icons */}
             <div className="hidden md:flex items-center space-x-4">
+              <button
+                className="p-2 text-red-500 cursor-pointer hover:text-purple-600 transition-colors duration-200 hover:scale-110 transform"
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    dispatch(openLoginModal("Please sign in to view your wishlist."));
+                    return;
+                  }
+                  navigate("/wishlist");
+                }}
+              >
+                <Heart className="w-5 h-5" />
+              </button>
+
+              <button
+                className="p-2 cursor-pointer text-yellow-500 hover:text-purple-600 relative transition-all duration-200 hover:scale-110 transform"
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    dispatch(openLoginModal("Please sign in to view your shopping cart."));
+                    return;
+                  }
+                  navigate("/cart");
+                }}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {isAuthenticated && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex cursor-pointer items-center justify-center transition-all duration-200">
+                    3
+                  </span>
+                )}
+              </button>
+
               {isAuthenticated && user ? (
                 <>
-                  <button
-                    className="p-2 text-red-500 cursor-pointer hover:text-purple-600 transition-colors duration-200 hover:scale-110 transform"
-                    onClick={() => {
-                      navigate("/wishlist");
-                    }}
-                  >
-                    <Heart className="w-5 h-5" />
-                  </button>
-
-                  <button
-                    className="p-2 cursor-pointer text-yellow-500 hover:text-purple-600 relative transition-all duration-200 hover:scale-110 transform"
-                    onClick={() => {
-                      navigate("/cart");
-                    }}
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex cursor-pointer items-center justify-center transition-all duration-200">
-                      3
-                    </span>
-                  </button>
-
                   {/* User Avatar + Dropdown with Smooth Animation */}
                   <div className="relative user-dropdown">
                     <button
@@ -526,15 +536,39 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <button
-                  onClick={() => {
-                    navigate("/login");
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl shadow-md active:scale-95 transition-all duration-200 ease-in-out hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 hover:scale-[1.02]"
-                >
-                  Login
-                </button>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-around pb-2">
+                    <button
+                      onClick={() => {
+                        dispatch(openLoginModal("Please sign in to view your wishlist."));
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 cursor-pointer text-red-500 hover:text-purple-600 transition-all duration-200 p-2 rounded-lg hover:bg-gray-800"
+                    >
+                      <Heart className="w-5 h-5" />
+                      <span>Wishlist</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        dispatch(openLoginModal("Please sign in to view your shopping cart."));
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 cursor-pointer text-yellow-500 hover:text-purple-600 transition-all duration-200 p-2 rounded-lg hover:bg-gray-800"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                      <span>Cart</span>
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl shadow-md active:scale-95 transition-all duration-200 ease-in-out hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 hover:scale-[1.02]"
+                  >
+                    Login
+                  </button>
+                </div>
               )}
             </div>
           </div>

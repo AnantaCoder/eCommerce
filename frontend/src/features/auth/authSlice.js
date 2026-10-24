@@ -250,8 +250,18 @@ const authSlice = createSlice({
     error: null,
     newsletterLoading: false,
     newsletterError: null,
+    isLoginModalOpen: false,
+    loginModalMessage: '',
   },
   reducers: {
+    openLoginModal: (state, action) => {
+      state.isLoginModalOpen = true;
+      state.loginModalMessage = action.payload || 'Please sign in to continue.';
+    },
+    closeLoginModal: (state) => {
+      state.isLoginModalOpen = false;
+      state.loginModalMessage = '';
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -271,6 +281,7 @@ const authSlice = createSlice({
       state.accessToken = access;
       state.refreshToken = refresh;
       state.isAuthenticated = true;
+      state.isLoginModalOpen = false;
 
       if (user) {
         state.user = user;
@@ -293,6 +304,7 @@ const authSlice = createSlice({
         state.accessToken = action.payload.access;
         state.refreshToken = action.payload.refresh;
         state.isAuthenticated = true;
+        state.isLoginModalOpen = false;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -373,7 +385,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearAuth, setTokensAndLogin } = authSlice.actions;
+export const { clearError, clearAuth, setTokensAndLogin, openLoginModal, closeLoginModal } = authSlice.actions;
 export default authSlice.reducer;
 
 /**

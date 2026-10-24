@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import WishlistCard from "../../components/WishlistCard";
 import { addToCart } from "../cart/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { openLoginModal } from "../auth/authSlice";
 
 export default function Wishlists() {
   const dispatch = useDispatch();
@@ -59,15 +60,23 @@ export default function Wishlists() {
 
   if (!token) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center p-6 bg-gray-900 rounded-xl border border-gray-700">
-          <Heart size={32} className="mx-auto mb-3 text-gray-600" />
-          <h2 className="text-lg font-semibold text-white mb-2">
+      <div className="flex items-center justify-center min-h-[60vh] p-4">
+        <div className="text-center p-8 bg-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-700/80 shadow-2xl max-w-sm w-full">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-600 to-purple-600 flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-rose-500/25">
+            <Heart size={28} />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">
             Sign In Required
           </h2>
-          <p className="text-gray-400 text-sm">
-            Please log in to view your wishlist.
+          <p className="text-gray-400 text-xs mb-6 leading-relaxed">
+            Please log in to your account to view and manage your saved wishlist items.
           </p>
+          <button
+            onClick={() => dispatch(openLoginModal("Please sign in to view your wishlist."))}
+            className="w-full bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:from-rose-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-rose-500/25 transition-all text-xs cursor-pointer"
+          >
+            Sign In Now
+          </button>
         </div>
       </div>
     );

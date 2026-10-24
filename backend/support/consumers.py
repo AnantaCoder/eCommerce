@@ -50,7 +50,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         else:
-            ai_response = await generate_ai_response(prompt=message,session_id=self.session_id)
+            ai_response = await sync_to_async(generate_ai_response)(prompt=message, session_id=self.session_id)
             if session.user: #<-- only save if user exists 
                 await sync_to_async(ChatMessage.objects.create)(
                     session=session, sender='bot', message=ai_response

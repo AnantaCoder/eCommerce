@@ -77,20 +77,14 @@ class CreatePaymentIntent(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if method not in ("card", "upi"):
-            return Response(
-                {"error": "Invalid payment_method. Must be 'card' or 'upi'"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
-            amount_in_paise = int(float(amount)) #change this later 
+            amount_in_paise = int(float(amount))
             
             stripe.api_key = settings.STRIPE_SECRET_KEY
             intent = stripe.PaymentIntent.create(
                 amount=amount_in_paise,
                 currency=currency,
-                payment_method_types=[method],
+                automatic_payment_methods={"enabled": True},
                 metadata={
                     "user_id": str(user.id),
                     "order_id": str(order_id),

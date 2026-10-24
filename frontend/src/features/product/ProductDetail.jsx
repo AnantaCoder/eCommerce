@@ -5,6 +5,7 @@ import IndividualProductCard from "../../components/IndivisualProductCard";
 import { fetchProducts } from "./productSlice";
 import { addToWishlist } from "../wishlist/wishlistSlice";
 import { addToCart } from "../cart/cartSlice";
+import { openLoginModal } from "../auth/authSlice";
 import ReviewSection from "./ReviewSection";
 import Loader from "../../components/Loader";
 
@@ -13,12 +14,21 @@ function ProductDetail() {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.product.items);
   const loading = useSelector((state) => state.product.loading);
-  const user = useSelector((state)=>state.auth.user)
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
   const handleAddToWishList = (id) => {
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to save items to your wishlist."));
+      return;
+    }
     dispatch(addToWishlist({ itemId: id }));
   };
 
   const handleAddToCart = (mapped) => {
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to add items to your shopping cart."));
+      return;
+    }
     dispatch(addToCart({ itemId: mapped.id, quantity: 1 }));
   };
 

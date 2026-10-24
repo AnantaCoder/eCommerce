@@ -1,7 +1,16 @@
 import { Heart, ShoppingCart, Star, Eye, Share2, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-const ProductCard = ({ product,addToCart,addToWishlist }) => {
-  const navigate = useNavigate()
+import { useDispatch, useSelector } from 'react-redux';
+import { openLoginModal } from '../features/auth/authSlice';
+import { addToCart as addToCartAction, deleteAllCart, fetchCartItems } from '../features/cart/cartSlice';
+import { addToWishlist as addToWishlistAction } from '../features/wishlist/wishlistSlice';
+import { toast } from 'react-toastify';
+
+const ProductCard = ({ product, addToCart, addToWishlist, buyNow }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   // Map API response to component props
   const mappedProduct = {
     id: product.id,
@@ -23,8 +32,54 @@ const ProductCard = ({ product,addToCart,addToWishlist }) => {
     originalPrice: null
   };
 
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to save items to your wishlist."));
+      return;
+    }
+    if (addToWishlist) {
+      addToWishlist(mappedProduct.id);
+    } else {
+      dispatch(addToWishlistAction({ itemId: mappedProduct.id }));
+    }
+  };
+
+  const handleCartClick = (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to add items to your shopping cart."));
+      return;
+    }
+    if (addToCart) {
+      addToCart(mappedProduct);
+    } else {
+      dispatch(addToCartAction({ itemId: mappedProduct.id, quantity: 1 }));
+    }
+  };
+
+  const handleBuyClick = async (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to purchase this product and checkout."));
+      return;
+    }
+    try {
+      if (buyNow) {
+        await buyNow(mappedProduct);
+      } else {
+        await dispatch(deleteAllCart()).unwrap();
+        await dispatch(addToCartAction({ itemId: mappedProduct.id, quantity: 1 }));
+        await dispatch(fetchCartItems()).unwrap();
+        navigate("/checkout");
+      }
+    } catch (err) {
+      toast.error("Could not start Buy Now: " + (err.message || err));
+    }
+  };
+
   return (
-    <div className="group relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20 ">
+    <div className="group relative bg-gray-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-200 hover:scale-[1.03] active:scale-[0.99] hover:shadow-blue-500/20 ">
       {mappedProduct.discount && (
         <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           -{mappedProduct.discount}%
@@ -33,8 +88,10 @@ const ProductCard = ({ product,addToCart,addToWishlist }) => {
 
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0">
         <button 
-        onClick={() => addToWishlist(mappedProduct.id)}
-        className="p-2 rounded-full bg-black/40 text-white hover:bg-red-500 backdrop-blur-md transition-all duration-200">
+          onClick={handleWishlistClick}
+          aria-label="Add to wishlist"
+          className="p-2.5 rounded-full bg-black/60 text-white hover:bg-red-500 active:scale-90 active:bg-red-600 backdrop-blur-md transition-all duration-150 cursor-pointer shadow-lg"
+        >
           <Heart className="w-4 h-4" />
         </button>
         <button className="p-2 rounded-full bg-black/40 text-white hover:bg-blue-500 backdrop-blur-md transition-all duration-200"
@@ -128,14 +185,22 @@ const ProductCard = ({ product,addToCart,addToWishlist }) => {
           Sold by {mappedProduct.seller}
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-2 pt-2">
           <button
             disabled={!mappedProduct.inStock}
-            onClick={() => addToCart(mappedProduct)}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-500/25"
+            onClick={handleCartClick}
+            className="flex-1 bg-gray-800 hover:bg-gray-700 active:scale-95 active:shadow-inner text-white font-semibold py-2.5 px-3 rounded-xl transition-all duration-150 flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg border border-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            <ShoppingCart className="w-4 h-4" />
-            Add to Cart
+            <ShoppingCart className="w-4 h-4 text-purple-400" />
+            <span className="text-xs">Add to Cart</span>
+          </button>
+          <button
+            disabled={!mappedProduct.inStock}
+            onClick={handleBuyClick}
+            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-95 active:shadow-inner text-white font-semibold py-2.5 px-3 rounded-xl transition-all duration-150 flex items-center justify-center gap-1.5 shadow-md hover:shadow-emerald-500/25 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            <Zap className="w-4 h-4 text-amber-300" />
+            <span className="text-xs">Buy Now</span>
           </button>
         </div>
       </div>

@@ -1,8 +1,18 @@
 import React, { useState } from "react";
-import { Star, Truck, ShoppingCart, Heart } from "lucide-react";
+import { Star, Truck, ShoppingCart, Heart, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { openLoginModal } from "../features/auth/authSlice";
+import { addToCart as addToCartAction, deleteAllCart, fetchCartItems } from "../features/cart/cartSlice";
+import { addToWishlist as addToWishlistAction } from "../features/wishlist/wishlistSlice";
+import { toast } from "react-toastify";
 
-const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
+const StoreCard = ({ product, addWishlist, addToCart, buyNow }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [onClicked, setOnClicked] = useState(false);
+
   const formatPrice = (price) =>
     `₹${parseFloat(price).toLocaleString("en-IN")}`;
   const formatRating = (rating) => rating.toFixed(1);
@@ -32,9 +42,55 @@ const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
     discount: null,
     originalPrice: null,
   };
-  // wishlist adder functionality
- const navigate = useNavigate()
- const [onClicked,setOnClicked] = useState(false)
+
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to save items to your wishlist."));
+      return;
+    }
+    if (addWishlist) {
+      addWishlist(mappedProduct.id);
+    } else {
+      dispatch(addToWishlistAction({ itemId: mappedProduct.id }));
+    }
+  };
+
+  const handleCartClick = (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to add items to your shopping cart."));
+      return;
+    }
+    if (addToCart) {
+      addToCart(mappedProduct);
+    } else {
+      dispatch(addToCartAction({ itemId: mappedProduct.id, quantity: 1 }));
+    }
+  };
+
+  const handleBuyClick = async (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      dispatch(openLoginModal("Please sign in to purchase this product and checkout."));
+      return;
+    }
+    setOnClicked(true);
+    try {
+      if (buyNow) {
+        await buyNow(mappedProduct);
+      } else {
+        await dispatch(deleteAllCart()).unwrap();
+        await dispatch(addToCartAction({ itemId: mappedProduct.id, quantity: 1 }));
+        await dispatch(fetchCartItems()).unwrap();
+        navigate("/checkout");
+      }
+    } catch (err) {
+      toast.error("Could not start Buy Now: " + (err.message || err));
+    } finally {
+      setOnClicked(false);
+    }
+  };
 
   return (
     <div className="group relative bg-gray-900/95 backdrop-blur-sm rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-500 hover:-translate-y-2 max-w-lg border border-gray-800/50">
@@ -64,8 +120,9 @@ const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
 
         {/* Wishlist Button */}
         <button
-        onClick={()=>addWishlist(mappedProduct.id)}
-          className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 transition-all duration-300 hover:scale-110 border border-gray-700/50"
+          onClick={handleWishlistClick}
+          aria-label="Add to wishlist"
+          className="absolute top-4 right-4 w-10 h-10 bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-gray-700 active:scale-90 active:bg-red-500/20 transition-all duration-150 hover:scale-110 border border-gray-700/50 cursor-pointer"
         >
           <Heart
             size={16}
@@ -136,36 +193,32 @@ const StoreCard = ({ product ,  addWishlist,addToCart,buyNow}) => {
         <div className="flex flex-col gap-3">
           <button
             disabled={!mappedProduct.inStock}
-            onClick={() => addToCart(mappedProduct)}
-
-            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
+            onClick={handleCartClick}
+            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-150 cursor-pointer active:scale-95 active:shadow-inner ${
               mappedProduct.inStock
-                ? "bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-105"
+                ? "bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white shadow-lg hover:shadow-xl hover:scale-[1.02]"
                 : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700"
             }`}
           >
             <ShoppingCart
               size={16}
-              className="transition-transform group-hover/btn:scale-110"
+              className="transition-transform group-hover/btn:scale-110 text-purple-600"
             />
             Add to Cart
           </button>
 
           {/* Purchase Button */}
           <button
-            disabled={!mappedProduct.inStock ||onClicked}
-            onClick={()=>{
-              setOnClicked(true)
-              buyNow(mappedProduct)
-            }}
-            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 ${
-              mappedProduct.inStock
-                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl hover:scale-105"
+            disabled={!mappedProduct.inStock || onClicked}
+            onClick={handleBuyClick}
+            className={`group/btn flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-150 cursor-pointer active:scale-95 active:shadow-inner ${
+              mappedProduct.inStock && !onClicked
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-emerald-500/25 hover:scale-[1.02]"
                 : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700"
             }`}
           >
-            <span className="text-lg">⚡</span>
-            Buy Now
+            <Zap size={16} className="text-amber-300" />
+            {onClicked ? "Processing..." : "Buy Now"}
           </button>
         </div>
       </div>

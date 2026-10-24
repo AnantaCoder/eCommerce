@@ -80,52 +80,51 @@ class SendMessageView(APIView):
             channel_layer = get_channel_layer()
             group_name = f"session_{session_id}"
 
-            try:
-                async_to_sync(channel_layer.group_send)(
-                    group_name,
-                    {
-                        "type": "chat.message",
-                        "sender": sender,
-                        "message": message_text,
-                    },
-                )
-            except (
-                ChannelFull,
-                InvalidChannelLayerError,
-                ConnectionRefusedError,
-                socket.error,
-            ) as e:
-                print(f"WebSocket broadcast error: {e}")
-                return Response(
-                    {
-                        "error": "Real-time messaging service is temporarily unavailable. Please try again later."
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
+            if channel_layer:
+                try:
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
+                        {
+                            "type": "chat.message",
+                            "sender": sender,
+                            "message": message_text,
+                        },
+                    )
+                except Exception as e:
+                    print(f"WebSocket broadcast warning (non-fatal): {e}")
 
+            bot_msg = None
             if sender == "user":
                 try:
                     ai_response = generate_ai_response(message_text, session.id)
-                except Exception:
+                except Exception as e:
+                    print(f"AI response error: {e}")
                     ai_response = (
                         "I'm sorry, I'm having trouble right now. Please try again."
                     )
 
-                ChatMessage.objects.create(
+                bot_msg = ChatMessage.objects.create(
                     session=session, message=ai_response, sender="bot"
                 )
 
-                async_to_sync(channel_layer.group_send)(
-                    group_name,
-                    {
-                        "type": "chat.message",
-                        "sender": "bot",
-                        "message": ai_response,
-                    },
-                )
+                if channel_layer:
+                    try:
+                        async_to_sync(channel_layer.group_send)(
+                            group_name,
+                            {
+                                "type": "chat.message",
+                                "sender": "bot",
+                                "message": ai_response,
+                            },
+                        )
+                    except Exception as e:
+                        print(f"WebSocket broadcast warning (non-fatal): {e}")
 
             message_serializer = ChatMessageSerializer(message)
-            return Response(message_serializer.data, status=status.HTTP_201_CREATED)
+            response_data = dict(message_serializer.data)
+            if bot_msg:
+                response_data["bot_message"] = ChatMessageSerializer(bot_msg).data
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
         except ChatSession.DoesNotExist:
             return Response(

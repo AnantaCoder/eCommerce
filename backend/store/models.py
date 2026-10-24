@@ -221,5 +221,14 @@ ManyToManyField: Creates an intermediate table linking two models; e.g. Order.it
 
 '''
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
-
+@receiver([post_save, post_delete], sender=Item)
+def invalidate_rag_cache(sender, instance, **kwargs):
+    """Automatically rebuild the LangChain RAG product catalog index when inventory changes."""
+    try:
+        from support.rag import reload_catalog_index
+        reload_catalog_index()
+    except Exception:
+        pass

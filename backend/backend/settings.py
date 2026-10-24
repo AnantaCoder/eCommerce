@@ -54,17 +54,26 @@ INSTALLED_APPS = [
 # asgi config
 ASGI_APPLICATION = "backend.asgi.application"
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
+# Channels Channel Layer (Uses in-memory layer by default for zero-dependency local dev; Redis for production)
+USE_REDIS = os.environ.get("USE_REDIS", "false").lower() == "true"
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+if USE_REDIS:
+    REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [(REDIS_HOST, REDIS_PORT)],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
 
 
 # AI MODEL CONFIGURATION

@@ -7,6 +7,8 @@ import { Elements } from "@stripe/react-stripe-js";
 import StripeCheckoutForm from "../features/stripe/StripeCheckout";
 import api from "../services/api";
 import { addOrderAddress } from "../features/order/orderSlice";
+import { openLoginModal } from "../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -62,9 +64,35 @@ export default function CheckoutPage() {
   const handlePaymentSuccess = () => {
     setShowStripe(false);
     setOrderId(null);
-    alert("Payment Successful");
+    toast.success("Payment Successful! Your order has been placed. 🥳", {
+      position: "top-center"
+    });
     window.location.href = "/my-orders";
   };
+
+  if (!token) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] p-4">
+        <div className="text-center p-8 bg-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-700/80 shadow-2xl max-w-sm w-full">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-purple-500/25">
+            <ShoppingCart size={28} />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">
+            Sign In Required
+          </h2>
+          <p className="text-gray-400 text-xs mb-6 leading-relaxed">
+            Please log in to complete your purchase and proceed to checkout securely.
+          </p>
+          <button
+            onClick={() => dispatch(openLoginModal("Please sign in to proceed with checkout."))}
+            className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all text-xs cursor-pointer"
+          >
+            Sign In to Checkout
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleCheckout = async () => {
     if (!validate()) return;
@@ -84,7 +112,7 @@ export default function CheckoutPage() {
         (item) => item.item?.id || item.id
       );
       if (validCartItems.length !== cartItems.length) {
-        alert(
+        toast.error(
           "Some items in your cart are no longer available. Please remove them and try again."
         );
         setCreatingOrder(false);
@@ -120,7 +148,7 @@ export default function CheckoutPage() {
           errorMessage = JSON.stringify(err.response.data);
         }
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
     setCreatingOrder(false);
   };
